@@ -1,0 +1,6 @@
+@POwusu.Server_HostAddress = http://localhost:5208
+
+GET {{POwusu.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
