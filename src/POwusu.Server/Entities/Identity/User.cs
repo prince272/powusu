@@ -11,6 +11,18 @@ namespace POwusu.Server.Entities.Identity
         public User(string userName) : base(userName)
         {
         }
+
+        public string FirstName { get; set; } = null!;
+
+        public string LastName { get; set; } = null!;
+
+        public DateTimeOffset CreatedAt { get; set; }
+
+        public DateTimeOffset? UpdatedAt { get; set; }
+
+        public DateTimeOffset? LastActiveAt { get; set; }
+
+        public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
     
     public class UserRole : IdentityUserRole<string>
