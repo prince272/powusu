@@ -6,7 +6,7 @@ using POwusu.Server.Services;
 
 namespace POwusu.Server.Endpoints
 {
-    public class IdentityEndpoints : IEndpoint
+    public class IdentityEndpoints : IEndpoints
     {
         public IdentityEndpoints()
         {

@@ -30,6 +30,7 @@ namespace POwusu.Server.Services
                 // Ensure database is created.
                 var dbContext = services.GetRequiredService<AppDbContext>();
                 await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+                await dbContext.Database.MigrateAsync(cancellationToken);
 
                 // Seed the database.
 

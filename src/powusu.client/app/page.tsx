@@ -6,6 +6,7 @@ import { button as buttonStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
+import { Counter } from "@/components/counter";
 
 export default function Home() {
   return (
@@ -27,7 +28,7 @@ export default function Home() {
           GitHub
         </Link>
       </div>
-
+      <Counter />
       <div className="mt-8">
         <Snippet hideSymbol hideCopyButton variant="flat">
           <span>

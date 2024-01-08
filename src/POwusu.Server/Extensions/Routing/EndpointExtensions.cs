@@ -8,11 +8,11 @@ namespace POwusu.Server.Extensions.Routing
         public static IServiceCollection AddEndpoints(this IServiceCollection services, params Assembly[] assemblies)
         {
             var concreteTypes = assemblies.SelectMany(_ => _.DefinedTypes).Select(_ => _.AsType())
-                .Where(type => type.IsClass && !type.IsAbstract && type.IsCompatibleWith(typeof(IEndpoint)));
+                .Where(type => type.IsClass && !type.IsAbstract && type.IsCompatibleWith(typeof(IEndpoints)));
 
             foreach (var concreteType in concreteTypes)
             {
-                var interfaceType = concreteType.GetInterfaces().FirstOrDefault(_ => _ == typeof(IEndpoint));
+                var interfaceType = concreteType.GetInterfaces().FirstOrDefault(_ => _ == typeof(IEndpoints));
 
                 if (interfaceType is not null)
                 {
@@ -26,7 +26,7 @@ namespace POwusu.Server.Extensions.Routing
         public static void MapEndpoints(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
-            var endpoints = scope.ServiceProvider.GetServices<IEndpoint>();
+            var endpoints = scope.ServiceProvider.GetServices<IEndpoints>();
             foreach (var endpoint in endpoints) endpoint.Configure(app);
         }
     }

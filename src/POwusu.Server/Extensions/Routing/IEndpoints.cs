@@ -2,7 +2,7 @@
 
 namespace POwusu.Server.Extensions.Routing
 {
-    public interface IEndpoint
+    public interface IEndpoints
     {
         void Configure(IEndpointRouteBuilder builder);
     }

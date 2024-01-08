@@ -129,6 +129,22 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>();
+
+            policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithExposedHeaders("Content-Disposition")
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+        });
+    });
+
     builder.Services.AddScoped<IValidator, Validator>();
     builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -142,6 +158,14 @@ try
 
     var app = builder.Build();
 
+    app.UseStatusCodePagesWithReExecute("/errors/{0}");
+    app.UseExceptionHandler(new ExceptionHandlerOptions()
+    {
+        AllowStatusCode404Response = true,
+        ExceptionHandler = null,
+        ExceptionHandlingPath = "/errors/500"
+    });
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -150,6 +174,8 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors();
 
     app.UseDbTransaction<AppDbContext>();
 
