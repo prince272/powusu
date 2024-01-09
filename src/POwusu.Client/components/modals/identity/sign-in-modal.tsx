@@ -1,20 +1,22 @@
 "use client";
 
-import React, { FC, ReactNode, useMemo, useState } from "react";
+import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getErrorMessage } from "@/utils/axios";
 import { ChevronRightRegular, PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
-import { clone } from "lodash";
+import { clone, uniqueId } from "lodash";
 import queryString from "query-string";
-import { Controller as FormController, useForm } from "react-hook-form";
+import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 
 import { api } from "@/lib/api";
 import { PasswordInput } from "@/components/ui/password-input";
+import { toast } from "@/components/ui/toaster";
 import { GoogleIcon } from "@/components/icons";
 import { Render } from "@/components/misc/render";
 import { useUser } from "@/components/providers/user";
@@ -35,7 +37,9 @@ export interface SignInInputs {
 }
 
 export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClose }) => {
+  const toastId = useRef(uniqueId()).current;
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const form = useForm<{ method?: SignInMethods | undefined } & SignInInputs>({
@@ -45,22 +49,22 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
       method: (searchParams.get("method") as SignInMethods) || undefined
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting]);
+  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
 
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
-  const submit = form.handleSubmit(async ({ method, ...inputs }) => {
+  const submit : SubmitHandler<{ method?: SignInMethods | undefined } & SignInInputs> = async ({ method, ...inputs }) => {
     try {
       setStatus("submitting");
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/tokens/generate", inputs);
-          user.set(response.data);
+          user.set({ ...response.data, authenticated: true });
           break;
         }
         case "google": {
           const response = await api.post("/identity/tokens/google/generate", inputs);
-          user.set(response.data);
+          user.set({ ...response.data, authenticated: true });
           break;
         }
       }
@@ -68,44 +72,66 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
     } catch (error) {
       console.error(error);
 
-      if (isAxiosError(error)) {
-        if (error.response) {
-          const fields = Object.entries<string[]>(error.response.data.errors || []);
-          fields.forEach(([name, message]) => {
-            form.setError(name as any, { message: message?.join("\n") });
-          });
-        }
+      if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
+        router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username }, fragmentIdentifier: "confirm-account" }));
+      } else {
+        const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
+        fields.forEach(([name, message]) => {
+          form.setError(name as any, { message: message?.join("\n") });
+        });
+
+        toast.error(getErrorMessage(error), { id: toastId });
       }
     } finally {
       setStatus("idle");
     }
-  });
+  };
 
   const user = useUser();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Sign in to your account</ModalHeader>
-        <ModalBody as="form" onSubmit={submit}>
+        <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
           <Render switch={form.watch("method")}>
-            <div key="credentials" className="grid gap-y-5">
+            <div key="credentials" className="grid grid-cols-12 gap-x-3 gap-y-5">
               <FormController
                 control={form.control}
                 name="username"
-                render={({ field }) => <Input {...field} label="Email or phone number" isInvalid={!!formErrors.username} errorMessage={formErrors.username?.message} />}
+                render={({ field }) => (
+                  <Input {...field} className="col-span-12" label="Email or phone number" isInvalid={!!formErrors.username} errorMessage={formErrors.username?.message} />
+                )}
               />
               <FormController
                 control={form.control}
                 name="password"
-                render={({ field }) => <PasswordInput {...field} label="Password" isInvalid={!!formErrors.password} errorMessage={formErrors.password?.message} />}
+                render={({ field }) => (
+                  <div className="col-span-12">
+                    <PasswordInput {...field} label="Password" isInvalid={!!formErrors.password} errorMessage={formErrors.password?.message} />
+                    <div className="flex justify-end px-1 py-2">
+                      <Link
+                        as={NextLink}
+                        href={queryString.stringifyUrl({
+                          url: currentUrl,
+                          query: { method: undefined, username: form.watch("username") || undefined },
+                          fragmentIdentifier: "reset-password"
+                        })}
+                        size="sm"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                  </div>
+                )}
               />
-              <Button color="primary" type="button" isDisabled={status != "idle"} isLoading={status == "submitting"} onPress={() => submit()}>
+              <Button className="col-span-12" color="primary" type="button" isDisabled={status != "idle"} isLoading={status == "submitting"} onPress={() => form.handleSubmit(submit)()}>
                 Sign in
               </Button>
             </div>
-            <div className="grid gap-y-5">
+            <div className="grid grid-cols-12 gap-y-5">
               <Button
+                className="col-span-12"
                 type="button"
                 color="primary"
                 isDisabled={status != "idle"}
@@ -115,6 +141,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
                 Use email or phone
               </Button>
               <Button
+                className="col-span-12"
                 type="button"
                 color="default"
                 startContent={status == "idle" && <GoogleIcon size={24} />}
@@ -122,7 +149,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
                 isLoading={status == "submitting"}
                 onPress={() => {
                   form.setValue("method", "google");
-                  submit();
+                  form.handleSubmit(submit)();
                 }}
               >
                 Continue with Google

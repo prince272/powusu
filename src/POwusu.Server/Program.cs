@@ -17,6 +17,9 @@ using Humanizer;
 using POwusu.Server.Middlewares;
 using Serilog;
 using Serilog.Settings.Configuration;
+using POwusu.Server.Extensions.Mailing.MailKit;
+using POwusu.Server.Extensions.Messaging.FakeSms;
+using POwusu.Server.Extensions.ViewRenderer.Razor;
 
 try
 {
@@ -70,7 +73,7 @@ try
 
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        options.UseSqlite(builder.Configuration.GetConnectionString("AppConnection"));
+        options.UseSqlite(builder.Configuration.GetConnectionString("Application"));
     });
 
     builder.Services.AddIdentity<User, Role>(options =>
@@ -93,7 +96,7 @@ try
         options.User.RequireUniqueEmail = false;
 
         options.SignIn.RequireConfirmedAccount = false;
-        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedEmail = true;
         options.SignIn.RequireConfirmedPhoneNumber = false;
 
         // Generate Short Code for Email Confirmation using Asp.Net Identity core 2.1
@@ -144,6 +147,18 @@ try
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
         });
     });
+
+    builder.Services.AddMailKitEmailSender(options =>
+    {
+        builder.Configuration.GetRequiredSection("MailingOptions:MailKit").Bind(options);
+    });
+
+    builder.Services.AddFakeSmsSender(options =>
+    {
+        builder.Configuration.GetRequiredSection("MessagingOptions:FakeSms").Bind(options);
+    });
+
+    builder.Services.AddRazorViewRenderer();
 
     builder.Services.AddScoped<IValidator, Validator>();
     builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

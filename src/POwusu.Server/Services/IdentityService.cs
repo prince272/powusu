@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using POwusu.Server.Entities.Identity;
 using POwusu.Server.Events.Identity;
 using POwusu.Server.Extensions.Authentication;
+using POwusu.Server.Extensions.Mailing;
+using POwusu.Server.Extensions.Messaging;
 using POwusu.Server.Extensions.Validation;
+using POwusu.Server.Extensions.ViewRenderer;
 using POwusu.Server.Helpers;
 using POwusu.Server.Models.Identity;
 
@@ -20,14 +23,20 @@ namespace POwusu.Server.Services
         private readonly IValidator _validator;
         private readonly ILogger<IdentityService> _logger;
         private readonly IMediator _mediator;
+        private readonly IEmailSender _emailSender;
+        private readonly ISmsSender _smsSender;
+        private readonly IViewRenderer _viewRenderer;
 
         public IdentityService(
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IJwtTokenManager jwtGenerator,
             IValidator validator,
-            ILogger<IdentityService> logger, 
-            IMediator mediator)
+            ILogger<IdentityService> logger,
+            IMediator mediator,
+            IEmailSender emailSender,
+            ISmsSender smsSender,
+            IViewRenderer viewRenderer)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -35,10 +44,13 @@ namespace POwusu.Server.Services
             _validator = validator;
             _logger = logger;
             _mediator = mediator;
+            _emailSender = emailSender;
+            _smsSender = smsSender;
+            _viewRenderer = viewRenderer;
         }
 
 
-        public async Task<IResult> RegisterAsync(RegisterForm form)
+        public async Task<IResult> RegisterAccountAsync(RegisterAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -103,9 +115,13 @@ namespace POwusu.Server.Services
             if (!await _userManager.CheckPasswordAsync(user, form.Password)) return Results.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Password), [$"'{nameof(form.Password).Humanize(LetterCasing.Sentence)}' is not correct."] } });
 
-            var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
-            var model = user.Adapt(tokenInfo.Adapt<UserWithTokenModel>());
-            model.Roles = (await _userManager.GetRolesAsync(user)).Select(_ => _.Camelize()).ToArray();
+            if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
+                (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
+                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
+
+
+            var model = await GenerateUserAsync(user);
             return Results.Ok(model);
         }
 
@@ -143,6 +159,128 @@ namespace POwusu.Server.Services
             return Results.Ok();
         }
 
+        public async Task<IResult> ConfirmAccountAsync(ConfirmAccountForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+
+
+            var formUsernameType = ValidationHelper.GetContactType(form.Username);
+            var user = formUsernameType switch
+            {
+                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
+                _ => null
+            };
+
+
+            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
+
+
+            if (form.SendCode)
+            {
+                if (formUsernameType == ContactType.EmailAddress)
+                {
+                    var code = await _userManager.GenerateChangeEmailTokenAsync(user, form.Username);
+
+                    var message = new EmailMessage
+                    {
+                        Subject = "Confirm Your Email Address",
+                        Body = await _viewRenderer.RenderAsync("/Templates/Email/ConfirmAccount", (user, code)),
+                        Recipients = new[] { form.Username }
+                    };
+
+                    await _emailSender.SendAsync(message);
+                }
+                else if (formUsernameType == ContactType.PhoneNumber)
+                {
+                    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, form.Username);
+
+                    var message = new TextMessage
+                    {
+                        Body = await _viewRenderer.RenderAsync("/Templates/Text/ConfirmAccount", (user, code)),
+                        Recipients = new[] { form.Username }
+                    };
+
+                    await _smsSender.SendAsync(message);
+                }
+
+                return Results.Ok();
+            }
+
+            var result = formUsernameType switch
+            {
+                ContactType.EmailAddress => await _userManager.ChangeEmailAsync(user, form.Username, form.Code),
+                ContactType.PhoneNumber => await _userManager.ChangePhoneNumberAsync(user, form.Username, form.Code),
+                _ => throw new InvalidOperationException()
+            };
+
+            if (!result.Succeeded) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
+
+            var model = await GenerateUserAsync(user);
+            return Results.Ok(model);
+        }
+
+        public async Task<IResult> ResetPasswordAsync(ResetPasswordForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+
+
+            var formUsernameType = ValidationHelper.GetContactType(form.Username);
+            var user = formUsernameType switch
+            {
+                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
+                _ => null
+            };
+
+
+            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
+
+
+            if (form.SendCode)
+            {
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                if (formUsernameType == ContactType.EmailAddress)
+                {
+                    var message = new EmailMessage
+                    {
+                        Subject = "Reset Your Password",
+                        Body = await _viewRenderer.RenderAsync("/Templates/Email/ResetPassword", (user, code)),
+                        Recipients = new[] { form.Username }
+                    };
+
+                    await _emailSender.SendAsync(message);
+                }
+                else if (formUsernameType == ContactType.PhoneNumber)
+                {
+                    var message = new TextMessage
+                    {
+                        Body = await _viewRenderer.RenderAsync("/Templates/Text/ResetPassword", (user, code)),
+                        Recipients = new[] { form.Username }
+                    };
+
+                    await _smsSender.SendAsync(message);
+                }
+
+                return Results.Ok();
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, form.Code, form.NewPassword);
+            if (!result.Succeeded) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
+
+            return Results.Ok();
+        }
+
+
         private async Task<string> GenerateUserNameAsync(string firstName, string lastName)
         {
             if (firstName is null) throw new ArgumentNullException(nameof(firstName));
@@ -160,16 +298,30 @@ namespace POwusu.Server.Services
 
             return userName;
         }
+
+        private async Task<UserWithTokenModel> GenerateUserAsync(User user)
+        {
+            if (user is null) throw new ArgumentNullException(nameof(user));
+
+            var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
+            var model = user.Adapt(tokenInfo.Adapt<UserWithTokenModel>());
+            model.Roles = (await _userManager.GetRolesAsync(user)).Select(_ => _.Camelize()).ToArray();
+            return model;
+        }
     }
 
     public interface IIdentityService
     {
-        Task<IResult> RegisterAsync(RegisterForm form);
+        Task<IResult> RegisterAccountAsync(RegisterAccountForm form);
 
         Task<IResult> GenerateTokenAsync(GenerateTokenForm form);
 
         Task<IResult> RefreshTokenAsync(RefreshTokenForm form);
 
         Task<IResult> RevokeTokenAsync(RevokeTokenForm form);
+
+        Task<IResult> ConfirmAccountAsync(ConfirmAccountForm form);
+
+        Task<IResult> ResetPasswordAsync(ResetPasswordForm form);
     }
 }

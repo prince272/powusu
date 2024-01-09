@@ -12,6 +12,8 @@ namespace POwusu.Server.Entities.Identity
         {
         }
 
+        public string FullName => $"{FirstName} {LastName}".Trim();
+
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;

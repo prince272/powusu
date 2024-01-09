@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import { NextUIProvider } from "@nextui-org/system";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
-
 import { User } from "@/types/user";
 
+import { modals } from "../modals";
 import { ModalRouterProvider } from "./modal-router";
 import { UserProvider } from "./user";
-import { modals } from "../modals";
+import { Toaster } from "../ui/toaster";
 
 export interface ProvidersProps {
   children: ReactNode;
@@ -25,7 +25,10 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <UserProvider value={{ authenticated: false } as User}>
       <ModalRouterProvider modals={modals}>
         <NextUIProvider navigate={router.push}>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          <NextThemesProvider {...themeProps}>
+            {children}
+            <Toaster />
+          </NextThemesProvider>
         </NextUIProvider>
       </ModalRouterProvider>
     </UserProvider>

@@ -48,7 +48,7 @@ namespace POwusu.Server.Extensions.Validation
 
         // How can I create strong passwords with FluentValidation?
         // source: https://stackoverflow.com/questions/63864594/how-can-i-create-strong-passwords-with-fluentvalidation
-        public static IRuleBuilder<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, int minimumLength = 6)
+        public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilderOptions<T, string> ruleBuilder, int minimumLength = 6)
         {
             var options = ruleBuilder
                 .MinimumLength(minimumLength)

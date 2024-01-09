@@ -1,0 +1,13 @@
+﻿@using POwusu.Server.Entities.Identity;
+@model (User User, string Code);
+
+Subject: Account Confirmation
+
+Dear @User,
+
+Thank you for creating an account with us. To activate your account, please use the following code:
+
+Activation Code: @(Model.Code)
+
+Best,
+Your Company Name

@@ -3,7 +3,7 @@ using POwusu.Server.Extensions.Validation;
 
 namespace POwusu.Server.Models.Identity
 {
-    public class RegisterForm
+    public class RegisterAccountForm
     {
         public string FirstName { get; set; } = null!;
 
@@ -14,9 +14,9 @@ namespace POwusu.Server.Models.Identity
         public string Password { get; set; } = null!;
     }
 
-    public class RegisterFormValidator : AbstractValidator<RegisterForm>
+    public class RegisterAccountFormValidator : AbstractValidator<RegisterAccountForm>
     {
-        public RegisterFormValidator()
+        public RegisterAccountFormValidator()
         {
             RuleFor(_ => _.FirstName).NotEmpty().MaximumLength(128);
             RuleFor(_ => _.LastName).NotEmpty().MaximumLength(128);

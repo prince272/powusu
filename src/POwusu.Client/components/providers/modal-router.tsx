@@ -84,6 +84,9 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
           onOpenChange: () => {
             if (modalProps.isOpen) router.push(previousUrl);
             modalProps.onOpenChange();
+          },
+          onClose: () => {
+            router.push(previousUrl);
           }
         }}
       />
