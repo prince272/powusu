@@ -12,6 +12,8 @@ using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Extensions.ViewRenderer;
 using POwusu.Server.Helpers;
 using POwusu.Server.Models.Identity;
+using System.Security.Claims;
+using System.Threading;
 
 namespace POwusu.Server.Services
 {
@@ -19,6 +21,7 @@ namespace POwusu.Server.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IJwtTokenManager _jwtTokenManager;
         private readonly IValidator _validator;
         private readonly ILogger<IdentityService> _logger;
@@ -30,6 +33,7 @@ namespace POwusu.Server.Services
         public IdentityService(
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
+            SignInManager<User> signInManager,
             IJwtTokenManager jwtGenerator,
             IValidator validator,
             ILogger<IdentityService> logger,
@@ -40,6 +44,7 @@ namespace POwusu.Server.Services
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
             _jwtTokenManager = jwtGenerator;
             _validator = validator;
             _logger = logger;
@@ -79,7 +84,6 @@ namespace POwusu.Server.Services
             var result = await _userManager.CreateAsync(user, form.Password);
             if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
 
-
             var roles = new List<string> { RoleNames.Member };
 
             var totalUserCount = await _userManager.Users.LongCountAsync();
@@ -88,9 +92,14 @@ namespace POwusu.Server.Services
             result = await _userManager.AddToRolesAsync(user, roles);
             if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
 
-            await _mediator.Publish(new SignUpEvent { UserId = user.Id });
 
-            return Results.Ok();
+            if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
+                (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
+                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return Results.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
+       
+            var model = await GenerateUserAsync(user);
+            return Results.Ok(model);
         }
 
         public async Task<IResult> GenerateTokenAsync(GenerateTokenForm form)
@@ -120,9 +129,81 @@ namespace POwusu.Server.Services
                 (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return Results.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
 
+            var model = await GenerateUserAsync(user);
+            return Results.Ok(model);
+        }
+
+        public async Task<IResult> GenerateTokenFromExternalAuthenticationAsync(string provider)
+        {
+            if (provider is null) throw new ArgumentNullException(nameof(provider));
+
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo is null) return Results.ValidationProblem(new Dictionary<string, string[]>(), title: "External authentication failed.");
+
+            var username =
+                (externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) ??
+                externalLoginInfo.Principal.FindFirstValue(ClaimTypes.MobilePhone) ??
+                externalLoginInfo.Principal.FindFirstValue(ClaimTypes.OtherPhone) ??
+                externalLoginInfo.Principal.FindFirstValue(ClaimTypes.HomePhone))!;
+
+            var firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
+            var lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
+
+            var formUsernameType = ValidationHelper.GetContactType(username);
+
+            var user = formUsernameType switch
+            {
+                ContactType.EmailAddress => await _userManager.FindByEmailAsync(username),
+                ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(username),
+                _ => null
+            };
+
+
+            if (user is null)
+            {
+                user = new User();
+                user.UserName = await GenerateUserNameAsync(firstName, lastName);
+                user.Email = formUsernameType == ContactType.EmailAddress ? username : null;
+                user.PhoneNumber = formUsernameType == ContactType.PhoneNumber ? username : null;
+                user.CreatedAt = DateTimeOffset.UtcNow;
+
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
+
+                var roles = new List<string> { RoleNames.Member };
+
+                var totalUserCount = await _userManager.Users.LongCountAsync();
+                if (totalUserCount == 1) roles.Add(RoleNames.Administrator);
+
+                result = await _userManager.AddToRolesAsync(user, roles);
+                if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
+            }
+
+
+            await _userManager.RemoveLoginAsync(user, externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey);
+            await _userManager.AddLoginAsync(user, externalLoginInfo);
+
 
             var model = await GenerateUserAsync(user);
             return Results.Ok(model);
+        }
+
+        public Task<IResult> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins)
+        {
+            if (string.IsNullOrEmpty(provider))
+                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified." ));
+
+            if (string.IsNullOrEmpty(returnUrl))
+                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No return url was specified."));
+
+            provider = provider.Pascalize();
+
+            if (!allowedOrigins.Any(origin => Uri.Compare(new Uri(origin, UriKind.Absolute), new Uri(origin), UriComponents.SchemeAndServer, UriFormat.UriEscaped, StringComparison.OrdinalIgnoreCase) == 0))
+                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No return url is not allowed."));
+
+            // Request a redirect to the external sign-in provider.
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
+            return Task.FromResult(Results.Challenge(properties, new[] { provider }));
         }
 
         public async Task<IResult> RefreshTokenAsync(RefreshTokenForm form)
@@ -315,6 +396,10 @@ namespace POwusu.Server.Services
         Task<IResult> RegisterAccountAsync(RegisterAccountForm form);
 
         Task<IResult> GenerateTokenAsync(GenerateTokenForm form);
+
+        Task<IResult> GenerateTokenFromExternalAuthenticationAsync(string provider);
+
+        Task<IResult> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins);
 
         Task<IResult> RefreshTokenAsync(RefreshTokenForm form);
 

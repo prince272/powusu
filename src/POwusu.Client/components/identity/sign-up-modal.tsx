@@ -2,7 +2,9 @@
 
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleIcon } from "@/assets/icons";
+import { useUser } from "@/providers/user";
 import { getErrorMessage } from "@/utils/axios";
 import { ChevronRightRegular, PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
@@ -16,10 +18,9 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 
 import { api } from "@/lib/api";
 import { PasswordInput } from "@/components/ui/password-input";
+import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
-import { GoogleIcon } from "@/components/icons";
-import { Render } from "@/components/misc/render";
-import { useUser } from "@/components/providers/user";
+import { ExternalWindow } from "@/lib/external-window";
 
 export interface SignUpModalProps {
   children: ReactNode;
@@ -40,6 +41,7 @@ export interface SignUpInputs {
 
 export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClose }) => {
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const toastId = useRef(uniqueId()).current;
   const form = useForm<{ method: SignUpMethods | undefined } & SignUpInputs>({
@@ -55,18 +57,25 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
 
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
-  const submit : SubmitHandler<{ method: SignUpMethods | undefined } & SignUpInputs> = async ({ method, ...inputs }) => {
+  const submit: SubmitHandler<{ method: SignUpMethods | undefined } & SignUpInputs> = async ({ method, ...inputs }) => {
     try {
       setStatus("submitting");
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/register", inputs);
-          user.set(response.data);
+          user.set({ ...response.data, authenticated: true });
           break;
         }
-        case "google": {
-          const response = await api.post("/identity/tokens/google/generate", inputs);
-          user.set(response.data);
+        default: {
+          try {
+            const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
+            externalUrl.searchParams.set("returnUrl", window.location.href);
+            await ExternalWindow.open(externalUrl, { center: true });
+          } catch (error) {
+            console.warn(error);
+          }
+          const response = await api.post(`/identity/tokens/${method}/generate`);
+          user.set({ ...response.data, authenticated: true });
           break;
         }
       }
@@ -74,12 +83,16 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
     } catch (error) {
       console.error(error);
 
-      const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
-      fields.forEach(([name, message]) => {
-        form.setError(name as any, { message: message?.join("\n") });
-      });
+      if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
+        router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username }, fragmentIdentifier: "confirm-account" }));
+      } else {
+        const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
+        fields.forEach(([name, message]) => {
+          form.setError(name as any, { message: message?.join("\n") });
+        });
 
-      toast.error(getErrorMessage(error), { id: toastId });
+        toast.error(getErrorMessage(error), { id: toastId });
+      }
     } finally {
       setStatus("idle");
     }
@@ -120,7 +133,14 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
                   <PasswordInput {...field} className="col-span-12" label="Password" isInvalid={!!formErrors.password} errorMessage={formErrors.password?.message} />
                 )}
               />
-              <Button className="col-span-12" color="primary" type="button" isDisabled={status != "idle"} isLoading={status == "submitting"} onPress={() => form.handleSubmit(submit)()}>
+              <Button
+                className="col-span-12"
+                color="primary"
+                type="submit"
+                isDisabled={status != "idle"}
+                isLoading={status == "submitting"}
+                onPress={() => form.handleSubmit(submit)()}
+              >
                 Sign up
               </Button>
             </div>
@@ -133,10 +153,10 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
                 startContent={<PersonFilled fontSize={24} />}
                 onPress={() => form.setValue("method", "credentials")}
               >
-                Use email or phone
+                Sign up with email or phone
               </Button>
               <Button
-                className="col-span-12"
+                className="col-span-12 light"
                 type="button"
                 color="default"
                 startContent={status == "idle" && <GoogleIcon size={24} />}
@@ -147,17 +167,24 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
                   form.handleSubmit(submit)();
                 }}
               >
-                Continue with Google
+                Sgin up with Google
+              </Button>
+              <Button
+                className="col-span-12"
+                type="button"
+                color="default"
+                variant="flat"
+                isDisabled={status != "idle"}
+                isLoading={status == "submitting"}
+                as={NextLink}
+                href={queryString.stringifyUrl({ url: currentUrl, query: { method: form.watch("method") }, fragmentIdentifier: "sign-in" })}
+              >
+                Already registered? <span className="text-primary">Sign in</span>
               </Button>
             </div>
           </Render>
         </ModalBody>
-        <ModalFooter className="flex items-center justify-center text-center text-sm">
-          Already have have an account?{" "}
-          <Link as={NextLink} className="text-sm" href={queryString.stringifyUrl({ url: currentUrl, query: { method: form.watch("method") }, fragmentIdentifier: "sign-in" })}>
-            Sign in <ChevronRightRegular fontSize={20} />
-          </Link>
-        </ModalFooter>
+        <ModalFooter></ModalFooter>
       </ModalContent>
     </Modal>
   );

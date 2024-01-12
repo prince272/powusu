@@ -16,11 +16,10 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
-import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/toaster";
-import { useUser } from "@/components/providers/user";
+import { useUser } from "@/providers/user";
 
-export interface ResetPasswordModalProps {
+export interface ConfirmAccountModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
@@ -28,24 +27,22 @@ export interface ResetPasswordModalProps {
   onOpenChange: () => void;
 }
 
-export interface ResetPasswordInputs {
+export interface ConfirmAccountInputs {
   action: "send-code" | "validate-code";
   username: string;
   code: string;
-  newPassword: string;
 }
 
-export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onOpenChange, onClose }) => {
+export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onOpenChange, onClose }) => {
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
   const searchParams = useSearchParams();
   const toastId = useRef(uniqueId()).current;
 
-  const form = useForm<ResetPasswordInputs>({
+  const form = useForm<ConfirmAccountInputs>({
     defaultValues: {
       username: searchParams.get("username") || "",
       code: "",
-      action: "send-code",
-      newPassword: ""
+      action: "send-code"
     }
   });
   const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
@@ -60,21 +57,21 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onOpen
   const [codeSent, setCodeSent] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
-  const submit: SubmitHandler<ResetPasswordInputs> = async ({ action, ...inputs }) => {
+  const submit: SubmitHandler<ConfirmAccountInputs> = async ({ action, ...inputs }) => {
     try {
       setStatus("submitting");
 
       switch (action) {
         case "send-code": {
-          await api.post("/identity/password/reset", { ...inputs, sendCode: true });
+          await api.post("/identity/confirm", { ...inputs, sendCode: true });
           setCodeSent(true);
           resendCodeTimer.start();
           toast.success("Security code sent.", { id: toastId });
           break;
         }
         case "validate-code": {
-          const response = await api.post("/identity/password/reset", inputs);
-          user.set(response.data);
+          const response = await api.post("/identity/confirm", inputs);
+          user.set({ ...response.data, authenticated: true });
           onClose();
           break;
         }
@@ -98,14 +95,14 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onOpen
   return (
     <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Reset your password</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">Confirm your account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
           <div key="credentials" className="grid grid-cols-12 gap-x-3 gap-y-5">
             <FormController
               control={form.control}
               name="username"
               render={({ field }) => (
-                <Input {...field} className="col-span-12" label="Email or phone number" isInvalid={!!formErrors.username} errorMessage={formErrors.username?.message} />
+                <Input {...field} className="col-span-12" label="Email or phone number" isInvalid={!!formErrors.username} errorMessage={formErrors.username?.message} isReadOnly />
               )}
             />
             <FormController
@@ -148,19 +145,10 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onOpen
                 />
               )}
             />
-            {codeSent && (
-              <FormController
-                control={form.control}
-                name="newPassword"
-                render={({ field }) => (
-                  <PasswordInput {...field} className="col-span-12" label="New password" isInvalid={!!formErrors.newPassword} errorMessage={formErrors.newPassword?.message} />
-                )}
-              />
-            )}
             <Button
               className="col-span-12"
               color="primary"
-              type="button"
+              type="submit"
               isDisabled={status != "idle" || !codeSent}
               isLoading={status == "submitting" && form.watch("action") == "validate-code"}
               onPress={() => {

@@ -28,12 +28,17 @@ namespace POwusu.Server.Endpoints
             builder.MapPost("/tokens/generate", ([FromServices] IIdentityService identityService, [FromBody] GenerateTokenForm form)
                 => identityService.GenerateTokenAsync(form));
 
+            builder.MapPost("/tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider)
+                => identityService.GenerateTokenFromExternalAuthenticationAsync(provider));
+
+            builder.MapGet("/tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider, [FromQuery] string returnUrl, IConfiguration configuration)
+                => identityService.ConfigureExternalAuthenticationAsync(provider, returnUrl, configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>()));
+
             builder.MapPost("/tokens/refresh", ([FromServices] IIdentityService identityService, [FromBody] RefreshTokenForm form)
                 => identityService.RefreshTokenAsync(form));
 
             builder.MapPost("/tokens/revoke", ([FromServices] IIdentityService identityService, [FromBody] RevokeTokenForm form)
                 => identityService.RevokeTokenAsync(form));
-
         }
     }
 }

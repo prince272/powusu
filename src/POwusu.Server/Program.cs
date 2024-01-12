@@ -20,6 +20,8 @@ using Serilog.Settings.Configuration;
 using POwusu.Server.Extensions.Mailing.MailKit;
 using POwusu.Server.Extensions.Messaging.FakeSms;
 using POwusu.Server.Extensions.ViewRenderer.Razor;
+using POwusu.Server.Hubs;
+using Microsoft.AspNetCore.Authentication.Google;
 
 try
 {
@@ -126,7 +128,12 @@ try
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 
     })
-        .AddJwtBearer().AddJwtTokenManager();
+        .AddJwtBearer().AddJwtTokenManager()
+        .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+        {
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+            builder.Configuration.GetRequiredSection("AuthenticationOptions:Google").Bind(options);
+        }); ;
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -147,6 +154,8 @@ try
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
         });
     });
+
+    builder.Services.AddSignalR();
 
     builder.Services.AddMailKitEmailSender(options =>
     {
@@ -195,6 +204,8 @@ try
     app.UseDbTransaction<AppDbContext>();
 
     app.MapEndpoints();
+
+    app.MapHub<SignalRHub>("/signalr");
 
     app.Run();
 }

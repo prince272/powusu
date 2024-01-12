@@ -8,10 +8,10 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { User } from "@/types/user";
 
-import { modals } from "../modals";
+import { modals } from "../components/modals";
 import { ModalRouterProvider } from "./modal-router";
 import { UserProvider } from "./user";
-import { Toaster } from "../ui/toaster";
+import { Toaster } from "../components/ui/toaster";
 
 export interface ProvidersProps {
   children: ReactNode;
