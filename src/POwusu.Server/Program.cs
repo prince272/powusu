@@ -1,27 +1,31 @@
 using FluentValidation;
+using Humanizer;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using POwusu.Server.Data;
 using POwusu.Server.Entities.Identity;
-using POwusu.Server.Extensions.Authentication;
+using POwusu.Server.Extensions.Anonymous;
+using POwusu.Server.Extensions.EmailSender.MailKit;
+using POwusu.Server.Extensions.FileStorage;
+using POwusu.Server.Extensions.FileStorage.Local;
+using POwusu.Server.Extensions.Identity;
+using POwusu.Server.Extensions.MessageSender.Fake;
 using POwusu.Server.Extensions.Routing;
 using POwusu.Server.Extensions.Validation;
-using POwusu.Server.Services;
-using System.Reflection;
-using System.Security.Claims;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using IValidator = POwusu.Server.Extensions.Validation.IValidator;
-using Humanizer;
-using POwusu.Server.Middlewares;
-using Serilog;
-using Serilog.Settings.Configuration;
-using POwusu.Server.Extensions.Mailing.MailKit;
-using POwusu.Server.Extensions.Messaging.FakeSms;
 using POwusu.Server.Extensions.ViewRenderer.Razor;
 using POwusu.Server.Hubs;
-using Microsoft.AspNetCore.Authentication.Google;
+using POwusu.Server.Middlewares;
+using POwusu.Server.Options;
+using POwusu.Server.Services;
+using Serilog;
+using Serilog.Settings.Configuration;
+using System.Reflection;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using IValidator = POwusu.Server.Extensions.Validation.IValidator;
 
 try
 {
@@ -71,8 +75,6 @@ try
         options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-    // Add services to the container.
-
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
         options.UseSqlite(builder.Configuration.GetConnectionString("Application"));
@@ -117,9 +119,12 @@ try
         .AddDefaultTokenProviders()
         .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory>();
 
-    builder.Services.AddTransient<IJwtTokenManager, JwtTokenManager>();
 
     builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
+
+    builder.Services.ConfigureOptions<ConfigureJwtTokenOptions>();
+
+    builder.Services.AddJwtTokenManager();
 
     builder.Services.AddAuthentication(options =>
     {
@@ -128,14 +133,16 @@ try
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 
     })
-        .AddJwtBearer().AddJwtTokenManager()
+        .AddJwtBearer()
         .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
         {
             options.SignInScheme = IdentityConstants.ExternalScheme;
             builder.Configuration.GetRequiredSection("AuthenticationOptions:Google").Bind(options);
-        }); ;
+        });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.ConfigureOptions<ConfigureSwaggerGenOptions>();
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
@@ -162,19 +169,72 @@ try
         builder.Configuration.GetRequiredSection("MailingOptions:MailKit").Bind(options);
     });
 
-    builder.Services.AddFakeSmsSender(options =>
+    builder.Services.AddFakeMessageSender(options =>
     {
         builder.Configuration.GetRequiredSection("MessagingOptions:FakeSms").Bind(options);
     });
 
     builder.Services.AddRazorViewRenderer();
 
+    builder.Services.Configure<FileCriteriaOptions>(options =>
+    {
+        options.Videos = new[] { ".mp4", ".webm", ".swf", ".flv" }.Select(extension =>
+        {
+
+            return new FileCriteria
+            {
+                Type = FileType.Video,
+                Extension = extension,
+                Length = 83886080L // 80MB
+            };
+        }).ToList();
+
+        options.Images = new[] { ".jpg", ".jpeg", ".png" }.Select(fileExtension =>
+        {
+            return new FileCriteria
+            {
+                Type = FileType.Image,
+                Extension = fileExtension,
+                Length = 20971520 // 20MB
+            };
+        }).ToList();
+
+        options.Documents = new[] { ".doc", ".docx", ".rtf", ".pdf" }.Select(fileExtension =>
+        {
+            return new FileCriteria
+            {
+                Type = FileType.Document,
+                Extension = fileExtension,
+                Length = 83886080L // 80MB
+            };
+        }).ToList();
+
+        options.Audios = new[] { ".mp3", ".wav", ".ogg" }.Select(fileExtension =>
+        {
+            return new FileCriteria
+            {
+                Type = FileType.Audio,
+                Extension = fileExtension,
+                Length = 83886080L // 80MB
+            };
+        }).ToList();
+    });
+
+    builder.Services.ConfigureOptions<ConfigureLocalFileStorageOptions>();
+    builder.Services.AddLocalFileStorage();
+
+    builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
     builder.Services.AddScoped<IValidator, Validator>();
     builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
     builder.Services.AddMediatR(options => options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
+    builder.Services.AddScoped<IUserContext, UserContext>();
+
     builder.Services.AddScoped<IIdentityService, IdentityService>();
+
+    builder.Services.AddScoped<IBlogService, BlogService>();
 
     builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
@@ -200,6 +260,10 @@ try
     app.UseHttpsRedirection();
 
     app.UseCors();
+
+    app.UseStaticFiles();
+
+    app.UseAnonymousId();
 
     app.UseDbTransaction<AppDbContext>();
 

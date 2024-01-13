@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-
-namespace POwusu.Server.Extensions.Routing
+﻿namespace POwusu.Server.Extensions.Routing
 {
     public interface IEndpoints
     {

@@ -5,8 +5,8 @@ using POwusu.Server.Entities.Identity;
 
 namespace POwusu.Server.Data
 {
-    public class AppDbContext : IdentityDbContext<User, Role, string, 
-        IdentityUserClaim<string>, UserRole, IdentityUserLogin<string>, 
+    public class AppDbContext : IdentityDbContext<User, Role, string,
+        IdentityUserClaim<string>, UserRole, IdentityUserLogin<string>,
         IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public AppDbContext()

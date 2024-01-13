@@ -24,9 +24,19 @@ namespace POwusu.Server.Entities.Identity
 
         public DateTimeOffset? LastActiveAt { get; set; }
 
+        public bool InclusiveRoles(params string[] roles)
+        {
+            return roles.All(role => UserRoles.Any(userRole => string.Equals(userRole.Role.Name, role, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        public bool ExclusiveRoles(params string[] roles)
+        {
+            return !roles.Any(role => UserRoles.Any(userRole => string.Equals(userRole.Role.Name, role, StringComparison.OrdinalIgnoreCase)));
+        }
+
         public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
-    
+
     public class UserRole : IdentityUserRole<string>
     {
         public virtual User User { get; set; } = null!;

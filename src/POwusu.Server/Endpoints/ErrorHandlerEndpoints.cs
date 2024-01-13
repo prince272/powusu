@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.Extensions.Options;
 using POwusu.Server.Extensions.Routing;
-using System.Collections;
-using System.Net;
 using System.Text;
 
 namespace POwusu.Server.Endpoints
@@ -32,11 +27,14 @@ namespace POwusu.Server.Endpoints
 
                 if (exceptionFeature is not null)
                 {
+                    var exceptionType = exceptionFeature.Error.GetType().FullName;
+                    var exceptionDetails = GetExceptionDetails(exceptionFeature.Error);
+
                     var instance = exceptionFeature.Path;
                     var extensions = _environment.IsDevelopment() ? new Dictionary<string, object?>()
                     {
-                        { "exception", exceptionFeature.Error.GetType().FullName },
-                        { "exceptionDetails", GetExceptionDetails(exceptionFeature.Error)}
+                        { nameof(exceptionType), exceptionFeature.Error.GetType().FullName },
+                        { nameof(exceptionDetails), GetExceptionDetails(exceptionFeature.Error)}
                     } : null;
 
                     return Results.Problem(title: title, detail: detail, instance: instance, statusCode: statusCode, extensions: extensions);

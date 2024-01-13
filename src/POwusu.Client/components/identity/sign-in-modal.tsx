@@ -176,7 +176,6 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
                 color="default"
                 variant="flat"
                 isDisabled={status != "idle"}
-                isLoading={status == "submitting"}
                 as={NextLink}
                 href={queryString.stringifyUrl({ url: currentUrl, query: { method: form.watch("method") }, fragmentIdentifier: "sign-up" })}
               >

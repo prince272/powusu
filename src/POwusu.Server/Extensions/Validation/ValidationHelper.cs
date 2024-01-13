@@ -1,4 +1,5 @@
-﻿using PhoneNumbers;
+﻿using FluentValidation;
+using PhoneNumbers;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -8,7 +9,8 @@ namespace POwusu.Server.Extensions.Validation
     {
         public static MailAddress ParseEmail(string value)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(value));
+            if (value is null) throw new ArgumentNullException(nameof(value));
+
             Exception? innerException = null;
 
             try
@@ -27,7 +29,8 @@ namespace POwusu.Server.Extensions.Validation
 
         public static PhoneNumber ParsePhoneNumber(string value)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(value));
+            if (value is null) throw new ArgumentNullException(nameof(value));
+
             Exception? innerException = null;
 
             try
@@ -48,7 +51,8 @@ namespace POwusu.Server.Extensions.Validation
 
         public static ContactType GetContactType(string value)
         {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
+            if (value is null) throw new ArgumentNullException(nameof(value));
+
             return !Regex.IsMatch(value.ToLower(), "^[-+0-9() ]+$") ? ContactType.EmailAddress : ContactType.PhoneNumber;
         }
     }

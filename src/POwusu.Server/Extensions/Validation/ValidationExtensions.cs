@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using FluentValidation.Results;
 
 namespace POwusu.Server.Extensions.Validation
 {
