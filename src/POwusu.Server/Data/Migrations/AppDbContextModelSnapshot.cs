@@ -104,6 +104,79 @@ namespace POwusu.Server.Data.Migrations
                     b.ToTable("UserToken", (string)null);
                 });
 
+            modelBuilder.Entity("POwusu.Server.Entities.Blog.Post", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("PublishedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ReadingDuration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Post", (string)null);
+                });
+
+            modelBuilder.Entity("POwusu.Server.Entities.Blog.PostContent", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PostContent", (string)null);
+                });
+
             modelBuilder.Entity("POwusu.Server.Entities.Identity.Role", b =>
                 {
                     b.Property<string>("Id")
@@ -226,7 +299,7 @@ namespace POwusu.Server.Data.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
-            modelBuilder.Entity("POwusu.Server.Extensions.Authentication.JwtToken", b =>
+            modelBuilder.Entity("POwusu.Server.Extensions.Identity.JwtToken", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -292,6 +365,25 @@ namespace POwusu.Server.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("POwusu.Server.Entities.Blog.Post", b =>
+                {
+                    b.HasOne("POwusu.Server.Entities.Blog.PostContent", "Content")
+                        .WithMany()
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POwusu.Server.Entities.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Content");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("POwusu.Server.Entities.Identity.UserRole", b =>
                 {
                     b.HasOne("POwusu.Server.Entities.Identity.Role", "Role")
@@ -311,7 +403,7 @@ namespace POwusu.Server.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("POwusu.Server.Extensions.Authentication.JwtToken", b =>
+            modelBuilder.Entity("POwusu.Server.Extensions.Identity.JwtToken", b =>
                 {
                     b.HasOne("POwusu.Server.Entities.Identity.User", "User")
                         .WithMany()

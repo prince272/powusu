@@ -16,7 +16,7 @@ namespace POwusu.Server.Endpoints
         {
             builder = builder.MapGroup("/identity");
 
-            builder.MapPost("/register", ([FromServices] IIdentityService identityService, [FromBody] RegisterAccountForm form) 
+            builder.MapPost("/register", ([FromServices] IIdentityService identityService, [FromBody] RegisterAccountForm form)
                 => identityService.RegisterAccountAsync(form));
 
             builder.MapPost("/confirm", ([FromServices] IIdentityService identityService, [FromBody] ConfirmAccountForm form)

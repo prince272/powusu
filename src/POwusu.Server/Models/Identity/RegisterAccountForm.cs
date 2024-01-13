@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
+using POwusu.Server.Entities.Identity;
 using POwusu.Server.Extensions.Validation;
 
 namespace POwusu.Server.Models.Identity
@@ -22,6 +24,14 @@ namespace POwusu.Server.Models.Identity
             RuleFor(_ => _.LastName).NotEmpty().MaximumLength(128);
             RuleFor(_ => _.Username).NotEmpty().MaximumLength(128).Username();
             RuleFor(_ => _.Password).NotEmpty().MaximumLength(128).Password();
+        }
+    }
+
+    public class RegisterAccountFormProfile : Profile
+    {
+        public RegisterAccountFormProfile()
+        {
+            CreateMap<RegisterAccountForm, User>();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace POwusu.Server.Extensions.Validation
 {
@@ -15,7 +14,7 @@ namespace POwusu.Server.Extensions.Validation
 
         public async Task<ValidationResult> ValidateAsync<TModel>(TModel model)
         {
-            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            if (model == null) throw new ArgumentNullException(nameof(model));
 
             var modelValidator = _serviceProvider.GetRequiredService<IValidator<TModel>>();
             var modelValidationResult = await modelValidator.ValidateAsync(model);

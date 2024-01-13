@@ -1,11 +1,14 @@
-﻿using System.Globalization;
+﻿using Ganss.Xss;
+using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace POwusu.Server.Helpers
 {
     public static class TextHelper
-    {        
+    {
         // URL Slugify algorithm in C#?
         // source: https://stackoverflow.com/questions/2920744/url-slugify-algorithm-in-c/2921135#2921135
         public static string GenerateSlug(string input, string separator = "-")
@@ -46,6 +49,106 @@ namespace POwusu.Server.Helpers
             input = Regex.Replace(input, @"(-){2,}", "$1", RegexOptions.Compiled).Trim('-');
 
             return input;
+        }
+
+        public static string StripHtml(string html)
+        {
+            if (html == null)
+                throw new ArgumentNullException(nameof(html));
+
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
+
+            if (doc.DocumentNode == null || doc.DocumentNode.ChildNodes == null)
+            {
+                return WebUtility.HtmlDecode(html);
+            }
+
+            var sb = new StringBuilder();
+            var i = 0;
+
+            foreach (var node in doc.DocumentNode.ChildNodes)
+            {
+                var text = node.InnerText?.Trim();
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    sb.Append(text);
+
+                    if (i < doc.DocumentNode.ChildNodes.Count - 1)
+                    {
+                        sb.Append(Environment.NewLine);
+                    }
+                }
+
+                i++;
+            }
+
+            return WebUtility.HtmlDecode(sb.ToString());
+        }
+
+        public static string WrapHtml(string text)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            text = HttpUtility.HtmlEncode(text);
+            text = text.Replace("\r\n", "\r");
+            text = text.Replace("\n", "\r");
+            text = text.Replace("\r", "<br>\r\n");
+            text = text.Replace("  ", " &nbsp;");
+            return $"<p>{text.Trim()}</p>";
+        }
+
+        public static string SanitizeHtml(string html)
+        {
+            if (html == null)
+                throw new ArgumentNullException(nameof(html));
+
+            var sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowDataAttributes = true;
+            sanitizer.AllowedSchemes.Add("data");
+
+            html = sanitizer.Sanitize(html).Trim();
+
+            return html;
+        }
+
+        public static long GetTextReadingDuration(string text)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            var wordCount = ((Func<int>)(() =>
+            {
+                int wordCount = 0, index = 0;
+
+                // skip whitespace until first word
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                    index++;
+
+                while (index < text.Length)
+                {
+                    // check if current char is part of a word
+                    while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                        index++;
+
+                    wordCount++;
+
+                    // skip whitespace until next word
+                    while (index < text.Length && char.IsWhiteSpace(text[index]))
+                        index++;
+                }
+
+                return wordCount;
+            }))();
+
+            // Slow = 100 wpm, Average = 130 wpm, Fast = 160 wpm. 
+            var wordsPerMinute = 70;
+            var wordsTotalSeconds = wordCount / (wordsPerMinute / 60);
+            var wordsTotalTicks = (long)Math.Round(wordsTotalSeconds * Math.Pow(10, 9) / 100);
+            return wordsTotalTicks;
         }
     }
 }

@@ -1,19 +1,18 @@
-﻿using Humanizer;
-using Mapster;
+﻿using AutoMapper;
+using Humanizer;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using POwusu.Server.Entities.Identity;
-using POwusu.Server.Events.Identity;
-using POwusu.Server.Extensions.Authentication;
-using POwusu.Server.Extensions.Mailing;
-using POwusu.Server.Extensions.Messaging;
+using POwusu.Server.Extensions.EmailSender;
+using POwusu.Server.Extensions.Identity;
+using POwusu.Server.Extensions.MessageSender;
 using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Extensions.ViewRenderer;
 using POwusu.Server.Helpers;
 using POwusu.Server.Models.Identity;
 using System.Security.Claims;
-using System.Threading;
 
 namespace POwusu.Server.Services
 {
@@ -27,8 +26,9 @@ namespace POwusu.Server.Services
         private readonly ILogger<IdentityService> _logger;
         private readonly IMediator _mediator;
         private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
+        private readonly IMessageSender _smsSender;
         private readonly IViewRenderer _viewRenderer;
+        private readonly IMapper _mapper;
 
         public IdentityService(
             UserManager<User> userManager,
@@ -39,8 +39,9 @@ namespace POwusu.Server.Services
             ILogger<IdentityService> logger,
             IMediator mediator,
             IEmailSender emailSender,
-            ISmsSender smsSender,
-            IViewRenderer viewRenderer)
+            IMessageSender smsSender,
+            IViewRenderer viewRenderer,
+            IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -52,14 +53,15 @@ namespace POwusu.Server.Services
             _emailSender = emailSender;
             _smsSender = smsSender;
             _viewRenderer = viewRenderer;
+            _mapper = mapper;
         }
 
 
-        public async Task<IResult> RegisterAccountAsync(RegisterAccountForm form)
+        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var formUsernameType = ValidationHelper.GetContactType(form.Username);
@@ -71,11 +73,11 @@ namespace POwusu.Server.Services
             };
 
 
-            if (user is not null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is not null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is already taken."] } });
 
 
-            user = form.Adapt<User>();
+            user = _mapper.Map<User>(form);
             user.UserName = await GenerateUserNameAsync(form.FirstName, form.LastName);
             user.Email = formUsernameType == ContactType.EmailAddress ? form.Username : null;
             user.PhoneNumber = formUsernameType == ContactType.PhoneNumber ? form.Username : null;
@@ -95,18 +97,18 @@ namespace POwusu.Server.Services
 
             if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
-                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return Results.ValidationProblem(new Dictionary<string, string[]>
+                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
-       
-            var model = await GenerateUserAsync(user);
-            return Results.Ok(model);
+
+            var model = await BuildUserWithTokenModelAsync(user);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<IResult> GenerateTokenAsync(GenerateTokenForm form)
+        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var formUsernameType = ValidationHelper.GetContactType(form.Username);
@@ -118,27 +120,28 @@ namespace POwusu.Server.Services
             };
 
 
-            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
-            if (!await _userManager.CheckPasswordAsync(user, form.Password)) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (!await _userManager.CheckPasswordAsync(user, form.Password)) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Password), [$"'{nameof(form.Password).Humanize(LetterCasing.Sentence)}' is not correct."] } });
 
             if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
-                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return Results.ValidationProblem(new Dictionary<string, string[]>
+                (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
 
-            var model = await GenerateUserAsync(user);
-            return Results.Ok(model);
+            var model = await BuildUserWithTokenModelAsync(user);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<IResult> GenerateTokenFromExternalAuthenticationAsync(string provider)
+        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider)
         {
-            if (provider is null) throw new ArgumentNullException(nameof(provider));
+            if (string.IsNullOrEmpty(provider))
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified.");
 
             var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
-            if (externalLoginInfo is null) return Results.ValidationProblem(new Dictionary<string, string[]>(), title: "External authentication failed.");
+            if (externalLoginInfo is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: "External authentication failed.");
 
             var username =
                 (externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) ??
@@ -184,67 +187,67 @@ namespace POwusu.Server.Services
             await _userManager.AddLoginAsync(user, externalLoginInfo);
 
 
-            var model = await GenerateUserAsync(user);
-            return Results.Ok(model);
+            var model = await BuildUserWithTokenModelAsync(user);
+            return TypedResults.Ok(model);
         }
 
-        public Task<IResult> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins)
+        public async Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins)
         {
+            await Task.CompletedTask;
+
             if (string.IsNullOrEmpty(provider))
-                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified." ));
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified.");
 
             if (string.IsNullOrEmpty(returnUrl))
-                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No return url was specified."));
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(returnUrl)}' was specified.");
 
             provider = provider.Pascalize();
 
             if (!allowedOrigins.Any(origin => Uri.Compare(new Uri(origin, UriKind.Absolute), new Uri(origin), UriComponents.SchemeAndServer, UriFormat.UriEscaped, StringComparison.OrdinalIgnoreCase) == 0))
-                return Task.FromResult(Results.ValidationProblem(new Dictionary<string, string[]>(), title: $"No return url is not allowed."));
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"The '{nameof(returnUrl)}' specified is not allowed.");
 
             // Request a redirect to the external sign-in provider.
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
-            return Task.FromResult(Results.Challenge(properties, new[] { provider }));
+            return TypedResults.Challenge(properties, new[] { provider });
         }
 
-        public async Task<IResult> RefreshTokenAsync(RefreshTokenForm form)
+        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var user = await _jwtTokenManager.FindUserByTokenAsync(form.Token);
-            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Token), [$"'{nameof(form.Token).Humanize(LetterCasing.Sentence)}' is not valid."] } });
 
 
-            var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
-            var model = user.Adapt(tokenInfo.Adapt<UserWithTokenModel>());
-            model.Roles = (await _userManager.GetRolesAsync(user)).Select(_ => _.Camelize()).ToArray();
-            return Results.Ok(model);
+            var model = await BuildUserWithTokenModelAsync(user, form.Token);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<IResult> RevokeTokenAsync(RevokeTokenForm form)
+        public async Task<Results<Ok, ValidationProblem>> RevokeTokenAsync(RevokeTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var user = await _jwtTokenManager.FindUserByTokenAsync(form.Token);
-            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Token), [$"'{nameof(form.Token).Humanize(LetterCasing.Sentence)}' is not valid."] } });
 
 
             await _jwtTokenManager.InvalidateAsync(user, form.Token);
-            return Results.Ok();
+            return TypedResults.Ok();
         }
 
-        public async Task<IResult> ConfirmAccountAsync(ConfirmAccountForm form)
+        public async Task<Results<Ok, Ok<UserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var formUsernameType = ValidationHelper.GetContactType(form.Username);
@@ -256,7 +259,7 @@ namespace POwusu.Server.Services
             };
 
 
-            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
 
@@ -279,7 +282,7 @@ namespace POwusu.Server.Services
                 {
                     var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, form.Username);
 
-                    var message = new TextMessage
+                    var message = new Message
                     {
                         Body = await _viewRenderer.RenderAsync("/Templates/Text/ConfirmAccount", (user, code)),
                         Recipients = new[] { form.Username }
@@ -288,7 +291,7 @@ namespace POwusu.Server.Services
                     await _smsSender.SendAsync(message);
                 }
 
-                return Results.Ok();
+                return TypedResults.Ok();
             }
 
             var result = formUsernameType switch
@@ -298,18 +301,18 @@ namespace POwusu.Server.Services
                 _ => throw new InvalidOperationException()
             };
 
-            if (!result.Succeeded) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
 
-            var model = await GenerateUserAsync(user);
-            return Results.Ok(model);
+            var model = await BuildUserWithTokenModelAsync(user);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<IResult> ResetPasswordAsync(ResetPasswordForm form)
+        public async Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
-            if (!formValidation.IsValid) return Results.ValidationProblem(formValidation.Errors);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
             var formUsernameType = ValidationHelper.GetContactType(form.Username);
@@ -321,7 +324,7 @@ namespace POwusu.Server.Services
             };
 
 
-            if (user is null) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
 
@@ -342,7 +345,7 @@ namespace POwusu.Server.Services
                 }
                 else if (formUsernameType == ContactType.PhoneNumber)
                 {
-                    var message = new TextMessage
+                    var message = new Message
                     {
                         Body = await _viewRenderer.RenderAsync("/Templates/Text/ResetPassword", (user, code)),
                         Recipients = new[] { form.Username }
@@ -351,16 +354,15 @@ namespace POwusu.Server.Services
                     await _smsSender.SendAsync(message);
                 }
 
-                return Results.Ok();
+                return TypedResults.Ok();
             }
 
             var result = await _userManager.ResetPasswordAsync(user, form.Code, form.NewPassword);
-            if (!result.Succeeded) return Results.ValidationProblem(new Dictionary<string, string[]>
+            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
 
-            return Results.Ok();
+            return TypedResults.Ok();
         }
-
 
         private async Task<string> GenerateUserNameAsync(string firstName, string lastName)
         {
@@ -380,12 +382,14 @@ namespace POwusu.Server.Services
             return userName;
         }
 
-        private async Task<UserWithTokenModel> GenerateUserAsync(User user)
+        private async Task<UserWithTokenModel> BuildUserWithTokenModelAsync(User user, string? token = null)
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
 
+            if (token is not null) await _jwtTokenManager.InvalidateAsync(user, token);
+
             var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
-            var model = user.Adapt(tokenInfo.Adapt<UserWithTokenModel>());
+            var model = _mapper.Map(user, _mapper.Map<UserWithTokenModel>(tokenInfo));
             model.Roles = (await _userManager.GetRolesAsync(user)).Select(_ => _.Camelize()).ToArray();
             return model;
         }
@@ -393,20 +397,20 @@ namespace POwusu.Server.Services
 
     public interface IIdentityService
     {
-        Task<IResult> RegisterAccountAsync(RegisterAccountForm form);
+        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form);
 
-        Task<IResult> GenerateTokenAsync(GenerateTokenForm form);
+        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form);
 
-        Task<IResult> GenerateTokenFromExternalAuthenticationAsync(string provider);
+        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider);
 
-        Task<IResult> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins);
+        Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins);
 
-        Task<IResult> RefreshTokenAsync(RefreshTokenForm form);
+        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form);
 
-        Task<IResult> RevokeTokenAsync(RevokeTokenForm form);
+        Task<Results<Ok, ValidationProblem>> RevokeTokenAsync(RevokeTokenForm form);
 
-        Task<IResult> ConfirmAccountAsync(ConfirmAccountForm form);
+        Task<Results<Ok, Ok<UserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
-        Task<IResult> ResetPasswordAsync(ResetPasswordForm form);
+        Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
     }
 }
