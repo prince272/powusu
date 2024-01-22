@@ -27,7 +27,7 @@ export interface ProvidersProps extends UserProviderProps {
   children: ReactNode;
 }
 
-export function Providers({ children, initialUser, ...props }: ProvidersProps) {
+export function Providers({ children, initialUser }: ProvidersProps) {
   const router = useRouter();
 
   return (

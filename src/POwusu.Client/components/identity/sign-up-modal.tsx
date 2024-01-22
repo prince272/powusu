@@ -3,7 +3,7 @@
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GoogleIcon } from "@/components/icons";
+import { useUser } from "@/providers/user/client";
 import { getErrorMessage } from "@/utils/axios";
 import { PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
@@ -15,17 +15,17 @@ import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 
 import { api } from "@/lib/api";
+import { ExternalWindow } from "@/lib/external-window";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
-import { ExternalWindow } from "@/lib/external-window";
-import { useUser } from "@/providers/user/client";
+import { GoogleIcon } from "@/components/icons";
 
 export interface SignUpModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
-  onClose: () => void;
+  onClose: (submitted?: boolean) => void;
 }
 
 export type SignUpMethods = "credentials" | "google";
@@ -80,12 +80,12 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
           break;
         }
       }
-      onClose();
+      onClose(true);
     } catch (error) {
       console.error(error);
 
       if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
-        router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username }, fragmentIdentifier: "confirm-account" }));
+        router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username, modal: "confirm-account" } }));
       } else {
         const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
         fields.forEach(([name, message]) => {
@@ -100,7 +100,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Sign up for a new account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
@@ -175,7 +175,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
                 variant="flat"
                 isDisabled={status != "idle"}
                 as={NextLink}
-                href={queryString.stringifyUrl({ url: currentUrl, query: { method: form.watch("method") }, fragmentIdentifier: "sign-in" })}
+                href={queryString.stringifyUrl({ url: currentUrl, query: { method: form.watch("method"), modal: "sign-in" } })}
               >
                 Already registered? <span className="text-primary">Sign in</span>
               </Button>

@@ -21,7 +21,7 @@ export interface ResetPasswordModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
-  onClose: () => void;
+  onClose: (submitted?: boolean) => void;
 }
 
 export interface ResetPasswordInputs {
@@ -73,7 +73,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
         case "validate-code": {
           const response = await api.post("/identity/password/reset", inputs);
           setUser(response.data);
-          onClose();
+          onClose(true);
           break;
         }
       }
@@ -92,7 +92,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Reset your password</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>

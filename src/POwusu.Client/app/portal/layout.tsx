@@ -8,11 +8,6 @@ import { redirect } from "next/navigation";
 import { getUser } from "@/providers/user/server";
 
 const PortalLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const currentUser = getUser();
-  
-  if (!currentUser) {
-    redirect("/#sign-in");
-  }
 
   return (
     <div className="flex min-h-screen flex-col">

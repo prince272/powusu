@@ -29,17 +29,17 @@ export const UserProvider: FC<UserProviderProps> = ({ children, initialUser, onS
   const [user, _setUser] = useState<User | null | undefined>(initialUser);
 
   const setUser = useCallback((user: User) => {
-    _setUser(user);
+     _setUser(user);
     onSetUser?.(user);
   }, [_setUser]);
 
   const updateUser = useCallback((user: User) => {
-    _setUser((prevUser) => merge(user, [prevUser]));
+     _setUser((prevUser) => merge(user, [prevUser]));
     onUpdateUser?.(user);
   }, [_setUser]);
 
   const removeUser = useCallback(() => {
-    _setUser(null);
+     _setUser(null);
     onRemoveUser?.();
   }, [_setUser]);
 

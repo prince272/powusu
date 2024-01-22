@@ -19,7 +19,7 @@ export interface ConfirmAccountModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
-  onClose: () => void;
+  onClose: (submitted?: boolean) => void;
 }
 
 export interface ConfirmAccountInputs {
@@ -69,7 +69,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
         case "validate-code": {
           const response = await api.post("/identity/confirm", inputs);
           setUser(response.data);
-          onClose();
+          onClose(true);
           break;
         }
       }
@@ -88,7 +88,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Confirm your account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>

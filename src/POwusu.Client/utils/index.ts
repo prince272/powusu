@@ -1,3 +1,5 @@
+import queryString, { StringifiableRecord } from "query-string";
+
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -22,3 +24,49 @@ export function stringifyJSON(value: any): string | null {
     return null;
   }
 }
+
+export function compareSearchParams(params1: URLSearchParams, params2: URLSearchParams): boolean {
+  // Get an array of key-value pairs for each set of search parameters
+  const entries1 = Array.from(params1.entries());
+  const entries2 = Array.from(params2.entries());
+
+  // Check if the number of key-value pairs is the same
+  if (entries1.length !== entries2.length) {
+    return false;
+  }
+
+  // Check if each key-value pair in the first set is present in the second set
+  for (const [key, value] of entries1) {
+    if (!entries2.some(([otherKey, otherValue]) => key === otherKey && value === otherValue)) {
+      return false;
+    }
+  }
+
+  // Check if each key-value pair in the second set is present in the first set
+  for (const [key, value] of entries2) {
+    if (!entries1.some(([otherKey, otherValue]) => key === otherKey && value === otherValue)) {
+      return false;
+    }
+  }
+
+  // If all checks pass, the search parameters are equal
+  return true;
+}
+
+export const buildCallbackUrl = (query: StringifiableRecord, callbackUrl: URL | string, previousUrl?: URL | string) => {
+  
+  let previousURL = previousUrl ?  new URL(previousUrl) : null;
+  let callbackURL = new URL(callbackUrl);
+
+  callbackURL = new URL(
+    queryString.stringifyUrl({
+      url: previousURL?.href || callbackURL.origin,
+      query: {
+        callback: callbackURL.pathname + callbackURL.search,
+        ...query
+      }
+    })
+  );
+
+  return callbackURL.toString();
+};

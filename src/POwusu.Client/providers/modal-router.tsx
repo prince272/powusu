@@ -1,9 +1,12 @@
-import { ComponentType, createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+"use client";
+
+import { ComponentType, createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
-import { sleep } from "@/utils";
+import { compareSearchParams, sleep } from "@/utils";
 import { useDisclosure } from "@nextui-org/modal";
 import PQueue from "p-queue";
+import queryString, { StringifiableRecord } from "query-string";
 
 export interface ModalRouterProps {
   children: ReactNode;
@@ -15,7 +18,6 @@ export interface ModalRouterContextType {}
 export interface ModalRouterState {
   key: string;
   Component: ComponentType<any>;
-  metadata?: any;
 }
 
 export const ModalRouterContext = createContext<ModalRouterContextType>(undefined!);
@@ -29,18 +31,18 @@ export const useModalRouter = () => {
 };
 
 const EmptyModalComponent: FC<any> = () => <></>;
-const emptyModal = { key: "", Component: EmptyModalComponent };
+const emptyModal = { key: "", Component: EmptyModalComponent } as ModalRouterState;
 
 export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) => {
   const queue = new PQueue({ concurrency: 1 });
 
-  const [{ key: currentKey, Component: CurrentModalComponent, metadata: currentMetadata }, setCurrentModal] = useStateAsync(useState<ModalRouterState>(emptyModal));
+  const [{ key, Component: ModalComponent }, setCurrentModal] = useStateAsync(useState<ModalRouterState>(emptyModal));
 
   const router = useRouter();
-  const [hash, setHash] = useHashState();
-  const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
-  const previousUrl = usePreviousValue(currentUrl) || "/";
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
+  const modalKey = searchParams.get("modal") || "";
   const modalProps = useDisclosure();
 
   useEffect(() => {
@@ -58,24 +60,33 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
         await setCurrentModal(emptyModal);
       }
 
-      const nextModal = { key: hash, Component: modals[hash], metadata: { previousUrl } } || emptyModal;
+      const nextModal =
+        {
+          key: modals[modalKey] ? modalKey : "",
+          Component: modals[modalKey]
+        } || emptyModal;
 
       if (nextModal.key) {
         await setCurrentModal(nextModal);
         modalProps.onOpen();
-        await sleep(300);
       }
     });
-  }, [hash]);
+  }, [modalKey]);
 
   return (
     <ModalRouterContext.Provider value={{}}>
       {children}
-      <CurrentModalComponent
+      <ModalComponent
         {...{
           ...modalProps,
-          onClose: () => {
-            if (currentMetadata?.previousUrl) router.push(currentMetadata.previousUrl);
+          onClose: (submitted: boolean) => {
+            if (submitted) {
+              const href = searchParams.get("callback") || pathname;
+              router.replace(href);
+            } else {
+              router.replace(pathname);
+            }
+
             modalProps.onClose();
           }
         }}
