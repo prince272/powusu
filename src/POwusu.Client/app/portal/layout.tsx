@@ -1,16 +1,28 @@
+import { Header } from "@/components/portal/header";
+import { Sidebar } from "@/components/portal/sidebar";
+
 import "@/styles/globals.css";
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+import { FC } from "react";
+import { redirect } from "next/navigation";
+import { getUser } from "@/providers/user/server";
+
+const PortalLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const currentUser = getUser();
+  
+  if (!currentUser) {
+    redirect("/#sign-in");
+  }
+
   return (
-    <div className="relative flex h-screen flex-col">
-      <Navbar />
-      <main className="container mx-auto max-w-7xl flex-grow px-6 pt-16">{children}</main>
-      <footer className="flex w-full items-center justify-center py-3">
-        <Link isExternal className="flex items-center gap-1 text-current" href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template" title="nextui.org homepage">
-          <span className="text-default-600">Powered by</span>
-          <p className="text-primary">NextUI</p>
-        </Link>
-      </footer>
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <div className="container grid flex-1 gap-12 md:grid-cols-[200px_1fr]">
+        <Sidebar />
+        <main className="flex w-full flex-1 flex-col overflow-hidden pt-6">{children}</main>
+      </div>
     </div>
   );
-}
+};
+
+export default PortalLayout;

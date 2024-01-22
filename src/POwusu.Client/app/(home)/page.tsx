@@ -1,13 +1,21 @@
+"use client";
+
+import { FC } from "react";
+import NextLink from "next/link";
 import { Code } from "@nextui-org/code";
 import { Link } from "@nextui-org/link";
 import { Snippet } from "@nextui-org/snippet";
 import { button as buttonStyles } from "@nextui-org/theme";
 
 import { siteConfig } from "@/config/site";
-import { GithubIcon } from "@/assets/icons";
+import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
+import { useUser } from "@/providers/user/client";
+import { stringifyJSON } from "@/utils";
 
-export default function Home() {
+const Home: FC = () => {
+  const { user } = useUser();
+
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="inline-block max-w-lg justify-center text-center">
@@ -17,10 +25,10 @@ export default function Home() {
         <h1 className={title()}>websites regardless of your design experience.</h1>
         <h2 className={subtitle({ class: "mt-4" })}>Beautiful, fast and modern React UI library.</h2>
       </div>
-
+      {stringifyJSON(user)}
       <div className="flex gap-3">
-        <Link isExternal href={siteConfig.links.docs} className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
-          Documentation
+        <Link as={NextLink} href="/portal/posts" className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
+          Portal
         </Link>
         <Link isExternal className={buttonStyles({ variant: "bordered", radius: "full" })} href={siteConfig.links.github}>
           <GithubIcon size={20} />
@@ -36,4 +44,6 @@ export default function Home() {
       </div>
     </section>
   );
-}
+};
+
+export default Home;

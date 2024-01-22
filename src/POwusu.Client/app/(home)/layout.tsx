@@ -1,10 +1,11 @@
 import "@/styles/globals.css";
 
+import { FC } from "react";
 import { Link } from "@nextui-org/link";
 
 import { Navbar } from "@/components/home/navbar";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const HomeLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="relative flex h-screen flex-col">
       <Navbar />
@@ -17,4 +18,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </footer>
     </div>
   );
-}
+};
+
+export default HomeLayout;

@@ -1,30 +1,25 @@
 "use client";
 
-import React, { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import NextLink from "next/link";
+import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getErrorMessage } from "@/utils/axios";
-import { ChevronRightRegular } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
 import { clone, uniqueId } from "lodash";
-import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
 import { toast } from "@/components/ui/toaster";
-import { useUser } from "@/providers/user";
+import { useUser } from "@/providers/user/client";
 
 export interface ConfirmAccountModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onOpenChange: () => void;
 }
 
 export interface ConfirmAccountInputs {
@@ -33,10 +28,12 @@ export interface ConfirmAccountInputs {
   code: string;
 }
 
-export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onOpenChange, onClose }) => {
+export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onClose }) => {
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
   const searchParams = useSearchParams();
   const toastId = useRef(uniqueId()).current;
+
+  const { setUser } = useUser();
 
   const form = useForm<ConfirmAccountInputs>({
     defaultValues: {
@@ -71,7 +68,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onOp
         }
         case "validate-code": {
           const response = await api.post("/identity/confirm", inputs);
-          user.set({ ...response.data, authenticated: true });
+          setUser(response.data);
           onClose();
           break;
         }
@@ -90,10 +87,8 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onOp
     }
   };
 
-  const user = useUser();
-
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Confirm your account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>

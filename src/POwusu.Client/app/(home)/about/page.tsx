@@ -1,15 +1,18 @@
-import { title } from "@/components/primitives";
+import { FC } from "react";
 import { Metadata } from "next";
+
+import { title } from "@/components/primitives";
 
 export const metadata: Metadata = {
   title: "About"
-}
- 
+};
 
-export default function AboutPage() {
+const AboutPage: FC = () => {
   return (
     <div>
       <h1 className={title()}>About</h1>
     </div>
   );
-}
+};
+
+export default AboutPage;

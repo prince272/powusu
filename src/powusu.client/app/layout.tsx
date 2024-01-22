@@ -1,11 +1,13 @@
 import "@/styles/globals.css";
 
+import { FC } from "react";
 import { Metadata } from "next";
-import { fontSans } from "@/assets/fonts";
 import { Providers } from "@/providers";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
+import { fontHeading, fontSans } from "@/components/fonts";
+import { getUser } from "@/providers/user/server";
 
 export const metadata: Metadata = {
   title: {
@@ -24,13 +26,17 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const currentUser = getUser();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>{children}</Providers>
+      <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
+        <Providers initialUser={currentUser}>{children}</Providers>
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

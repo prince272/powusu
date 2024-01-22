@@ -3,13 +3,11 @@
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GoogleIcon } from "@/assets/icons";
-import { useUser } from "@/providers/user";
+import { GoogleIcon } from "@/components/icons";
 import { getErrorMessage } from "@/utils/axios";
-import { ChevronRightRegular, PersonFilled } from "@fluentui/react-icons";
+import { PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
 import { clone, uniqueId } from "lodash";
@@ -21,13 +19,13 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
 import { ExternalWindow } from "@/lib/external-window";
+import { useUser } from "@/providers/user/client";
 
 export interface SignUpModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onOpenChange: () => void;
 }
 
 export type SignUpMethods = "credentials" | "google";
@@ -39,11 +37,14 @@ export interface SignUpInputs {
   password: string;
 }
 
-export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClose }) => {
+export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
   const router = useRouter();
   const searchParams = useSearchParams();
   const toastId = useRef(uniqueId()).current;
+
+  const { setUser } = useUser();
+
   const form = useForm<{ method: SignUpMethods | undefined } & SignUpInputs>({
     defaultValues: {
       firstName: "",
@@ -63,7 +64,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/register", inputs);
-          user.set({ ...response.data, authenticated: true });
+          setUser(response.data);
           break;
         }
         default: {
@@ -75,7 +76,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
             console.warn(error);
           }
           const response = await api.post(`/identity/tokens/${method}/generate`);
-          user.set({ ...response.data, authenticated: true });
+          setUser(response.data);
           break;
         }
       }
@@ -98,10 +99,8 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onOpenChange, onClos
     }
   };
 
-  const user = useUser();
-
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Sign up for a new account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>

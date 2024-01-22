@@ -39,25 +39,16 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
   const router = useRouter();
   const [hash, setHash] = useHashState();
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
-  const previousUrl = usePreviousValue(currentUrl, () => !!hash || hash != "sign-in") || "/";
+  const previousUrl = usePreviousValue(currentUrl) || "/";
 
   const modalProps = useDisclosure();
 
   useEffect(() => {
     queue.add(async () => {
-      const nextModal = modals[hash]
-        ? {
-            key: hash,
-            Component: modals[hash],
-            metadata: { url: currentUrl, previousUrl }
-          }
-        : emptyModal;
-
       const currentModal = await new Promise<ModalRouterState>((resolve) => {
         setCurrentModal((modal) => {
-          const newModal = { ...modal, metadata: modal.metadata ? { ...modal.metadata, canReturn: !nextModal } : modal.metadata };
-          resolve(newModal);
-          return newModal;
+          resolve(modal);
+          return modal;
         });
       });
 
@@ -66,6 +57,8 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
         await sleep(300);
         await setCurrentModal(emptyModal);
       }
+
+      const nextModal = { key: hash, Component: modals[hash], metadata: { previousUrl } } || emptyModal;
 
       if (nextModal.key) {
         await setCurrentModal(nextModal);
@@ -81,12 +74,9 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
       <CurrentModalComponent
         {...{
           ...modalProps,
-          onOpenChange: () => {
-            if (modalProps.isOpen) router.push(previousUrl);
-            modalProps.onOpenChange();
-          },
           onClose: () => {
-            router.push(previousUrl);
+            if (currentMetadata?.previousUrl) router.push(currentMetadata.previousUrl);
+            modalProps.onClose();
           }
         }}
       />

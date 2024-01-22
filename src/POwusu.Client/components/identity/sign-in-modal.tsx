@@ -3,10 +3,9 @@
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GoogleIcon } from "@/assets/icons";
-import { useUser } from "@/providers/user";
+import { GoogleIcon } from "@/components/icons";
 import { getErrorMessage } from "@/utils/axios";
-import { ChevronRightRegular, PersonFilled } from "@fluentui/react-icons";
+import { PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -21,13 +20,13 @@ import { ExternalWindow } from "@/lib/external-window";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
+import { useUser } from "@/providers/user/client";
 
 export interface SignInModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onOpenChange: () => void;
 }
 
 export type SignInMethods = "credentials" | "google";
@@ -37,11 +36,13 @@ export interface SignInInputs {
   password: string;
 }
 
-export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClose }) => {
+export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
   const toastId = useRef(uniqueId()).current;
   const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const { setUser } = useUser();
 
   const form = useForm<{ method?: SignInMethods | undefined } & SignInInputs>({
     defaultValues: {
@@ -60,7 +61,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/tokens/generate", inputs);
-          user.set({ ...response.data, authenticated: true });
+          setUser(response.data);
           break;
         }
         default: {
@@ -73,7 +74,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
           }
 
           const response = await api.post(`/identity/tokens/${method}/generate`, inputs);
-          user.set({ ...response.data, authenticated: true });
+          setUser(response.data);
           break;
         }
       }
@@ -96,10 +97,8 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onOpenChange, onClos
     }
   };
 
-  const user = useUser();
-
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isDismissable={false} isOpen={isOpen} onClose={onClose}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Sign in to your account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
