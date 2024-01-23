@@ -1,20 +1,23 @@
 "use client";
 
 import * as React from "react";
-import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { ReactNode, useEffect } from "react";
 import { parseJSON } from "@/utils";
 import { NextUIProvider } from "@nextui-org/system";
 import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import NextTopLoader from "nextjs-toploader";
 
-import { Toaster } from "../components/ui/toaster";
-import { ModalRouterProvider } from "./modal-router";
-import { UserProvider, UserProviderProps } from "./user/client";
-import { SignInModal } from "@/components/identity/sign-in-modal";
-import { SignUpModal } from "@/components/identity/sign-up-modal";
+import { ExternalWindow } from "@/lib/external-window";
+import { useRouter } from "@/hooks/use-router";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
 import { ResetPasswordModal } from "@/components/identity/reset-password";
+import { SignInModal } from "@/components/identity/sign-in-modal";
+import { SignUpModal } from "@/components/identity/sign-up-modal";
+
+import { Toaster } from "../components/ui/toaster";
+import { ModalRouterProvider } from "../components/ui/modal-router";
+import { UserProvider, UserProviderProps } from "./user/client";
 
 export const modals = {
   "sign-in": SignInModal,
@@ -42,6 +45,7 @@ export function Providers({ children, initialUser }: ProvidersProps) {
           <NextThemesProvider {...{ attribute: "class", defaultTheme: "dark" }}>
             {children}
             <Toaster />
+            <NextTopLoader color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" showSpinner={false} />
           </NextThemesProvider>
         </NextUIProvider>
       </ModalRouterProvider>

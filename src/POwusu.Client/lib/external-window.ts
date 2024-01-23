@@ -93,7 +93,7 @@ export class ExternalWindow {
       .join(",");
   }
 
-  public static notify(reason?: any): void {
+  public static notify(reason?: any): boolean {
     const origin: string = window.location.origin;
 
     // Check if the external window is defined
@@ -103,8 +103,11 @@ export class ExternalWindow {
 
       if (expectedOrigin.startsWith(origin)) {
         externalWindow.close(reason);
+        return true;
       }
     }
+
+    return false;
   }
 
   private static instance: ExternalWindow = new ExternalWindow();

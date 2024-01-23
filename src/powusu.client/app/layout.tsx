@@ -3,11 +3,12 @@ import "@/styles/globals.css";
 import { FC } from "react";
 import { Metadata } from "next";
 import { Providers } from "@/providers";
-import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { fontHeading, fontSans } from "@/components/fonts";
 import { getUser } from "@/providers/user/server";
+import { cn } from "@/utils";
+
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +33,7 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
         <Providers initialUser={currentUser}>{children}</Providers>
       </body>
     </html>

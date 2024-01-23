@@ -2,10 +2,11 @@
 
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
+import { cn } from "@/utils";
 import { getErrorMessage } from "@/utils/axios";
-import { PersonFilled } from "@fluentui/react-icons";
+import { ChevronLeftRegular, PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -17,6 +18,7 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 
 import { api } from "@/lib/api";
 import { ExternalWindow } from "@/lib/external-window";
+import { useRouter } from "@/hooks/use-router";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
@@ -65,13 +67,9 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
           break;
         }
         default: {
-          try {
-            const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
-            externalUrl.searchParams.set("returnUrl", window.location.href);
-            await ExternalWindow.open(externalUrl, { center: true });
-          } catch (error) {
-            console.warn(error);
-          }
+          const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
+          externalUrl.searchParams.set("returnUrl", window.location.origin);
+          await ExternalWindow.open(externalUrl, { center: true });
 
           const response = await api.post(`/identity/tokens/${method}/generate`, inputs);
           setUser(response.data);
@@ -100,7 +98,22 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Sign in to your account</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">
+          <div className="flex items-center space-x-1">
+            <Button
+              size="sm"
+              variant="light"
+              isIconOnly
+              className={cn(form.watch("method") != "credentials" && "hidden")}
+              onPress={() => {
+                form.setValue("method", undefined);
+              }}
+            >
+              <ChevronLeftRegular fontSize={20} />
+            </Button>
+            <div>Sign into your account</div>
+          </div>
+        </ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
           <Render switch={form.watch("method")}>
             <div key="credentials" className="grid grid-cols-12 gap-x-3 gap-y-5">
@@ -122,7 +135,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
                         as={NextLink}
                         href={queryString.stringifyUrl({
                           url: currentUrl,
-                          query: { method: undefined, username: form.watch("username") || undefined,  modal: "reset-password" },
+                          query: { method: undefined, username: form.watch("username") || undefined, modal: "reset-password" }
                         })}
                         size="sm"
                       >

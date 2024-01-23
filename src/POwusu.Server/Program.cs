@@ -137,6 +137,7 @@ try
         .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
         {
             options.SignInScheme = IdentityConstants.ExternalScheme;
+
             builder.Configuration.GetRequiredSection("AuthenticationOptions:Google").Bind(options);
         });
 

@@ -1,4 +1,10 @@
+import { ClassValue, clsx } from "clsx";
 import queryString, { StringifiableRecord } from "query-string";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -53,9 +59,8 @@ export function compareSearchParams(params1: URLSearchParams, params2: URLSearch
   return true;
 }
 
-export const buildCallbackUrl = (query: StringifiableRecord, callbackUrl: URL | string, previousUrl?: URL | string) => {
-  
-  let previousURL = previousUrl ?  new URL(previousUrl) : null;
+export const buildCallbackUrl = (query: StringifiableRecord, callbackUrl: string, previousUrl?: string | null) => {
+  let previousURL = previousUrl ? new URL(previousUrl) : null;
   let callbackURL = new URL(callbackUrl);
 
   callbackURL = new URL(

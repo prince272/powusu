@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { getUser } from "./providers/user/server";
-import { buildCallbackUrl } from "./utils";
-
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  const currentUser = getUser();
+  // Store current request url in a custom header, which you can read later
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-url", request.url);
 
-  if (!currentUser && request.nextUrl.pathname.startsWith("/portal")) {
-    const refererUrl = request.headers.has('referer') ? new URL(request.headers.get('referer')!) : undefined;
-    const callbackUrl = buildCallbackUrl({ modal: "sign-in" }, request.nextUrl, refererUrl);
- 
-
-    return NextResponse.redirect(callbackUrl);
-  }
-  return NextResponse.next();
+  return NextResponse.next({
+    request: {
+      // Apply new request headers
+      headers: requestHeaders
+    }
+  });
 }
 
 export const config = {

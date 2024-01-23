@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/hooks/use-router";
 import { FC } from "react";
 
 const CoursesPage: FC = () => {

@@ -9,8 +9,8 @@ import { User } from "@nextui-org/user";
 import { AcmeLogo } from "../icons";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { useUser } from "@/providers/user/client";
-import { useRouter } from "next/navigation";
 import { buildCallbackUrl } from "@/utils";
+import { useRouter } from "@/hooks/use-router";
 
 const Header: FC = () => {
   const router = useRouter();
@@ -40,7 +40,8 @@ const Header: FC = () => {
             <DropdownMenu aria-label="User actions">
               <DropdownItem key="sign-out" onPress={() => {
                  removeUser();
-                router.replace(buildCallbackUrl({ modal: "sign-in" }, window.location.href));
+                 const href = buildCallbackUrl({ modal: "sign-in" }, window.location.href);
+                 router.push(href);
               }}>Sign out</DropdownItem>
             </DropdownMenu>
           </Dropdown>

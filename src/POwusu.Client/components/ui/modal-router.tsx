@@ -1,12 +1,14 @@
 "use client";
 
 import { ComponentType, createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
 import { compareSearchParams, sleep } from "@/utils";
 import { useDisclosure } from "@nextui-org/modal";
 import PQueue from "p-queue";
 import queryString, { StringifiableRecord } from "query-string";
+
+import { useRouter } from "@/hooks/use-router";
 
 export interface ModalRouterProps {
   children: ReactNode;
@@ -79,15 +81,17 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
       <ModalComponent
         {...{
           ...modalProps,
-          onClose: (submitted: boolean) => {
+          onClose: async (submitted: boolean) => {
+            modalProps.onClose();
+
             if (submitted) {
               const href = searchParams.get("callback") || pathname;
-              router.replace(href);
+              router.push(href);
             } else {
-              router.replace(pathname);
+              router.push(pathname);
             }
 
-            modalProps.onClose();
+            router.refresh();
           }
         }}
       />
