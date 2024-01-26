@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
 
 namespace POwusu.Server.Entities.Identity
 {
@@ -11,6 +12,8 @@ namespace POwusu.Server.Entities.Identity
         public User(string userName) : base(userName)
         {
         }
+
+        public string ImageId { get; set; } = null!;
 
         public string FullName => $"{FirstName} {LastName}".Trim();
 
@@ -32,6 +35,11 @@ namespace POwusu.Server.Entities.Identity
         public bool ExclusiveRoles(params string[] roles)
         {
             return !roles.Any(role => UserRoles.Any(userRole => string.Equals(userRole.Role.Name, role, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        public string GetTitle(params string[] roles)
+        {
+            return roles.Append(RoleNames.Member).OrderBy(value => Array.IndexOf(RoleNames.All, value)).Select(role => role.Pascalize()).ToArray().First();
         }
 
         public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();

@@ -1,22 +1,28 @@
 ﻿
 using AutoMapper;
 using POwusu.Server.Entities.Blog;
+using POwusu.Server.Models.Identity;
 
 namespace POwusu.Server.Models.Blog
 {
-    public class PostsPageModel(long offset, int limit, long total)
+    public class PostsPageModel()
     {
-        public long Offset { get; } = offset;
-        public int Limit { get; } = limit;
-        public long Length { get; } = total;
-        public long? Previous => Offset - Limit >= 0 ? Offset - Limit : null;
-        public long? Next => Offset + Limit < Length ? Offset + Limit : null;
+        public long TotalItems { get; set; }
+
+        public int TotalPages { get; set; }
+
+        public int CurrentPage { get; set; }
+
+        public int NextPage => CurrentPage < TotalPages ? CurrentPage + 1 : TotalPages;
+
+        public int PreviousPage => CurrentPage > 1 ? CurrentPage - 1 : 1;
+
         public IList<PostItemModel> Items { get; set; } = new List<PostItemModel>();
     }
 
     public class PostItemModel
     {
-        public string UserId { get; set; } = null!;
+        public PublicProfileModel Author { get; set; } = null!;
 
         public string Id { get; set; } = null!;
 
@@ -25,6 +31,8 @@ namespace POwusu.Server.Models.Blog
         public string Summary { get; set; } = null!;
 
         public string Slug { get; set; } = null!;
+
+        public string? ImageUrl { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 

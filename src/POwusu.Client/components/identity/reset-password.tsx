@@ -2,7 +2,7 @@
 
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getErrorMessage } from "@/utils/axios";
+import { getErrorMessage } from "@/utils/api";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -80,7 +80,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
     } catch (error) {
       console.error(error);
 
-      const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
+      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors : {});
       fields.forEach(([name, message]) => {
         form.setError(name as any, { message: message?.join("\n") });
       });

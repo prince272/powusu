@@ -14,7 +14,7 @@
 
         Task<bool> ExistsAsync(string path, CancellationToken cancellationToken = default);
 
-        ValueTask<string> GetUrlAsync(string path);
+        string GetUrl(string path);
     }
 
     public enum FileStorageStatus

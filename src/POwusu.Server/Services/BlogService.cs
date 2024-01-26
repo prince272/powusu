@@ -1,16 +1,22 @@
 ﻿using AutoMapper;
+using Humanizer;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using POwusu.Server.Data;
 using POwusu.Server.Entities.Blog;
 using POwusu.Server.Entities.Identity;
 using POwusu.Server.Events.Blog;
 using POwusu.Server.Extensions.FileStorage;
 using POwusu.Server.Extensions.Identity;
+using POwusu.Server.Extensions.ImageProcessor;
 using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Helpers;
 using POwusu.Server.Models.Blog;
+using POwusu.Server.Models.Identity;
 using System.Net.Mime;
 using System.Threading;
 
@@ -19,20 +25,26 @@ namespace POwusu.Server.Services
     public class BlogService : IBlogService
     {
         private readonly AppDbContext _appDbContext;
+        private readonly UserManager<User> _userManager;
         private readonly IValidator _validator;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IUserContext _userContext;
-        private readonly IFileStorage _storage;
+        private readonly IFileStorage _fileStorage;
+        private readonly IImageProcessor _imageProcessor;
+        private readonly IOptions<BlogServiceOptions> _blogServiceOptions;
 
-        public BlogService(AppDbContext appDbContext, IValidator validator, IMediator mediator, IMapper mapper, IUserContext userContext, IFileStorage storage)
+        public BlogService(AppDbContext appDbContext, UserManager<User> userManager, IValidator validator, IMediator mediator, IMapper mapper, IUserContext userContext, IFileStorage fileStorage, IImageProcessor imageProcessor, IOptions<BlogServiceOptions> blogServiceOptions)
         {
             _appDbContext = appDbContext;
+            _userManager = userManager;
             _validator = validator;
             _mediator = mediator;
             _mapper = mapper;
             _userContext = userContext;
-            _storage = storage;
+            _fileStorage = fileStorage;
+            _imageProcessor = imageProcessor;
+            _blogServiceOptions = blogServiceOptions;
         }
 
         public async Task<Results<Ok<PostModel>, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> CreatePostAsync(CreatePostForm form)
@@ -48,7 +60,7 @@ namespace POwusu.Server.Services
                 return TypedResults.Forbid();
 
             var post = _mapper.Map<Post>(form);
-            post.UserId = currentUser.Id;
+            post.AuthorId = currentUser.Id;
             post.Slug = await GeneratePostSlugAsync(form.Title);
             post.CreatedAt = DateTime.UtcNow;
             post.PublishedAt = form.Published ? DateTime.UtcNow : null;
@@ -81,7 +93,7 @@ namespace POwusu.Server.Services
                 return TypedResults.Forbid();
 
             post = _mapper.Map(form, post);
-            post.UserId = currentUser.Id;
+            post.AuthorId = currentUser.Id;
             post.Slug = await GeneratePostSlugAsync(form.Title);
             post.UpdatedAt = DateTimeOffset.UtcNow;
             post.PublishedAt = form.Published ? post.PublishedAt is not null ? post.PublishedAt : DateTimeOffset.UtcNow : null;
@@ -138,7 +150,10 @@ namespace POwusu.Server.Services
 
         public async Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null)
         {
-            if (filter is null) filter = new PostsFilter();
+            filter ??= new PostsFilter();
+            filter.Page ??= 1;
+            filter.PageSize ??= 25;
+
             var formValidation = await _validator.ValidateAsync(filter);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
@@ -150,13 +165,27 @@ namespace POwusu.Server.Services
                 query = query.Where(_ => !_.Deleted);
 
 
-            var totalPosts = await query.LongCountAsync();
-            var posts = await query.LongSkip(filter.Offset).Take(filter.Limit).ToListAsync();
-            var model = await BuildPostsPageModelAsync(posts, new PostsPageModel(filter.Offset, filter.Limit, totalPosts));
+            var totalItems = await query.LongCountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalItems / filter.PageSize.Value);
+            var currentPage = Math.Max(1, Math.Min(filter.Page.Value, totalPages));
+
+            var items = await query
+                .LongSkip((filter.Page.Value - 1) * filter.PageSize.Value)
+                .Take(filter.PageSize.Value)
+                .Include(_ => _.Author)
+                .ToListAsync();       
+
+            var model = await BuildPostsPageModelAsync(items, new PostsPageModel
+            {
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                CurrentPage = currentPage
+            });
+
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form)
+        public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form)
         {
             if (string.IsNullOrEmpty(postId))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(postId)}' was specified.");
@@ -165,10 +194,10 @@ namespace POwusu.Server.Services
             var formValidation = await _validator.ValidateAsync(form);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
-            var prevStatus = await _storage.CheckAsync(form.Path);
+            var prevStatus = await _fileStorage.CheckAsync(form.Path);
             if (prevStatus == FileStorageStatus.Pending || prevStatus == FileStorageStatus.Processing)
-                await _storage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
-            var currentStatus = await _storage.CheckAsync(form.Path);
+                await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
+            var currentStatus = await _fileStorage.CheckAsync(form.Path);
 
 
             if (prevStatus == FileStorageStatus.Pending || currentStatus == FileStorageStatus.Completed)
@@ -184,6 +213,11 @@ namespace POwusu.Server.Services
 
                 if (prevStatus == FileStorageStatus.Completed)
                 {
+                    var source = await _fileStorage.ReadAsync(form.Path);
+                    if (source is null) return TypedResults.StatusCode(StatusCodes.Status424FailedDependency);
+
+                    await _imageProcessor.ScaleAsync(source, _blogServiceOptions.Value.PostImageScaleWidth);
+
                     post.ImageId = form.Path;
                     _appDbContext.Update(post);
                     await _appDbContext.SaveChangesAsync();
@@ -193,24 +227,39 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(form.Path);
         }
 
-        private Task<PostModel> BuildPostModelAsync(Post post)
+        private async Task<PostModel> BuildPostModelAsync(Post post)
         {
             if (post is null) throw new ArgumentNullException(nameof(post));
             var model = _mapper.Map<PostModel>(post);
-            return Task.FromResult(model);
+            model.ImageUrl = post.ImageId is not null ? _fileStorage.GetUrl(post.ImageId) : null;
+            model.Author = await BuildUserModelAsync(post.Author);
+            return model;
         }
 
-        private Task<PostsPageModel> BuildPostsPageModelAsync(IEnumerable<Post> posts, PostsPageModel postsPageModel)
+        private async Task<PublicProfileModel> BuildUserModelAsync(User user)
+        {
+            if (user is null) throw new ArgumentNullException(nameof(user));
+
+            var model = _mapper.Map<PublicProfileModel>(user);
+
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            model.Title = user.GetTitle(roles);
+            return model;
+        }
+
+        private async Task<PostsPageModel> BuildPostsPageModelAsync(IEnumerable<Post> posts, PostsPageModel model)
         {
             if (posts is null) throw new ArgumentNullException(nameof(posts));
 
             foreach (var post in posts)
             {
                 var postItemModel = _mapper.Map<PostItemModel>(post);
-                postsPageModel.Items.Add(postItemModel);
+                postItemModel.ImageUrl = post.ImageId is not null ? _fileStorage.GetUrl(post.ImageId) : null;
+                postItemModel.Author = await BuildUserModelAsync(post.Author);
+                model.Items.Add(postItemModel);
             }
 
-            return Task.FromResult(postsPageModel);
+            return model;
         }
 
         private async Task<string> GeneratePostSlugAsync(string title)
@@ -218,16 +267,16 @@ namespace POwusu.Server.Services
             if (title is null) throw new ArgumentNullException(nameof(title));
 
             string separator = "-";
-            string? userName = null;
+            string? slug = null;
             int count = 1;
 
             do
             {
-                userName = TextHelper.GenerateSlug($"{title} {(count == 1 ? "" : $" {count}")}".Trim(), separator).ToLower();
+                slug = TextHelper.GenerateSlug($"{title} {(count == 1 ? "" : $" {count}")}".Trim(), separator).ToLower();
                 count += 1;
-            } while (await _appDbContext.Set<Post>().AnyAsync(_ => _.Slug == userName));
+            } while (await _appDbContext.Set<Post>().AnyAsync(_ => _.Slug == slug));
 
-            return userName;
+            return slug;
         }
     }
 
@@ -243,6 +292,25 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null);
 
-        Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form);
+        Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form);
+    }
+
+    public class BlogServiceOptions
+    {
+        public int PostImageScaleWidth { get; set; }
+
+        public string[] PostImageFileExtensions { get; set; } = Array.Empty<string>();
+
+        public long PostImageFileMaxSize { get; set; }
+    }
+
+    public static class BlogServiceExtensions
+    {
+        public static IServiceCollection AddBlogService(this IServiceCollection services, Action<BlogServiceOptions>? configure = null)
+        {
+            if (configure is not null) services.Configure(configure);
+            services.AddScoped<IBlogService, BlogService>();
+            return services;
+        }
     }
 }

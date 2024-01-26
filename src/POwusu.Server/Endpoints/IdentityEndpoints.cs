@@ -1,6 +1,9 @@
 ﻿
+using Flurl;
 using Microsoft.AspNetCore.Mvc;
 using POwusu.Server.Extensions.Routing;
+using POwusu.Server.Helpers;
+using POwusu.Server.Models.Blog;
 using POwusu.Server.Models.Identity;
 using POwusu.Server.Services;
 
@@ -39,6 +42,31 @@ namespace POwusu.Server.Endpoints
 
             builder.MapPost("/tokens/revoke", ([FromServices] IIdentityService identityService, [FromBody] RevokeTokenForm form)
                 => identityService.RevokeTokenAsync(form));
+
+            builder.MapPost("/profile/image", async ([FromServices] IIdentityService identityService, HttpContext httpContext,
+                [FromHeader(Name = "Upload-Name")] string name,
+                [FromHeader(Name = "Upload-Length")] long length)
+                => identityService.UploadProfileImageAsync(new UploadProfileImageForm
+                {
+                    Name = name,
+                    Path = httpContext.Request.Path.ToString().AppendPathSegment($"{Guid.NewGuid()}{Path.GetExtension(name)}").ToString().ToLower(),
+                    Length = length,
+                    Offset = 0,
+                    Chunk = await httpContext.Request.Body.ToMemoryStreamAsync()
+                }));
+
+            builder.MapPatch("/profile/image/{imageId}", async ([FromServices] IIdentityService identityService, HttpContext httpContext, [FromRoute] string imageId,
+                [FromHeader(Name = "Upload-Name")] string name,
+                [FromHeader(Name = "Upload-Length")] long length,
+                [FromHeader(Name = "Upload-Offset")] long offset)
+                => identityService.UploadProfileImageAsync(new UploadProfileImageForm
+                {
+                    Name = name,
+                    Path = httpContext.Request.Path.ToString().AppendPathSegment(imageId).ToString(),
+                    Length = length,
+                    Offset = offset,
+                    Chunk = await httpContext.Request.Body.ToMemoryStreamAsync()
+                }));
         }
     }
 }

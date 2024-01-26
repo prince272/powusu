@@ -1,4 +1,4 @@
-﻿namespace POwusu.Server.Extensions.EmailSender.MailKit
+﻿namespace POwusu.Server.Extensions.EmailSender
 {
     public class MailKitEmailOptions
     {

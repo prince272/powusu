@@ -17,7 +17,7 @@ const Header: FC = () => {
   const { user: currentUser, removeUser } = useUser();
   
   return (
-    <Navbar className="shadow-md" classNames={{ wrapper: "max-w-[1400px]" }}>
+    <Navbar className="border-b-1 border-default-100" classNames={{ wrapper: "max-w-[1400px]" }}>
       <NavbarBrand>
         <AcmeLogo />
         <p className="font-bold text-inherit">ACME</p>
@@ -30,7 +30,7 @@ const Header: FC = () => {
                 <User
                   classNames={{ wrapper: "hidden sm:flex" }}
                   name={currentUser?.fullName}
-                  description="Product Designer"
+                  description={currentUser?.title}
                   avatarProps={{
                     src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                   }}

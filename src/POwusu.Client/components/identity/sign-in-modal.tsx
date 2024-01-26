@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
-import { getErrorMessage } from "@/utils/axios";
+import { getErrorMessage } from "@/utils/api";
 import { ChevronLeftRegular, PersonFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
@@ -83,7 +83,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
       if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
         router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username, modal: "confirm-account" } }));
       } else {
-        const fields = Object.entries<string[]>((isAxiosError(error) ? error?.response?.data?.errors : []) || []);
+        const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors : {});
         fields.forEach(([name, message]) => {
           form.setError(name as any, { message: message?.join("\n") });
         });

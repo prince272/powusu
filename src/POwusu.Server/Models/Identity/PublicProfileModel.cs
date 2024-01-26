@@ -1,7 +1,12 @@
-﻿namespace POwusu.Server.Models.Identity
+﻿using AutoMapper;
+using POwusu.Server.Entities.Identity;
+
+namespace POwusu.Server.Models.Identity
 {
-    public class UserModel
+    public class PublicProfileModel
     {
+        public string ImageUrl { get; set; } = null!;
+
         public string Id { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
@@ -24,6 +29,16 @@
 
         public DateTimeOffset? UpdatedAt { get; set; }
 
-        public string[] Roles { get; set; } = null!;
+        public string Title { get; set; } = null!;
+
+        public string[] Roles { get; set; } = Array.Empty<string>();
+    }
+
+    public class PublicProfile : Profile
+    {
+        public PublicProfile()
+        {
+            CreateMap<User, PublicProfileModel>();
+        }
     }
 }

@@ -1,9 +1,9 @@
 import { FC } from "react";
 
-import { CoursesPage } from "@/components/portal/courses/courses-page";
+import { CoursesView } from "@/components/portal/courses/courses-view";
 
 const Page: FC = () => {
-  return <CoursesPage />;
+  return <CoursesView />;
 };
 
 export default Page;

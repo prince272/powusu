@@ -4,9 +4,12 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using POwusu.Server.Entities.Identity;
 using POwusu.Server.Extensions.EmailSender;
+using POwusu.Server.Extensions.FileStorage;
 using POwusu.Server.Extensions.Identity;
+using POwusu.Server.Extensions.ImageProcessor;
 using POwusu.Server.Extensions.MessageSender;
 using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Extensions.ViewRenderer;
@@ -29,6 +32,10 @@ namespace POwusu.Server.Services
         private readonly IMessageSender _smsSender;
         private readonly IViewRenderer _viewRenderer;
         private readonly IMapper _mapper;
+        private readonly IFileStorage _fileStorage;
+        private readonly IImageProcessor _imageProcessor;
+        private readonly IUserContext _userContext;
+        private readonly IOptions<IdentityServiceOptions> _identityServiceOptions;
 
         public IdentityService(
             UserManager<User> userManager,
@@ -41,7 +48,11 @@ namespace POwusu.Server.Services
             IEmailSender emailSender,
             IMessageSender smsSender,
             IViewRenderer viewRenderer,
-            IMapper mapper)
+            IMapper mapper,
+            IFileStorage fileStorage,
+            IImageProcessor imageProcessor,
+            IUserContext userContext,
+            IOptions<IdentityServiceOptions> identityServiceOptions)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -54,10 +65,14 @@ namespace POwusu.Server.Services
             _smsSender = smsSender;
             _viewRenderer = viewRenderer;
             _mapper = mapper;
+            _fileStorage = fileStorage;
+            _imageProcessor = imageProcessor;
+            _userContext = userContext;
+            _identityServiceOptions = identityServiceOptions;
         }
 
 
-        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form)
+        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -104,7 +119,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form)
+        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -135,7 +150,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider)
+        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider)
         {
             if (string.IsNullOrEmpty(provider))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified.");
@@ -211,7 +226,7 @@ namespace POwusu.Server.Services
             return TypedResults.Challenge(properties, new[] { provider });
         }
 
-        public async Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form)
+        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -243,7 +258,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok();
         }
 
-        public async Task<Results<Ok, Ok<UserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form)
+        public async Task<Results<Ok, Ok<PrivateProfileWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -364,6 +379,39 @@ namespace POwusu.Server.Services
             return TypedResults.Ok();
         }
 
+        public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var prevStatus = await _fileStorage.CheckAsync(form.Path);
+            if (prevStatus == FileStorageStatus.Pending || prevStatus == FileStorageStatus.Processing)
+                await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
+            var currentStatus = await _fileStorage.CheckAsync(form.Path);
+
+
+            if (prevStatus == FileStorageStatus.Pending || currentStatus == FileStorageStatus.Completed)
+            {
+                var currentUser = await _userContext.GetUserAsync();
+                if (currentUser is null) return TypedResults.Unauthorized();
+
+
+                if (prevStatus == FileStorageStatus.Completed)
+                {
+                    var source = await _fileStorage.ReadAsync(form.Path);
+                    if (source is null) return TypedResults.StatusCode(StatusCodes.Status424FailedDependency);
+
+                    await _imageProcessor.ScaleAsync(source, _identityServiceOptions.Value.ProfileImageScaleWidth);
+
+                    currentUser.ImageId = form.Path;
+                    await _userManager.UpdateAsync(currentUser);
+                }
+            }
+
+            return TypedResults.Ok(form.Path);
+        }
+
         private async Task<string> GenerateUserNameAsync(string firstName, string lastName)
         {
             if (firstName is null) throw new ArgumentNullException(nameof(firstName));
@@ -382,35 +430,60 @@ namespace POwusu.Server.Services
             return userName;
         }
 
-        private async Task<UserWithTokenModel> BuildUserWithTokenModelAsync(User user, string? token = null)
+        private async Task<PrivateProfileWithTokenModel> BuildUserWithTokenModelAsync(User user, string? token = null)
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
 
             if (token is not null) await _jwtTokenManager.InvalidateAsync(user, token);
 
             var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
-            var model = _mapper.Map(user, _mapper.Map<UserWithTokenModel>(tokenInfo));
-            model.Roles = (await _userManager.GetRolesAsync(user)).Select(_ => _.Camelize()).ToArray();
+            var model = _mapper.Map(user, _mapper.Map<PrivateProfileWithTokenModel>(tokenInfo));
+
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            model.Roles = roles.Select(_ => _.Camelize()).ToArray();
+            model.Title = user.GetTitle(roles);
             return model;
         }
     }
 
     public interface IIdentityService
     {
-        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form);
+        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form);
 
-        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form);
+        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form);
 
-        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider);
+        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider);
 
         Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins);
 
-        Task<Results<Ok<UserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form);
+        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form);
 
         Task<Results<Ok, ValidationProblem>> RevokeTokenAsync(RevokeTokenForm form);
 
-        Task<Results<Ok, Ok<UserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
+        Task<Results<Ok, Ok<PrivateProfileWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
         Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
+
+        Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form);
+    }
+
+    public class IdentityServiceOptions
+    {
+        public int ProfileImageScaleWidth { get; set; }
+
+        public string[] ProfileImageFileExtensions { get; set; } = Array.Empty<string>();
+
+        public long ProfileImageFileMaxSize { get; set; }
+
+    }
+
+    public static class IdentityServiceExtensions
+    {
+        public static IServiceCollection AddIdentityService(this IServiceCollection services, Action<IdentityServiceOptions>? configure = null)
+        {
+            if (configure is not null) services.Configure(configure);
+            services.AddScoped<IIdentityService, IdentityService>();
+            return services;
+        }
     }
 }

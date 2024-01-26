@@ -1,5 +1,3 @@
-"use client";
-
 import { FC } from "react";
 import NextLink from "next/link";
 import { Code } from "@nextui-org/code";
@@ -14,7 +12,6 @@ import { useUser } from "@/providers/user/client";
 import { stringifyJSON } from "@/utils";
 
 const Home: FC = () => {
-  const { user } = useUser();
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -25,7 +22,6 @@ const Home: FC = () => {
         <h1 className={title()}>websites regardless of your design experience.</h1>
         <h2 className={subtitle({ class: "mt-4" })}>Beautiful, fast and modern React UI library.</h2>
       </div>
-      {stringifyJSON(user)}
       <div className="flex gap-3">
         <Link as={NextLink} href="/portal/posts" className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
           Portal

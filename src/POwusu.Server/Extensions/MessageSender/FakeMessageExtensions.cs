@@ -1,4 +1,4 @@
-﻿namespace POwusu.Server.Extensions.MessageSender.Fake
+﻿namespace POwusu.Server.Extensions.MessageSender
 {
     public static class FakeMessageExtensions
     {

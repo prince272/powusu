@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using POwusu.Server.Extensions.ViewRenderer;
 
-namespace POwusu.Server.Extensions.ViewRenderer.Razor
+namespace POwusu.Server.Extensions.ViewRenderer
 {
     public class RazorViewRenderer : IViewRenderer
     {

@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using POwusu.Server.Entities.Blog;
+using POwusu.Server.Models.Identity;
 
 namespace POwusu.Server.Models.Blog
 {
     public class PostModel
     {
-        public string UserId { get; set; } = null!;
+        public PublicProfileModel Author { get; set; } = null!;
 
         public string Id { get; set; } = null!;
 
@@ -16,6 +17,8 @@ namespace POwusu.Server.Models.Blog
         public string Content { get; set; } = null!;
 
         public string Slug { get; set; } = null!;
+
+        public string? ImageUrl { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 

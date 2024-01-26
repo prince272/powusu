@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using System.IO;
 using Flurl;
-using POwusu.Server.Extensions.FileStorage;
 
-namespace POwusu.Server.Extensions.FileStorage.Local
+namespace POwusu.Server.Extensions.FileStorage
 {
     public class LocalFileStorage : IFileStorage
     {
@@ -20,7 +19,7 @@ namespace POwusu.Server.Extensions.FileStorage.Local
             if (content == null) throw new ArgumentNullException(nameof(content));
 
             var filePath = GetFilePath(path);
-            using var fileStream = File.Create(filePath);
+            using var fileStream = new FileStream(filePath, FileMode.CreateNew, FileAccess.Write);
             await content.CopyToAsync(fileStream, cancellationToken);
         }
 
@@ -67,7 +66,7 @@ namespace POwusu.Server.Extensions.FileStorage.Local
 
             if (File.Exists(filePath))
             {
-                return Task.FromResult((Stream?)new FileStream(filePath, FileMode.Open, FileAccess.Read));
+                return Task.FromResult((Stream?)new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite));
             }
 
             return Task.FromResult<Stream?>(null);
@@ -95,11 +94,11 @@ namespace POwusu.Server.Extensions.FileStorage.Local
             return Task.FromResult(File.Exists(filePath));
         }
 
-        public ValueTask<string> GetUrlAsync(string path)
+        public string GetUrl(string path)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             var url = _localFileStorageOptions.Value.RootUrl.AppendPathSegment(path);
-            return ValueTask.FromResult(url.ToString());
+            return url.ToString();
         }
 
 

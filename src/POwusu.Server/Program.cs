@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using POwusu.Server.Data;
 using POwusu.Server.Entities.Identity;
 using POwusu.Server.Extensions.Anonymous;
-using POwusu.Server.Extensions.EmailSender.MailKit;
+using POwusu.Server.Extensions.EmailSender;
 using POwusu.Server.Extensions.FileStorage;
-using POwusu.Server.Extensions.FileStorage.Local;
 using POwusu.Server.Extensions.Identity;
-using POwusu.Server.Extensions.MessageSender.Fake;
+using POwusu.Server.Extensions.ImageProcessor;
+using POwusu.Server.Extensions.MessageSender;
 using POwusu.Server.Extensions.Routing;
 using POwusu.Server.Extensions.Validation;
-using POwusu.Server.Extensions.ViewRenderer.Razor;
+using POwusu.Server.Extensions.ViewRenderer;
 using POwusu.Server.Hubs;
 using POwusu.Server.Middlewares;
 using POwusu.Server.Options;
@@ -165,6 +165,8 @@ try
 
     builder.Services.AddSignalR();
 
+    builder.Services.AddImageProcessor();
+
     builder.Services.AddMailKitEmailSender(options =>
     {
         builder.Configuration.GetRequiredSection("MailingOptions:MailKit").Bind(options);
@@ -233,9 +235,20 @@ try
 
     builder.Services.AddScoped<IUserContext, UserContext>();
 
-    builder.Services.AddScoped<IIdentityService, IdentityService>();
+    builder.Services.AddIdentityService(options =>
+    {
+        options.ProfileImageScaleWidth = 128;
+        options.ProfileImageFileExtensions = new[] { ".jpg", ".jpeg", ".png" };
+        options.ProfileImageFileMaxSize = 20971520; // 20MB
+    });
 
-    builder.Services.AddScoped<IBlogService, BlogService>();
+    builder.Services.AddBlogService(options =>
+    {
+        options.PostImageScaleWidth = 512;
+        options.PostImageFileExtensions = new[] { ".jpg", ".jpeg", ".png" };
+        options.PostImageFileMaxSize = 20971520; // 20MB
+
+    });
 
     builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 

@@ -1,4 +1,4 @@
-﻿namespace POwusu.Server.Extensions.ViewRenderer.Razor
+﻿namespace POwusu.Server.Extensions.ViewRenderer
 {
     public class RazorViewRendererOptions
     {

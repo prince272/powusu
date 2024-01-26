@@ -1,6 +1,4 @@
-﻿using POwusu.Server.Extensions.FileStorage;
-
-namespace POwusu.Server.Extensions.FileStorage.Local
+﻿namespace POwusu.Server.Extensions.FileStorage
 {
     public static class LocalFileStorageExtensions
     {

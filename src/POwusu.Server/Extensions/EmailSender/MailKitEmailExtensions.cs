@@ -1,6 +1,4 @@
-﻿using POwusu.Server.Extensions.EmailSender;
-
-namespace POwusu.Server.Extensions.EmailSender.MailKit
+﻿namespace POwusu.Server.Extensions.EmailSender
 {
     public static class MailKitEmailExtensions
     {

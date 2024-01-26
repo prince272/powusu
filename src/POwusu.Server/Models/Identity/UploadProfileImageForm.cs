@@ -6,9 +6,9 @@ using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Services;
 using System.IO;
 
-namespace POwusu.Server.Models.Blog
+namespace POwusu.Server.Models.Identity
 {
-    public class UploadPostImageForm
+    public class UploadProfileImageForm
     {
         public string Name { get; set; } = null!;
 
@@ -21,9 +21,9 @@ namespace POwusu.Server.Models.Blog
         public Stream Chunk { get; set; } = null!;
     }
 
-    public abstract class UploadPostImageFormValidator : AbstractValidator<UploadPostImageForm>
+    public abstract class UploadProfileImageFormValidator : AbstractValidator<UploadProfileImageForm>
     {
-        public UploadPostImageFormValidator(IOptions<BlogServiceOptions> blogServiceOptions)
+        public UploadProfileImageFormValidator(IOptions<IdentityServiceOptions> identityServiceOptions)
         {
 
             RuleFor(_ => _.Name)
@@ -37,18 +37,18 @@ namespace POwusu.Server.Models.Blog
                 .Must((form, path) => Path.HasExtension(path))
                 .WithMessage("The file path must contain an extension.")
                 
-                .Must((form, path) => blogServiceOptions.Value.PostImageFileExtensions.Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase))
+                .Must((form, path) => identityServiceOptions.Value.ProfileImageFileExtensions.Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase))
                 .WithMessage((form, path) => $"The file extension '{Path.GetExtension(path).ToLower()}' is not allowed.");
 
             RuleFor(_ => _.Length)
                 .Must((form, fileSize) =>
                 {
-                    var fileMaxSize = blogServiceOptions.Value.PostImageFileMaxSize;
+                    var fileMaxSize = identityServiceOptions.Value.ProfileImageFileMaxSize;
                     return fileSize <= fileMaxSize;
                 })
                 .WithMessage((form, fileSize) =>
                 {
-                    var fileMaxSize = blogServiceOptions.Value.PostImageFileMaxSize;
+                    var fileMaxSize = identityServiceOptions.Value.ProfileImageFileMaxSize;
                     return $"The file size must be {fileMaxSize.Bytes().Humanize()} or smaller.";
                 });
 

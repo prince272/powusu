@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.ObjectPool;
-using POwusu.Server.Extensions.ViewRenderer;
 using POwusu.Server.Helpers;
 using System.Diagnostics;
 
-namespace POwusu.Server.Extensions.ViewRenderer.Razor
+namespace POwusu.Server.Extensions.ViewRenderer
 {
     public static class RazorViewRendererExtensions
     {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using POwusu.Server.Extensions.FileStorage;
-using POwusu.Server.Extensions.FileStorage.Local;
 
 namespace POwusu.Server.Options
 {

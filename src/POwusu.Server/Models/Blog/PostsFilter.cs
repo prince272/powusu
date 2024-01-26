@@ -4,17 +4,17 @@ namespace POwusu.Server.Models.Blog
 {
     public class PostsFilter
     {
-        public long Offset { get; set; } = 0;
+        public int? Page { get; set; }
 
-        public int Limit { get; set; } = 25;
+        public int? PageSize { get; set; }
     }
 
     public class PostsFilterValidator : AbstractValidator<PostsFilter>
     {
         public PostsFilterValidator()
         {
-            RuleFor(_ => _.Offset).GreaterThanOrEqualTo(0);
-            RuleFor(_ => _.Limit).InclusiveBetween(1, 100);
+            RuleFor(_ => _.Page).GreaterThanOrEqualTo(1);
+            RuleFor(_ => _.PageSize).InclusiveBetween(1, 100);
         }
     }
 }

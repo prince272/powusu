@@ -2,9 +2,8 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using POwusu.Server.Extensions.EmailSender;
 
-namespace POwusu.Server.Extensions.EmailSender.MailKit
+namespace POwusu.Server.Extensions.EmailSender
 {
     public class MailKitEmailSender : IEmailSender
     {

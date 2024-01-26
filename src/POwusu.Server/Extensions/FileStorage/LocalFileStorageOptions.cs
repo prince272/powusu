@@ -1,4 +1,4 @@
-﻿namespace POwusu.Server.Extensions.FileStorage.Local
+﻿namespace POwusu.Server.Extensions.FileStorage
 {
     public class LocalFileStorageOptions
     {
