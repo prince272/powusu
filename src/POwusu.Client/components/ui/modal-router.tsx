@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentType, createContext, FC, ReactNode, useContext, useEffect, useState } from "react";
+import { ComponentType, createContext, FC, ReactNode, use, useContext, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
 import { compareSearchParams, sleep } from "@/utils";
@@ -43,8 +43,9 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [hash] = useHashState();
 
-  const modalKey = searchParams.get("modal") || "";
+  const modalKey = searchParams.get("modal") || hash || "";
   const modalProps = useDisclosure();
 
   useEffect(() => {
@@ -78,23 +79,7 @@ export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) 
   return (
     <ModalRouterContext.Provider value={{}}>
       {children}
-      <ModalComponent
-        {...{
-          ...modalProps,
-          onClose: async (submitted: boolean) => {
-            modalProps.onClose();
-
-            if (submitted) {
-              const href = searchParams.get("callback") || pathname;
-              router.push(href);
-            } else {
-              router.push(pathname);
-            }
-
-            router.refresh();
-          }
-        }}
-      />
+      <ModalComponent {...modalProps} />
     </ModalRouterContext.Provider>
   );
 };

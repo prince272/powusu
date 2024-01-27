@@ -2,7 +2,7 @@
 
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getErrorMessage } from "@/utils/api";
@@ -27,7 +27,7 @@ export interface SignUpModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
-  onClose: (submitted?: boolean) => void;
+  onClose: () => void;
 }
 
 export type SignUpMethods = "credentials" | "google";
@@ -40,9 +40,11 @@ export interface SignUpInputs {
 }
 
 export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
-  const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   const toastId = useRef(uniqueId()).current;
 
   const { setUser } = useUser();
@@ -79,14 +81,16 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
           break;
         }
       }
-      onClose(true);
+
+      onClose();
+      router.replace(searchParams.get("callback") || pathname);
     } catch (error) {
       console.error(error);
 
       if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
         router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username, modal: "confirm-account" } }));
       } else {
-        const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors : {});
+        const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
         fields.forEach(([name, message]) => {
           form.setError(name as any, { message: message?.join("\n") });
         });
@@ -99,7 +103,14 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
+    <Modal
+      isDismissable={false}
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        router.replace(pathname);
+      }}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <div className="flex items-center space-x-1">
@@ -150,6 +161,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
                 className="col-span-12"
                 color="primary"
                 type="submit"
+                variant="solid"
                 isDisabled={status != "idle"}
                 isLoading={status == "submitting"}
                 onPress={() => form.handleSubmit(submit)()}
@@ -162,6 +174,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
                 className="col-span-12"
                 type="button"
                 color="primary"
+                variant="solid"
                 isDisabled={status != "idle"}
                 startContent={<PersonFilled fontSize={24} />}
                 onPress={() => form.setValue("method", "credentials")}
@@ -172,6 +185,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
                 className="col-span-12 light"
                 type="button"
                 color="default"
+                variant="solid"
                 startContent={status == "idle" && <GoogleIcon size={24} />}
                 isDisabled={status != "idle"}
                 isLoading={status == "submitting"}

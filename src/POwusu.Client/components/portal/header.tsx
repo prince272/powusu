@@ -1,21 +1,28 @@
 "use client";
 
 import { FC } from "react";
+import NextLink from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
 import { User } from "@nextui-org/user";
+import queryString from "query-string";
+
+import { useRouter } from "@/hooks/use-router";
 
 import { AcmeLogo } from "../icons";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
-import { useUser } from "@/providers/user/client";
-import { buildCallbackUrl } from "@/utils";
-import { useRouter } from "@/hooks/use-router";
+import { PersonArrowRightRegular, SettingsRegular } from "@fluentui/react-icons";
 
 const Header: FC = () => {
   const router = useRouter();
-  const { user: currentUser, removeUser } = useUser();
-  
+  const { user: currentUser } = useUser();
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   return (
     <Navbar className="border-b-1 border-default-100" classNames={{ wrapper: "max-w-[1400px]" }}>
       <NavbarBrand>
@@ -38,11 +45,12 @@ const Header: FC = () => {
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="User actions">
-              <DropdownItem key="sign-out" onPress={() => {
-                 removeUser();
-                 const href = buildCallbackUrl({ modal: "sign-in" }, window.location.href);
-                 router.push(href);
-              }}>Sign out</DropdownItem>
+              <DropdownItem key="settings" startContent={<SettingsRegular fontSize={24} />} as={NextLink} href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings" } })}>
+                Settings
+              </DropdownItem>
+              <DropdownItem key="sign-out" startContent={<PersonArrowRightRegular fontSize={24} />} className="text-danger" color="danger" as={NextLink} href={queryString.stringifyUrl({ url: currentUrl }) + "#sign-out"}>
+                Sign out
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </NavbarItem>

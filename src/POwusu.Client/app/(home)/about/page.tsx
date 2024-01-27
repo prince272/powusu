@@ -1,11 +1,12 @@
 "use client";
 
 import { FC } from "react";
+import { Metadata } from "next";
 import NextLink from "next/link";
 import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
+
 import { title } from "@/components/primitives";
-import { Metadata } from "next";
 
 const AboutPage: FC = () => {
   return (

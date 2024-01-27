@@ -60,18 +60,38 @@ export function compareSearchParams(params1: URLSearchParams, params2: URLSearch
 }
 
 export const buildCallbackUrl = (query: StringifiableRecord, callbackUrl: string, previousUrl?: string | null) => {
-  let previousURL = previousUrl ? new URL(previousUrl) : null;
-  let callbackURL = new URL(callbackUrl);
+  callbackUrl = removeBaseUrl(callbackUrl);
+  previousUrl = previousUrl ? removeBaseUrl(previousUrl) : "/";
 
-  callbackURL = new URL(
-    queryString.stringifyUrl({
-      url: previousURL?.href || callbackURL.origin,
-      query: {
-        callback: callbackURL.pathname + callbackURL.search,
-        ...query
-      }
-    })
-  );
+  callbackUrl = queryString.stringifyUrl({
+    url: previousUrl,
+    query: {
+      callback: callbackUrl,
+      ...query
+    }
+  });
 
-  return callbackURL.toString();
+  return callbackUrl;
 };
+
+export function removeBaseUrl(url: string) {
+  /*
+   * Replace base URL in given string, if it exists, and return the result.
+   *
+   * e.g. "http://localhost:8000/api/v1/blah/" becomes "/api/v1/blah/"
+   *      "/api/v1/blah/" stays "/api/v1/blah/"
+   */
+  var baseUrlPattern = /^https?:\/\/[a-z\:0-9.]+/;
+  var result = "";
+
+  var match = baseUrlPattern.exec(url);
+  if (match != null) {
+    result = match[0];
+  }
+
+  if (result.length > 0) {
+    url = url.replace(result, "");
+  }
+
+  return url;
+}

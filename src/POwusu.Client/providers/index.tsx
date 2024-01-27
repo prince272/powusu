@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ReactNode, useEffect } from "react";
-import { parseJSON } from "@/utils";
+import { ReactNode } from "react";
 import { NextUIProvider } from "@nextui-org/system";
 import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
@@ -11,23 +10,28 @@ import NextTopLoader from "nextjs-toploader";
 import { ExternalWindow } from "@/lib/external-window";
 import { useRouter } from "@/hooks/use-router";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
-import { ResetPasswordModal } from "@/components/identity/reset-password";
+import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
+import { SettingsModal } from "@/components/identity/settings-modal";
 import { SignInModal } from "@/components/identity/sign-in-modal";
+import { SignOutModal } from "@/components/identity/sign-out-modal";
 import { SignUpModal } from "@/components/identity/sign-up-modal";
 
-import { Toaster } from "../components/ui/toaster";
 import { ModalRouterProvider } from "../components/ui/modal-router";
-import { UserProvider, UserProviderProps } from "./user/client";
+import { Toaster } from "../components/ui/toaster";
+import { Authorize, UserProvider, UserProviderProps } from "./user/client";
 
 export const modals = {
   "sign-in": SignInModal,
   "sign-up": SignUpModal,
+  "sign-out": SignOutModal,
   "confirm-account": ConfirmAccountModal,
-  "reset-password": ResetPasswordModal
+  "reset-password": ResetPasswordModal,
+  settings: SettingsModal
 };
 
-export interface ProvidersProps extends UserProviderProps {
+export interface ProvidersProps {
   children: ReactNode;
+  initialUser?: UserProviderProps["initialUser"];
 }
 
 export function Providers({ children, initialUser }: ProvidersProps) {
@@ -36,14 +40,14 @@ export function Providers({ children, initialUser }: ProvidersProps) {
   return (
     <UserProvider
       initialUser={initialUser}
-      onSetUser={(user) => setCookie("currentUser", user)}
-      onUpdateUser={(user) => setCookie("currentUser", user)}
-      onRemoveUser={() => setCookie("currentUser", null)}
+      onSetUser={(user) => setCookie("Identity", user)}
+      onUpdateUser={(user) => setCookie("Identity", user)}
+      onRemoveUser={() => setCookie("Identity", null)}
     >
       <ModalRouterProvider modals={modals}>
         <NextUIProvider navigate={router.push}>
           <NextThemesProvider {...{ attribute: "class", defaultTheme: "dark" }}>
-            {children}
+            <Authorize patterns={["/portal/*"]}>{children}</Authorize>
             <Toaster />
             <NextTopLoader color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" showSpinner={false} />
           </NextThemesProvider>

@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 
 import { nextui } from "@nextui-org/theme";
-const defaultTheme = require('tailwindcss/defaultTheme')
+
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: [
@@ -20,9 +21,9 @@ module.exports = {
       }
     },
     fontFamily: {
-      'sans': ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
-      'serif': [...defaultTheme.fontFamily.serif],
-      'mono': [...defaultTheme.fontFamily.mono],
+      sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
+      serif: [...defaultTheme.fontFamily.serif],
+      mono: [...defaultTheme.fontFamily.mono],
       heading: ["var(--font-heading)", ...defaultTheme.fontFamily.sans]
     }
   },

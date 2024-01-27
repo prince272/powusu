@@ -6,7 +6,7 @@ import { Spinner } from "@nextui-org/spinner";
 
 import { ExternalWindow } from "@/lib/external-window";
 
-const Loader: FC<{ timeout?: number; onTimeout?: () => void }> = ({ timeout = 1000, onTimeout }) => {
+const Loader: FC<{ timeout?: number; }> = ({ timeout = 1000 }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -15,13 +15,16 @@ export function useDebouncedCallback<TCallback extends (...args: any[]) => any>(
   fn: TCallback,
   dependencies: DependencyList,
   delay: number
-): (...args: Parameters<TCallback>) => void {
+): (...args: Parameters<TCallback>) => Promise<void> {
   const timeout = useTimeout();
   return useCallback(
     (...args: any[]) => {
-      timeout.set(() => {
-        fn(...args);
-      }, delay);
+      return new Promise<void>((resolve) => {
+        timeout.set(() => {
+          fn(...args);
+          resolve();
+        }, delay);
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [timeout, delay, fn, ...dependencies]

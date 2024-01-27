@@ -15,7 +15,7 @@ import { postsSearchParsers } from "./posts-search-params";
 
 export interface PostsPageProps {
   initialPage?: PostsPage;
-  initialError?: ApiError
+  initialError?: ApiError;
 }
 
 const PostsView: FC<PostsPageProps> = ({ initialPage, initialError }) => {
@@ -58,7 +58,9 @@ const PostsView: FC<PostsPageProps> = ({ initialPage, initialError }) => {
     setStatus("idle");
   }, []);
 
-  useEffect(() => { loadPage(searchParams); }, [loadPage, searchParams]);
+  useEffect(() => {
+    loadPage(searchParams);
+  }, [loadPage, searchParams]);
 
   const renderCell = useCallback((post: PostItem, columnKey: Key) => {
     const cellValue = post[columnKey as keyof PostItem];

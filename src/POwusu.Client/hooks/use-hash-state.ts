@@ -3,19 +3,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import queryString from "query-string";
+
 import { useRouter } from "./use-router";
 
 // How do I get the pathname with hash.
 // source: https://github.com/vercel/next.js/discussions/49465
 export const useHashState = () => {
-  const getCurrentHash = useMemo(() => () => (typeof window !== "undefined") ? window.location.hash.replace(/^#!?/, "") : "", []);
+  const getCurrentHash = useMemo(() => () => (typeof window !== "undefined" ? window.location.hash.replace(/^#!?/, "") : ""), []);
   const router = useRouter();
   const params = useParams();
   const [hash, _setHash] = useState<string>(getCurrentHash());
 
   const setHash = (newHash: string) => {
     let updatedUrl = window.location.href;
-    updatedUrl = queryString.stringifyUrl({ url: updatedUrl.split('#')[0], fragmentIdentifier: newHash });
+    updatedUrl = queryString.stringifyUrl({ url: updatedUrl.split("#")[0], fragmentIdentifier: newHash });
 
     _setHash(newHash);
     router.replace(updatedUrl);

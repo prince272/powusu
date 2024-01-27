@@ -1,25 +1,27 @@
 "use client";
 
 import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useUser } from "@/providers/user/client";
 import { getErrorMessage } from "@/utils/api";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
 import { clone, uniqueId } from "lodash";
+import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
+import { useRouter } from "@/hooks/use-router";
 import { toast } from "@/components/ui/toaster";
-import { useUser } from "@/providers/user/client";
 
 export interface ConfirmAccountModalProps {
   children: ReactNode;
   isOpen: boolean;
   onOpen: () => void;
-  onClose: (submitted?: boolean) => void;
+  onClose: () => void;
 }
 
 export interface ConfirmAccountInputs {
@@ -29,8 +31,11 @@ export interface ConfirmAccountInputs {
 }
 
 export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onClose }) => {
-  const currentUrl = useMemo(() => () => (typeof window !== "undefined" ? window.location.href : ""), [])();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   const toastId = useRef(uniqueId()).current;
 
   const { setUser } = useUser();
@@ -69,14 +74,15 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
         case "validate-code": {
           const response = await api.post("/identity/confirm", inputs);
           setUser(response.data);
-          onClose(true);
+          onClose();
+          router.replace(searchParams.get("callback") || pathname);
           break;
         }
       }
     } catch (error) {
       console.error(error);
 
-      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors : {});
+      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
       fields.forEach(([name, message]) => {
         form.setError(name as any, { message: message?.join("\n") });
       });
@@ -88,7 +94,14 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <Modal isDismissable={false} isOpen={isOpen} onClose={() => onClose()}>
+    <Modal
+      isDismissable={false}
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        router.replace(pathname);
+      }}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Confirm your account</ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
@@ -123,7 +136,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
                     <Button
                       className="-mt-4 px-7"
                       color="default"
-                      variant="faded"
+                      variant="solid"
                       size="sm"
                       type="button"
                       isLoading={status == "submitting" && form.watch("action") == "send-code"}

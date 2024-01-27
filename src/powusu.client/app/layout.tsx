@@ -3,12 +3,11 @@ import "@/styles/globals.css";
 import { FC } from "react";
 import { Metadata } from "next";
 import { Providers } from "@/providers";
-
-import { siteConfig } from "@/config/site";
-import { fontHeading, fontSans } from "@/components/fonts";
 import { getUser } from "@/providers/user/server";
 import { cn } from "@/utils";
 
+import { siteConfig } from "@/config/site";
+import { fontHeading, fontSans } from "@/components/fonts";
 
 export const metadata: Metadata = {
   title: {

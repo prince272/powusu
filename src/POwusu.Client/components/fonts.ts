@@ -13,6 +13,5 @@ export const fontMono = FontMono({
 
 export const fontHeading = localFont({
   src: "../assets/fonts/CalSans-SemiBold.woff2",
-  variable: "--font-heading",
-})
-
+  variable: "--font-heading"
+});

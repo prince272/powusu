@@ -5,5 +5,5 @@ import { getCookie } from "cookies-next";
 import { User } from "@/types/user";
 
 export const getUser = () => {
-  return parseJSON(getCookie("currentUser", { cookies })) as User | null | undefined;
+  return parseJSON(getCookie("Identity", { cookies })) as User | null | undefined;
 };
