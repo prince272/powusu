@@ -53,6 +53,7 @@ namespace POwusu.Server.Extensions.Identity
 
             return new JwtTokenInfo
             {
+                TokenType = "Bearer",
                 AccessToken = accessToken,
                 AccessTokenExpiresAt = accessTokenExpiresAt,
                 RefreshToken = refreshToken,

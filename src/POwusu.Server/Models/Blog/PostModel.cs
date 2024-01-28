@@ -6,7 +6,7 @@ namespace POwusu.Server.Models.Blog
 {
     public class PostModel
     {
-        public PublicProfileModel Author { get; set; } = null!;
+        public PublicUserModel Author { get; set; } = null!;
 
         public string Id { get; set; } = null!;
 

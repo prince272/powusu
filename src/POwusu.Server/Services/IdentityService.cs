@@ -72,7 +72,7 @@ namespace POwusu.Server.Services
         }
 
 
-        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -119,7 +119,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -150,7 +150,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider)
         {
             if (string.IsNullOrEmpty(provider))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified.");
@@ -226,7 +226,7 @@ namespace POwusu.Server.Services
             return TypedResults.Challenge(properties, new[] { provider });
         }
 
-        public async Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -258,7 +258,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok();
         }
 
-        public async Task<Results<Ok, Ok<PrivateProfileWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form)
+        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -379,6 +379,39 @@ namespace POwusu.Server.Services
             return TypedResults.Ok();
         }
 
+        public async Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var currentUser = await _userContext.GetUserAsync();
+            if (currentUser is null) return TypedResults.Unauthorized();
+
+            var result = await _userManager.ChangePasswordAsync(currentUser, form.CurrentPassword, form.NewPassword);
+            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: "Unable to change password.");
+
+            return TypedResults.Ok();
+        }
+
+        public async Task<Results<Ok<PrivateUserModel>, ValidationProblem, UnauthorizedHttpResult>> EditProfileAsync(EditProfileForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var currentUser = await _userContext.GetUserAsync();
+            if (currentUser is null) return TypedResults.Unauthorized();
+
+            currentUser = _mapper.Map(form, currentUser);
+            currentUser.UpdatedAt = DateTimeOffset.UtcNow;
+
+            await _userManager.UpdateAsync(currentUser);
+
+            var model = await BuildUserModelAsync(currentUser);
+            return TypedResults.Ok(model);
+        }
+
         public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
@@ -430,14 +463,26 @@ namespace POwusu.Server.Services
             return userName;
         }
 
-        private async Task<PrivateProfileWithTokenModel> BuildUserWithTokenModelAsync(User user, string? token = null)
+        private async Task<PrivateUserModel> BuildUserModelAsync(User user)
+        {
+            if (user is null) throw new ArgumentNullException(nameof(user));
+
+            var model = _mapper.Map<PrivateUserModel>(user);
+
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            model.Roles = roles.Select(_ => _.Camelize()).ToArray();
+            model.Title = user.GetTitle(roles);
+            return model;
+        }
+
+        private async Task<PrivateUserWithTokenModel> BuildUserWithTokenModelAsync(User user, string? token = null)
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
 
             if (token is not null) await _jwtTokenManager.InvalidateAsync(user, token);
 
             var tokenInfo = await _jwtTokenManager.GenerateAsync(user);
-            var model = _mapper.Map(user, _mapper.Map<PrivateProfileWithTokenModel>(tokenInfo));
+            var model = _mapper.Map(user, _mapper.Map<PrivateUserWithTokenModel>(tokenInfo));
 
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             model.Roles = roles.Select(_ => _.Camelize()).ToArray();
@@ -448,21 +493,25 @@ namespace POwusu.Server.Services
 
     public interface IIdentityService
     {
-        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> RegisterAccountAsync(RegisterAccountForm form);
 
-        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> GenerateTokenAsync(GenerateTokenForm form);
 
-        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> GenerateTokenFromExternalAuthenticationAsync(string provider);
 
         Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins);
 
-        Task<Results<Ok<PrivateProfileWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem>> RefreshTokenAsync(RefreshTokenForm form);
 
         Task<Results<Ok, ValidationProblem>> RevokeTokenAsync(RevokeTokenForm form);
 
-        Task<Results<Ok, Ok<PrivateProfileWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
+        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
         Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
+
+        Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form);
+
+        Task<Results<Ok<PrivateUserModel>, ValidationProblem, UnauthorizedHttpResult>> EditProfileAsync(EditProfileForm form);
 
         Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form);
     }

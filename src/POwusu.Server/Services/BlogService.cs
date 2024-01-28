@@ -236,11 +236,11 @@ namespace POwusu.Server.Services
             return model;
         }
 
-        private async Task<PublicProfileModel> BuildUserModelAsync(User user)
+        private async Task<PublicUserModel> BuildUserModelAsync(User user)
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
 
-            var model = _mapper.Map<PublicProfileModel>(user);
+            var model = _mapper.Map<PublicUserModel>(user);
 
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             model.Title = user.GetTitle(roles);

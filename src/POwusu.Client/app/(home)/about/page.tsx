@@ -13,7 +13,7 @@ const AboutPage: FC = () => {
     <div>
       <h1 className={title()}>About</h1>
 
-      <Link as={NextLink} href="/portal/posts" className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
+      <Link as={NextLink} href="/portal" className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
         Portal
       </Link>
     </div>

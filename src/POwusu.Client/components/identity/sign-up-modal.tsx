@@ -45,9 +45,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
 
-  const toastId = useRef(uniqueId()).current;
-
-  const { setUser } = useUser();
+  const toastId = useRef(uniqueId("_toast_")).current;
 
   const form = useForm<{ method: SignUpMethods | undefined } & SignUpInputs>({
     defaultValues: {
@@ -68,7 +66,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/register", inputs);
-          setUser(response.data);
+          api.user.next(response.data);
           break;
         }
         default: {
@@ -77,7 +75,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
           await ExternalWindow.open(externalUrl, { center: true });
 
           const response = await api.post(`/identity/tokens/${method}/generate`);
-          setUser(response.data);
+          api.user.next(response.data);
           break;
         }
       }
@@ -113,7 +111,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 h-8">
             <Button
               size="sm"
               variant="light"
@@ -160,7 +158,7 @@ export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
               <Button
                 className="col-span-12"
                 color="primary"
-                type="submit"
+                type="button"
                 variant="solid"
                 isDisabled={status != "idle"}
                 isLoading={status == "submitting"}

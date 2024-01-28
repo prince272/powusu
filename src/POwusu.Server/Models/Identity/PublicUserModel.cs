@@ -3,7 +3,7 @@ using POwusu.Server.Entities.Identity;
 
 namespace POwusu.Server.Models.Identity
 {
-    public class PublicProfileModel
+    public class PublicUserModel
     {
         public string ImageUrl { get; set; } = null!;
 
@@ -32,13 +32,15 @@ namespace POwusu.Server.Models.Identity
         public string Title { get; set; } = null!;
 
         public string[] Roles { get; set; } = Array.Empty<string>();
+
+        public string? Bio { get; set; }
     }
 
     public class PublicProfile : Profile
     {
         public PublicProfile()
         {
-            CreateMap<User, PublicProfileModel>();
+            CreateMap<User, PublicUserModel>();
         }
     }
 }

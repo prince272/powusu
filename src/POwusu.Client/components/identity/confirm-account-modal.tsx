@@ -36,9 +36,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
 
-  const toastId = useRef(uniqueId()).current;
-
-  const { setUser } = useUser();
+  const toastId = useRef(uniqueId("_toast_")).current;
 
   const form = useForm<ConfirmAccountInputs>({
     defaultValues: {
@@ -73,7 +71,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
         }
         case "validate-code": {
           const response = await api.post("/identity/confirm", inputs);
-          setUser(response.data);
+          api.user.next(response.data);
           onClose();
           router.replace(searchParams.get("callback") || pathname);
           break;
@@ -103,7 +101,9 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
       }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Confirm your account</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">
+          <div className="h-8">Confirm your account</div>
+        </ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
           <div key="credentials" className="grid grid-cols-12 gap-x-3 gap-y-5">
             <FormController
@@ -156,7 +156,7 @@ export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onCl
             <Button
               className="col-span-12"
               color="primary"
-              type="submit"
+              type="button"
               isDisabled={status != "idle" || !codeSent}
               isLoading={status == "submitting" && form.watch("action") == "validate-code"}
               onPress={() => {

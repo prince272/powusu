@@ -14,6 +14,7 @@ export type User = {
   roles: string[];
   connected: boolean;
   authenticated: boolean;
+  tokenType: string;
   accessToken: string;
   accessTokenExpiresAt: string;
   refreshToken: string;

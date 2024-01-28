@@ -5,7 +5,7 @@ using POwusu.Server.Extensions.Identity;
 
 namespace POwusu.Server.Models.Identity
 {
-    public class PrivateProfileModel
+    public class PrivateUserModel
     {
         public string ImageUrl { get; set; } = null!;
 
@@ -34,13 +34,15 @@ namespace POwusu.Server.Models.Identity
         public string Title { get; set; } = null!;
 
         public string[] Roles { get; set; } = Array.Empty<string>();
+
+        public string? Bio { get; set; }
     }
 
     public class PrivateProfile : Profile
     {
         public PrivateProfile()
         {
-            CreateMap<User, PrivateProfileModel>();
+            CreateMap<User, PrivateUserModel>();
         }
     }
 }

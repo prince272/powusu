@@ -26,7 +26,7 @@ const Render = polly<ComponentType, RenderProps>(function Render({ as: Component
     let cases: ReactNode[] = [];
     let defaults: ReactNode[] = [];
 
-    Children.forEach(Array.isArray(children) ? children : [], (child) => {
+    Children.forEach(Array.isArray(children) ? children : [children], (child) => {
       if (isValidElement(child)) {
         switch (child.key != null ? "case" : "default") {
           case "case":

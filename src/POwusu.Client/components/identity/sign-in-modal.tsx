@@ -39,14 +39,12 @@ export interface SignInInputs {
 }
 
 export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
-  const toastId = useRef(uniqueId()).current;
+  const toastId = useRef(uniqueId("_toast_")).current;
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
-
-  const { setUser } = useUser();
 
   const form = useForm<{ method?: SignInMethods | undefined } & SignInInputs>({
     defaultValues: {
@@ -65,7 +63,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
       switch (method) {
         case "credentials": {
           const response = await api.post("/identity/tokens/generate", inputs);
-          setUser(response.data);
+          api.user.next(response.data);
           break;
         }
         default: {
@@ -74,7 +72,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
           await ExternalWindow.open(externalUrl, { center: true });
 
           const response = await api.post(`/identity/tokens/${method}/generate`, inputs);
-          setUser(response.data);
+          api.user.next(response.data);
           break;
         }
       }
@@ -110,7 +108,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 h-8">
             <Button
               size="sm"
               variant="light"
@@ -159,7 +157,7 @@ export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
               <Button
                 className="col-span-12"
                 color="primary"
-                type="submit"
+                type="button"
                 variant="solid"
                 isDisabled={status != "idle"}
                 isLoading={status == "submitting"}

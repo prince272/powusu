@@ -38,10 +38,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
-
-  const toastId = useRef(uniqueId()).current;
-
-  const { setUser } = useUser();
+  const toastId = useRef(uniqueId("_toast_")).current;
 
   const form = useForm<ResetPasswordInputs>({
     defaultValues: {
@@ -77,7 +74,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
         }
         case "validate-code": {
           const response = await api.post("/identity/password/reset", inputs);
-          setUser(response.data);
+          api.user.next(response.data);
           onClose();
           router.replace(searchParams.get("callback") || pathname);
           break;
@@ -107,7 +104,9 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
       }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Reset your password</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">
+          <div className="h-8">Reset password</div>
+        </ModalHeader>
         <ModalBody as="form" className="py-0" onSubmit={form.handleSubmit(submit)}>
           <div key="credentials" className="grid grid-cols-12 gap-x-3 gap-y-5">
             <FormController
@@ -169,7 +168,7 @@ export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClos
             <Button
               className="col-span-12"
               color="primary"
-              type="submit"
+              type="button"
               isDisabled={status != "idle" || !codeSent}
               isLoading={status == "submitting" && form.watch("action") == "validate-code"}
               onPress={() => {

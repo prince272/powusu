@@ -4,12 +4,14 @@ import { Code } from "@nextui-org/code";
 import { Link } from "@nextui-org/link";
 import { Snippet } from "@nextui-org/snippet";
 import { button as buttonStyles } from "@nextui-org/theme";
+import queryString from "query-string";
 
 import { siteConfig } from "@/config/site";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 
 const Home: FC = () => {
+
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="inline-block max-w-lg justify-center text-center">
@@ -20,7 +22,11 @@ const Home: FC = () => {
         <h2 className={subtitle({ class: "mt-4" })}>Beautiful, fast and modern React UI library.</h2>
       </div>
       <div className="flex gap-3">
-        <Link as={NextLink} href="/portal/posts" className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}>
+        <Link
+          as={NextLink}
+          href={queryString.stringifyUrl({ url: "/", query: { modal: "sign-in", callback: "/portal" } })}
+          className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}
+        >
           Portal
         </Link>
         <Link isExternal className={buttonStyles({ variant: "bordered", radius: "full" })} href={siteConfig.links.github}>

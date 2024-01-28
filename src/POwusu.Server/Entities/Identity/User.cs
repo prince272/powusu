@@ -21,6 +21,8 @@ namespace POwusu.Server.Entities.Identity
 
         public string LastName { get; set; } = null!;
 
+        public string? Bio { get; set; }
+
         public DateTimeOffset CreatedAt { get; set; }
 
         public DateTimeOffset? UpdatedAt { get; set; }

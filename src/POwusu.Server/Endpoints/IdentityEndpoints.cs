@@ -25,6 +25,9 @@ namespace POwusu.Server.Endpoints
             builder.MapPost("/confirm", ([FromServices] IIdentityService identityService, [FromBody] ConfirmAccountForm form)
                 => identityService.ConfirmAccountAsync(form));
 
+            builder.MapPost("/password/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePasswordForm form)
+                => identityService.ChangePasswordAsync(form));
+
             builder.MapPost("/password/reset", ([FromServices] IIdentityService identityService, [FromBody] ResetPasswordForm form)
                 => identityService.ResetPasswordAsync(form));
 
@@ -42,6 +45,9 @@ namespace POwusu.Server.Endpoints
 
             builder.MapPost("/tokens/revoke", ([FromServices] IIdentityService identityService, [FromBody] RevokeTokenForm form)
                 => identityService.RevokeTokenAsync(form));
+
+            builder.MapPost("/edit-profile", ([FromServices] IIdentityService identityService, [FromBody] EditProfileForm form)
+                => identityService.EditProfileAsync(form));
 
             builder.MapPost("/profile/image", async ([FromServices] IIdentityService identityService, HttpContext httpContext,
                 [FromHeader(Name = "Upload-Name")] string name,

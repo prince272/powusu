@@ -7,7 +7,6 @@ import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import NextTopLoader from "nextjs-toploader";
 
-import { ExternalWindow } from "@/lib/external-window";
 import { useRouter } from "@/hooks/use-router";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
 import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
@@ -38,12 +37,7 @@ export function Providers({ children, initialUser }: ProvidersProps) {
   const router = useRouter();
 
   return (
-    <UserProvider
-      initialUser={initialUser}
-      onSetUser={(user) => setCookie("Identity", user)}
-      onUpdateUser={(user) => setCookie("Identity", user)}
-      onRemoveUser={() => setCookie("Identity", null)}
-    >
+    <UserProvider initialUser={initialUser}>
       <ModalRouterProvider modals={modals}>
         <NextUIProvider navigate={router.push}>
           <NextThemesProvider {...{ attribute: "class", defaultTheme: "dark" }}>

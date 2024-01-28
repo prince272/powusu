@@ -5,8 +5,10 @@ using POwusu.Server.Extensions.Identity;
 
 namespace POwusu.Server.Models.Identity
 {
-    public class PrivateProfileWithTokenModel : PrivateProfileModel
+    public class PrivateUserWithTokenModel : PrivateUserModel
     {
+        public string TokenType { get; set; } = null!;
+
         public string AccessToken { get; set; } = null!;
 
         public DateTimeOffset AccessTokenExpiresAt { get; set; }
@@ -20,8 +22,8 @@ namespace POwusu.Server.Models.Identity
     {
         public UserWithTokenProfile()
         {
-            CreateMap<JwtTokenInfo, PrivateProfileWithTokenModel>();
-            CreateMap<User, PrivateProfileWithTokenModel>();
+            CreateMap<JwtTokenInfo, PrivateUserWithTokenModel>();
+            CreateMap<User, PrivateUserWithTokenModel>();
         }
     }
 }

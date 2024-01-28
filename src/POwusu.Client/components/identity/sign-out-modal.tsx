@@ -6,6 +6,7 @@ import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import queryString from "query-string";
+import { api } from "@/lib/api";
 
 export interface SignOutModalProps {
   children: ReactNode;
@@ -17,7 +18,6 @@ export interface SignOutModalProps {
 export interface SignOutInputs {}
 
 export const SignOutModal: FC<SignOutModalProps> = ({ isOpen, onClose }) => {
-  const { user: currentUser, removeUser } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -32,7 +32,9 @@ export const SignOutModal: FC<SignOutModalProps> = ({ isOpen, onClose }) => {
       }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Sign out</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">
+          <div className="h-8">Sign out</div>
+        </ModalHeader>
         <ModalBody>Are you sure you want to sign out?</ModalBody>
         <ModalFooter className="flex items-center justify-center text-center text-sm">
           <Button
@@ -51,7 +53,7 @@ export const SignOutModal: FC<SignOutModalProps> = ({ isOpen, onClose }) => {
             color="danger"
             variant="solid"
             onClick={async () => {
-              removeUser();
+              api.user.next(null);
               onClose();
               router.replace(searchParams.get("callback") || pathname);
             }}

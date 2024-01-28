@@ -9,10 +9,12 @@ namespace POwusu.Server.Options
     public class ConfigureJwtTokenOptions : IConfigureOptions<JwtTokenOptions>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
-        public ConfigureJwtTokenOptions(IHttpContextAccessor httpContextAccessor)
+        public ConfigureJwtTokenOptions(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         public void Configure(JwtTokenOptions options)
@@ -26,10 +28,14 @@ namespace POwusu.Server.Options
             var httpContext = _httpContextAccessor?.HttpContext;
             if (httpContext == null) throw new InvalidOperationException("Unable to determine the current HttpContext.");
 
-            var server = string.Concat(httpContext.Request.Scheme, "://", httpContext.Request.Host.ToUriComponent());
+            var allowedHosts = new string[] { string.Concat(httpContext.Request.Scheme, "://", httpContext.Request.Host.ToUriComponent()) }.ToList();
+            allowedHosts.AddRange((options.Issuer ?? string.Empty).Split(JwtTokenOptions.Seperator).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
 
-            options.Issuer = string.Join(JwtTokenOptions.Seperator, (options.Issuer ?? string.Empty).Split(JwtTokenOptions.Seperator).Append(server).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
-            options.Audience = string.Join(JwtTokenOptions.Seperator, (options.Audience ?? string.Empty).Split(JwtTokenOptions.Seperator).Append(server).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
+            var allowedOrigins = _configuration.GetSection("AllowedOrigins")?.Get<string[]>()?.ToList() ?? new List<string>();
+            allowedOrigins.AddRange((options.Audience ?? string.Empty).Split(JwtTokenOptions.Seperator).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
+
+            options.Issuer = string.Join(JwtTokenOptions.Seperator, allowedHosts);
+            options.Audience = string.Join(JwtTokenOptions.Seperator, allowedOrigins);
 
             options.AccessTokenExpiresIn = options.AccessTokenExpiresIn != TimeSpan.Zero ? options.AccessTokenExpiresIn : TimeSpan.FromDays(1);
             options.RefreshTokenExpiresIn = options.RefreshTokenExpiresIn != TimeSpan.Zero ? options.RefreshTokenExpiresIn : TimeSpan.FromDays(90);
