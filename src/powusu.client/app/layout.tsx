@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 
-import { FC } from "react";
+import { ReactNode } from "react";
 import { Metadata } from "next";
 import { Providers } from "@/providers";
 import { getUser } from "@/providers/user/server";
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   }
 };
 
-const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+const RootLayout = ({ children }: { children: ReactNode }) => {
   const currentUser = getUser();
 
   return (

@@ -1,12 +1,12 @@
 import "@/styles/globals.css";
 
-import { FC } from "react";
+import { ReactNode } from "react";
 import { Link } from "@nextui-org/link";
 
 import { Loader } from "@/components/ui/loader";
 import { Navbar } from "@/components/home/navbar";
 
-const HomeLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+const HomeLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative flex h-screen flex-col">
       <Navbar />

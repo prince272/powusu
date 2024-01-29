@@ -8,6 +8,8 @@ namespace POwusu.Server.Models.Identity
         public string CurrentPassword { get; set; } = null!;
 
         public string NewPassword { get; set; } = null!;
+
+        public string ConfirmPassword { get; set; } = null!;
     }
 
     public class ChangePasswordFormValidator : AbstractValidator<ChangePasswordForm>
@@ -17,6 +19,9 @@ namespace POwusu.Server.Models.Identity
             RuleFor(_ => _.CurrentPassword).NotEmpty().MaximumLength(128);
             RuleFor(_ => _.NewPassword).NotEmpty().MaximumLength(128).Password().NotEqual(_ => _.CurrentPassword)
                 .WithMessage("'New password' must be different from the 'current password'.");
+
+            RuleFor(_ => _.ConfirmPassword).NotEmpty().MaximumLength(128).Equal(_ => _.NewPassword)
+                .WithMessage("'Confirm password' must be equal to 'New password'");
         }
     }
 }

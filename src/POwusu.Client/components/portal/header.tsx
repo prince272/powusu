@@ -1,6 +1,5 @@
 "use client";
 
-import { FC } from "react";
 import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
@@ -15,7 +14,7 @@ import { useRouter } from "@/hooks/use-router";
 import { AcmeLogo } from "../icons";
 import { PersonArrowRightRegular, SettingsRegular } from "@fluentui/react-icons";
 
-const Header: FC = () => {
+const Header = () => {
   const router = useRouter();
   const { user: currentUser } = useUser();
 

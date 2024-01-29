@@ -27,6 +27,8 @@ namespace POwusu.Server.Models.Identity
 
         public bool PhoneNumberConfirmed { get; set; }
 
+        public bool PasswordCreated { get; set; }
+
         public DateTimeOffset CreatedAt { get; set; }
 
         public DateTimeOffset? UpdatedAt { get; set; }

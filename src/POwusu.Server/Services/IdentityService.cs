@@ -97,6 +97,7 @@ namespace POwusu.Server.Services
             user.Email = formUsernameType == ContactType.EmailAddress ? form.Username : null;
             user.PhoneNumber = formUsernameType == ContactType.PhoneNumber ? form.Username : null;
             user.CreatedAt = DateTimeOffset.UtcNow;
+            user.PasswordCreated = true;
 
             var result = await _userManager.CreateAsync(user, form.Password);
             if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
@@ -379,6 +380,35 @@ namespace POwusu.Server.Services
             return TypedResults.Ok();
         }
 
+        public async Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var currentUser = await _userContext.GetUserAsync();
+            if (currentUser is null) return TypedResults.Unauthorized();
+
+            var result = await _userManager.AddPasswordAsync(currentUser, form.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    if (error.Code == "UserAlreadyHasPassword")
+                        return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: "User already has a password.");
+                }
+
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: "Unable to create password.");
+
+            }
+
+            currentUser.PasswordCreated = true;
+            await _userManager.UpdateAsync(currentUser);
+
+            return TypedResults.Ok();
+        }
+
         public async Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
@@ -389,8 +419,19 @@ namespace POwusu.Server.Services
             if (currentUser is null) return TypedResults.Unauthorized();
 
             var result = await _userManager.ChangePasswordAsync(currentUser, form.CurrentPassword, form.NewPassword);
-            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: "Unable to change password.");
+            if (!result.Succeeded)
+            {
+                var errors = new Dictionary<string, string[]>();
 
+                foreach (var error in result.Errors)
+                {
+                    if (error.Code == "PasswordMismatch") errors.Add(nameof(form.CurrentPassword), new[] { $"'{nameof(form.CurrentPassword).Humanize(LetterCasing.Sentence)}' is not correct." });
+                }
+
+                return TypedResults.ValidationProblem(errors,
+                title: "Unable to change password.");
+
+            }
             return TypedResults.Ok();
         }
 
@@ -508,6 +549,8 @@ namespace POwusu.Server.Services
         Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
         Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
+
+        Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form);
 
         Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form);
 

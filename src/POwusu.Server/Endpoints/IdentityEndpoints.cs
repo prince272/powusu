@@ -25,6 +25,9 @@ namespace POwusu.Server.Endpoints
             builder.MapPost("/confirm", ([FromServices] IIdentityService identityService, [FromBody] ConfirmAccountForm form)
                 => identityService.ConfirmAccountAsync(form));
 
+            builder.MapPost("/password/create", ([FromServices] IIdentityService identityService, [FromBody] CreatePasswordForm form)
+                => identityService.CreatePasswordAsync(form));
+
             builder.MapPost("/password/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePasswordForm form)
                 => identityService.ChangePasswordAsync(form));
 

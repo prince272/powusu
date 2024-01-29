@@ -1,11 +1,10 @@
 "use client";
 
-import { FC } from "react";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
 
 import { useRouter } from "@/hooks/use-router";
 
-const CoursesView: FC = () => {
+const CoursesView = () => {
   const router = useRouter();
   return (
     <>

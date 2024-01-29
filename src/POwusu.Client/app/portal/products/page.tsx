@@ -1,8 +1,6 @@
-import { FC } from "react";
-
 import { ProductsView } from "@/components/portal/products/products-view";
 
-const Page: FC = () => {
+const Page = () => {
   return <ProductsView />;
 };
 

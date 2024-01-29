@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { getErrorMessage } from "@/utils/api";
@@ -33,7 +33,7 @@ export interface ResetPasswordInputs {
   newPassword: string;
 }
 
-export const ResetPasswordModal: FC<ResetPasswordModalProps> = ({ isOpen, onClose }) => {
+export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -1,12 +1,12 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/utils";
 import { Spinner } from "@nextui-org/spinner";
 
 import { ExternalWindow } from "@/lib/external-window";
 
-const Loader: FC<{ timeout?: number; }> = ({ timeout = 1000 }) => {
+const Loader = ({ timeout = 1000 }: { timeout?: number }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

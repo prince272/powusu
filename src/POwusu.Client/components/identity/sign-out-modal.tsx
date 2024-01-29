@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
@@ -17,7 +17,7 @@ export interface SignOutModalProps {
 
 export interface SignOutInputs {}
 
-export const SignOutModal: FC<SignOutModalProps> = ({ isOpen, onClose }) => {
+export const SignOutModal = ({ isOpen, onClose } : SignOutModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

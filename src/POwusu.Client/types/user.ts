@@ -9,6 +9,7 @@ export type User = {
   emailConfirmed: boolean;
   phoneNumber: string;
   phoneNumberConfirmed: boolean;
+  passwordCreated: boolean;
   createdAt: string;
   updatedAt: string | null;
   roles: string[];

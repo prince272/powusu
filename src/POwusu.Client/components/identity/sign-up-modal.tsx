@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
@@ -39,7 +39,7 @@ export interface SignUpInputs {
   password: string;
 }
 
-export const SignUpModal: FC<SignUpModalProps> = ({ isOpen, onClose }) => {
+export const SignUpModal = ({ isOpen, onClose } : SignUpModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

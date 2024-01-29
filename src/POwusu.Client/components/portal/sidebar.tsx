@@ -1,12 +1,11 @@
 "use client";
 
-import { FC } from "react";
 import NextLink from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { CubeRegular, DocumentTextRegular, HatGraduationRegular } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 
-const SidebarWrapper: FC<{ children: React.ReactNode }> = ({ children }) => {
+const SidebarWrapper = ({ children } : { children: React.ReactNode }) => {
   return (
     <div className="relative hidden h-full flex-col pt-6 md:flex">
       <div className="fixed w-[200px]">{children}</div>
@@ -14,7 +13,7 @@ const SidebarWrapper: FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-const Sidebar: FC = () => {
+const Sidebar = () => {
   const segment = useSelectedLayoutSegment() ?? "";
   return (
     <SidebarWrapper>

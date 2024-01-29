@@ -3,11 +3,11 @@ import { Sidebar } from "@/components/portal/sidebar";
 
 import "@/styles/globals.css";
 
-import { FC } from "react";
+import { ReactNode } from "react";
 
 import { Loader } from "@/components/ui/loader";
 
-const PortalLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
+const PortalLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />

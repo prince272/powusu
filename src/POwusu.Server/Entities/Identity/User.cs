@@ -13,6 +13,8 @@ namespace POwusu.Server.Entities.Identity
         {
         }
 
+        public bool PasswordCreated { get; set; }
+
         public string ImageId { get; set; } = null!;
 
         public string FullName => $"{FirstName} {LastName}".Trim();

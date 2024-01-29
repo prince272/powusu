@@ -1,8 +1,6 @@
 "use client";
 
-import { FC } from "react";
-
-const ProductsView: FC = () => {
+const ProductsView = () => {
   return (
     <>
       <div className="grid items-start gap-8">

@@ -1,20 +1,36 @@
-import axios, { AxiosRequestConfig, HttpStatusCode, isAxiosError } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
+import { cloneDeep } from "lodash";
 import PQueue from "p-queue";
-import { BehaviorSubject } from "rxjs";
+import { ReplaySubject } from "rxjs";
 
 import { User } from "@/types/user";
 import { apiConfig } from "@/config/api";
 
-const apiUser = new BehaviorSubject<User | null | undefined>(undefined);
-const apiInstance = axios.create(apiConfig);
+class UserSubject extends ReplaySubject<User | null | undefined> {
+  constructor(public value?: User | null | undefined) {
+    super();
+  }
+
+  next(value: User | null | undefined) {
+    this.value = value;
+    super.next(cloneDeep(value));
+  }
+}
+
+const api = Object.assign({}, axios.create(apiConfig), { user: new UserSubject() });
+
 const apiQueue = new PQueue({ concurrency: 1 });
 
 // Add a request interceptor
-apiInstance.interceptors.request.use(
+api.interceptors.request.use(
   (requestConfig) => {
-    const currentUser = apiUser.getValue();
+    const currentUser = api.user.value;
     if (currentUser) {
-      requestConfig.headers.setAuthorization(`${currentUser.tokenType} ${currentUser.accessToken}`);
+      requestConfig.headers["Authorization"] = `${currentUser.tokenType} ${currentUser.accessToken}`;
+      api.defaults.headers["Authorization"] = `${currentUser.tokenType} ${currentUser.accessToken}`;
+    } else {
+      delete requestConfig.headers["Authorization"];
+      delete api.defaults.headers["Authorization"];
     }
     return requestConfig;
   },
@@ -22,13 +38,13 @@ apiInstance.interceptors.request.use(
 );
 
 // Add a response interceptor
-apiInstance.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!isAxiosError(error)) return Promise.reject(error);
     if (error.response?.status != HttpStatusCode.Unauthorized) return Promise.reject(error);
 
-    const currentUser = apiUser.getValue();
+    const currentUser = api.user.value;
     if (!currentUser) return Promise.reject(error);
 
     const requestConfig = error.config as AxiosRequestConfig & { retryCount: number };
@@ -40,28 +56,25 @@ apiInstance.interceptors.response.use(
     }
 
     if (apiQueue.size != 0 || apiQueue.pending != 0) {
-      return apiQueue.onIdle().then(() => apiInstance.request(requestConfig!));
+      return apiQueue.onIdle().then(() => api.request(requestConfig!));
     }
 
-    return apiQueue.add(() =>
-      apiInstance
+    return apiQueue.add(() => {
+      const currentUser = api.user.value;
+      if (!currentUser) return Promise.reject(error);
+      return api
         .post("/identity/tokens/refresh", { token: currentUser.refreshToken })
-        .then((response) => {
-          apiUser.next(response.data);
-          return apiInstance.request(requestConfig!);
-        })
-        .catch((refreshError) => {
-          if (isAxiosError(refreshError)) {
-            if (refreshError.response?.status == HttpStatusCode.BadRequest) {
-              apiUser.next(null);
-            }
+        .then((response) => ({ response }))
+        .catch((refreshError) => ({ refreshError }))
+        .then(({ refreshError, response }: { response?: AxiosResponse<any, any>; refreshError?: any }) => {
+          if (response) {
+            api.user.next(response.data);
+            return api.request(requestConfig!);
           }
-          apiUser.next(null);
           return Promise.reject(error);
-        })
-    );
+        });
+    });
   }
 );
 
-const api = Object.assign({}, apiInstance, { user: apiUser });
 export { api };

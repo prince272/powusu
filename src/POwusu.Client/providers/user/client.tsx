@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { usePreviousValue, useStateAsync } from "@/hooks";
 import { buildCallbackUrl } from "@/utils";
@@ -13,7 +13,7 @@ import { User } from "@/types/user";
 import { api } from "@/lib/api";
 import { useRouter } from "@/hooks/use-router";
 
-export type UserContextType = { user: User | null | undefined; setUser: (user: User) => void; };
+export type UserContextType = { user: User | null | undefined; setUser: (user: User) => void };
 
 export const UserContext = createContext<UserContextType>(undefined!);
 
@@ -30,7 +30,7 @@ export interface UserProviderProps {
   initialUser?: UserContextType["user"];
 }
 
-export const UserProvider: FC<UserProviderProps> = ({ children, initialUser }) => {
+export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
   const [user, _setUser] = useStateAsync(useState<User | null | undefined>(initialUser));
 
   const setUser = useCallback(
@@ -49,7 +49,9 @@ export const UserProvider: FC<UserProviderProps> = ({ children, initialUser }) =
     api.user.next(initialUser);
 
     const subscribition = api.user.subscribe({
-      next: setUser,
+      next: (nextUser) => {
+        setUser(nextUser);
+      }
     });
 
     return () => subscribition.unsubscribe();
@@ -58,7 +60,12 @@ export const UserProvider: FC<UserProviderProps> = ({ children, initialUser }) =
   return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 
-export const Authorize: FC<{ patterns: (PathPattern<string> | string)[]; children: ReactNode }> = ({ patterns, children }) => {
+interface AuthorizeProps {
+  patterns: (PathPattern<string> | string)[];
+  children: ReactNode;
+}
+
+export const Authorize = ({ patterns, children }: AuthorizeProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, Key, useCallback, useEffect, useState } from "react";
+import { Key, useCallback, useEffect, useState } from "react";
 import { useDebouncedCallback } from "@/hooks";
 import { ApiError, ApiResponse, getApiResponse } from "@/utils/api";
 import { Pagination } from "@nextui-org/pagination";
@@ -18,7 +18,7 @@ export interface PostsPageProps {
   initialError?: ApiError;
 }
 
-const PostsView: FC<PostsPageProps> = ({ initialPage, initialError }) => {
+const PostsView = ({ initialPage, initialError } : PostsPageProps) => {
   const [status, setStatus] = useState<"idle" | "loading">("idle");
   const [searchParams, setSearchParams] = useQueryStates(postsSearchParsers);
   const { page, pageSize } = searchParams;

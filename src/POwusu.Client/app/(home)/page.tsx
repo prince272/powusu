@@ -1,4 +1,3 @@
-import { FC } from "react";
 import NextLink from "next/link";
 import { Code } from "@nextui-org/code";
 import { Link } from "@nextui-org/link";
@@ -10,7 +9,7 @@ import { siteConfig } from "@/config/site";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 
-const Home: FC = () => {
+const Home = () => {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">

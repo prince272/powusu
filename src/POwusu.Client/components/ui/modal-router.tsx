@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentType, createContext, FC, ReactNode, use, useContext, useEffect, useState } from "react";
+import { ComponentType, createContext, ReactNode, use, useContext, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
 import { compareSearchParams, sleep } from "@/utils";
@@ -32,10 +32,10 @@ export const useModalRouter = () => {
   return context;
 };
 
-const EmptyModalComponent: FC<any> = () => <></>;
+const EmptyModalComponent = () => <></>;
 const emptyModal = { key: "", Component: EmptyModalComponent } as ModalRouterState;
 
-export const ModalRouterProvider: FC<ModalRouterProps> = ({ children, modals }) => {
+export const ModalRouterProvider = ({ children, modals } : ModalRouterProps) => {
   const queue = new PQueue({ concurrency: 1 });
 
   const [{ key, Component: ModalComponent }, setCurrentModal] = useStateAsync(useState<ModalRouterState>(emptyModal));

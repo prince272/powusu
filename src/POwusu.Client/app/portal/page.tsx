@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
-import { FC } from "react";
 
-const PortalPage: FC = () => {
+const PortalPage = () => {
   redirect("/portal/posts");
 };
 

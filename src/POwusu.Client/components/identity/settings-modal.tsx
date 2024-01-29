@@ -1,6 +1,7 @@
 "use client";
 
-import React, { FC, Key, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import React, { Key, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useBreakpoint } from "@/hooks";
 import { useUser } from "@/providers/user/client";
@@ -9,9 +10,10 @@ import { getErrorMessage } from "@/utils/api";
 import { ChevronLeftRegular, PasswordRegular, PeopleSwapFilled, PeopleSwapRegular, PersonRegular, SettingsRegular } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
+import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
-import { clone, set, uniqueId } from "lodash";
+import { clone, create, set, uniqueId } from "lodash";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import Sticky from "react-stickynode";
@@ -34,7 +36,10 @@ export interface SettingsModalProps {
 
 export interface SettingsInputs {}
 
-export const SettingsModal: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
+  const { user: currentUser } = useUser();
+  const passwordCreated = currentUser?.passwordCreated;
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -58,8 +63,8 @@ export const SettingsModal: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         onClose();
         router.replace(pathname);
       }}
-      classNames={{ base: isMd || selectedKey ? "min-h-[512px]" : "" }}
-      size={isMd ? "2xl" : "full"}
+      classNames={{ base: "min-h-[640px]" }}
+      size={"2xl"}
       scrollBehavior="inside"
     >
       <ModalContent>
@@ -83,13 +88,13 @@ export const SettingsModal: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             <div>Settings</div>
           </div>
         </ModalHeader>
-        <ModalBody className="flex flex-row gap-6 py-0">
+        <ModalBody className="flex flex-row gap-6 py-0 sm:pl-3 sm:pr-6">
           <div className={cn("sticky top-0", selectedKey ? "hidden sm:block" : "w-full")}>
             <div className="grid items-start gap-x-2 gap-y-3 sm:w-56">
               {[
                 { key: "edit-profile", label: <>Edit profile</>, icon: <PersonRegular fontSize={24} /> },
                 { key: "change-account", label: <>Change account</>, icon: <PeopleSwapRegular fontSize={24} /> },
-                { key: "change-password", label: <>Change password</>, icon: <PasswordRegular fontSize={24} /> }
+                { key: "change-password", label: <>{passwordCreated ? "Change password" : "Create password"}</>, icon: <PasswordRegular fontSize={24} /> }
               ].map((item) => (
                 <Button
                   key={item.key}
@@ -120,25 +125,21 @@ export const SettingsModal: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
 interface EditProfileInputs {
   firstName: string;
   lastName: string;
-  email: string;
-  password: string;
 }
 
-const EditProfileView: FC<{ footerId: string }> = ({ footerId }) => {
-  const { user } = useUser();
+const EditProfileView = ({ footerId }: { footerId: string }) => {
+  const { user: currentUser } = useUser();
   const form = useForm<EditProfileInputs>({
     defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      email: user?.email,
-      password: "**********"
+      firstName: currentUser?.firstName,
+      lastName: currentUser?.lastName
     }
   });
   const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
   const toastId = useRef(uniqueId("_toast_")).current;
 
-  const submit: SubmitHandler<EditProfileInputs> = async ({ email, password, ...inputs }) => {
+  const submit: SubmitHandler<EditProfileInputs> = async (inputs) => {
     try {
       setStatus("submitting");
 
@@ -160,7 +161,7 @@ const EditProfileView: FC<{ footerId: string }> = ({ footerId }) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-6">
+    <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-3">
       <FormController
         control={form.control}
         name="firstName"
@@ -191,40 +192,16 @@ const EditProfileView: FC<{ footerId: string }> = ({ footerId }) => {
           />
         )}
       />
-      <FormController
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <Input
-            {...field}
-            className="col-span-12"
-            placeholder="Email address"
-            labelPlacement="outside"
-            label="Email"
-            isInvalid={!!formErrors.lastName}
-            errorMessage={formErrors.lastName?.message}
-            isDisabled
-          />
-        )}
-      />
-      <FormController
-        control={form.control}
-        name="password"
-        render={({ field }) => (
-          <Input
-            {...field}
-            className="col-span-12"
-            placeholder="Password"
-            labelPlacement="outside"
-            label="Password"
-            isInvalid={!!formErrors.password}
-            errorMessage={formErrors.password?.message}
-            isReadOnly
-          />
-        )}
-      />
       <Portal rootId={footerId}>
-        <Button className="w-full sm:w-auto" color="primary" type="button" variant="solid" isDisabled={status != "idle"} isLoading={status == "submitting"} onPress={() => form.handleSubmit(submit)()}>
+        <Button
+          className="w-full sm:w-auto"
+          color="primary"
+          type="button"
+          variant="solid"
+          isDisabled={status != "idle"}
+          isLoading={status == "submitting"}
+          onPress={() => form.handleSubmit(submit)()}
+        >
           Save changes
         </Button>
       </Portal>
@@ -235,25 +212,32 @@ const EditProfileView: FC<{ footerId: string }> = ({ footerId }) => {
 interface ChangePasswordInputs {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
-const ChangePasswordView: FC<{ footerId: string }> = ({ footerId }) => {
-  const { user } = useUser();
+const ChangePasswordView = ({ footerId }: { footerId: string }) => {
+  const { user: currentUser } = useUser();
+  const passwordCreated = currentUser?.passwordCreated;
   const form = useForm<ChangePasswordInputs>({
     defaultValues: {
       currentPassword: "",
-      newPassword: ""
+      newPassword: "",
+      confirmPassword: ""
     }
   });
   const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
   const toastId = useRef(uniqueId("_toast_")).current;
 
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   const submit: SubmitHandler<ChangePasswordInputs> = async (inputs) => {
     try {
       setStatus("submitting");
 
-      await api.post("/identity/password/change", inputs);
+      await api.post(`/identity/password/${!passwordCreated ? "create" : "change"}`, inputs);
       form.reset();
       toast.success("Password changed.", { id: toastId });
     } catch (error) {
@@ -272,21 +256,36 @@ const ChangePasswordView: FC<{ footerId: string }> = ({ footerId }) => {
 
   return (
     <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-6">
-      <FormController
-        control={form.control}
-        name="currentPassword"
-        render={({ field }) => (
-          <PasswordInput
-            {...field}
-            className="col-span-12"
-            placeholder="Current password"
-            labelPlacement="outside"
-            label="Current password"
-            isInvalid={!!formErrors.currentPassword}
-            errorMessage={formErrors.currentPassword?.message}
-          />
-        )}
-      />
+      {passwordCreated && (
+        <FormController
+          control={form.control}
+          name="currentPassword"
+          render={({ field }) => (
+            <div className="col-span-12">
+              <PasswordInput
+                {...field}
+                placeholder="Current password"
+                labelPlacement="outside"
+                label="Current password"
+                isInvalid={!!formErrors.currentPassword}
+                errorMessage={formErrors.currentPassword?.message}
+              />
+              <div className="flex justify-end px-1 py-2">
+                <Link
+                  as={NextLink}
+                  href={queryString.stringifyUrl({
+                    url: currentUrl,
+                    query: { modal: "reset-password" }
+                  })}
+                  size="sm"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+          )}
+        />
+      )}
       <FormController
         control={form.control}
         name="newPassword"
@@ -302,8 +301,31 @@ const ChangePasswordView: FC<{ footerId: string }> = ({ footerId }) => {
           />
         )}
       />
-      <Button className="col-span-12" color="primary" type="button" variant="solid" isDisabled={status != "idle"} isLoading={status == "submitting"} onPress={() => form.handleSubmit(submit)()}>
-        Change password
+      <FormController
+        control={form.control}
+        name="confirmPassword"
+        render={({ field }) => (
+          <PasswordInput
+            {...field}
+            className="col-span-12"
+            placeholder="Confirm password"
+            labelPlacement="outside"
+            label="Confirm password"
+            isInvalid={!!formErrors.confirmPassword}
+            errorMessage={formErrors.confirmPassword?.message}
+          />
+        )}
+      />
+      <Button
+        className="col-span-12"
+        color="primary"
+        type="button"
+        variant="solid"
+        isDisabled={status != "idle"}
+        isLoading={status == "submitting"}
+        onPress={() => form.handleSubmit(submit)()}
+      >
+        {!passwordCreated ? "Create password" : "Change password"}
       </Button>
     </form>
   );

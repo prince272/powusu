@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { getErrorMessage } from "@/utils/api";
@@ -30,7 +30,7 @@ export interface ConfirmAccountInputs {
   code: string;
 }
 
-export const ConfirmAccountModal: FC<ConfirmAccountModalProps> = ({ isOpen, onClose }) => {
+export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

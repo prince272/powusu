@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface PortalProps {
@@ -6,7 +6,7 @@ interface PortalProps {
   children: ReactNode;
 }
 
-export const Portal: FC<PortalProps> = ({ rootId, children }) => {
+export const Portal = ({ rootId, children } : PortalProps) => {
   const [target, setTarget] = useState<HTMLElement | null>(() => document.getElementById(rootId));
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
@@ -38,7 +38,7 @@ export interface SignInInputs {
   password: string;
 }
 
-export const SignInModal: FC<SignInModalProps> = ({ isOpen, onClose }) => {
+export const SignInModal = ({ isOpen, onClose } : SignInModalProps) => {
   const toastId = useRef(uniqueId("_toast_")).current;
 
   const router = useRouter();
