@@ -5,7 +5,9 @@ namespace POwusu.Server.Models.Identity
 {
     public class PublicUserModel
     {
-        public string ImageUrl { get; set; } = null!;
+        public string? ImageId { get; set; } = null!;
+
+        public string? ImageUrl { get; set; } = null!;
 
         public string Id { get; set; } = null!;
 

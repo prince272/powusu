@@ -7,7 +7,9 @@ namespace POwusu.Server.Models.Identity
 {
     public class PrivateUserModel
     {
-        public string ImageUrl { get; set; } = null!;
+        public string? ImageId { get; set; } = null!;
+
+        public string? ImageUrl { get; set; } = null!;
 
         public string Id { get; set; } = null!;
 
@@ -27,7 +29,7 @@ namespace POwusu.Server.Models.Identity
 
         public bool PhoneNumberConfirmed { get; set; }
 
-        public bool PasswordCreated { get; set; }
+        public bool HasPassword { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 

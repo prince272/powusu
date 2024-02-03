@@ -21,7 +21,7 @@ namespace POwusu.Server.Models.Identity
         public Stream Chunk { get; set; } = null!;
     }
 
-    public abstract class UploadProfileImageFormValidator : AbstractValidator<UploadProfileImageForm>
+    public class UploadProfileImageFormValidator : AbstractValidator<UploadProfileImageForm>
     {
         public UploadProfileImageFormValidator(IOptions<IdentityServiceOptions> identityServiceOptions)
         {

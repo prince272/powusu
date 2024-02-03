@@ -4,11 +4,11 @@ using System.Text;
 
 namespace POwusu.Server.Endpoints
 {
-    public class ErrorHandlerEndpoints : IEndpoints
+    public class ErrorEndpoints : IEndpoints
     {
         private readonly IWebHostEnvironment _environment;
 
-        public ErrorHandlerEndpoints(IWebHostEnvironment environment)
+        public ErrorEndpoints(IWebHostEnvironment environment)
         {
             _environment = environment;
         }
@@ -22,7 +22,7 @@ namespace POwusu.Server.Endpoints
                 var exceptionFeature = httpContext.Features.Get<IExceptionHandlerFeature>();
                 var statusCodeFeature = httpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
-                string title = statusCode >= 500 ? "A server-side error occurred." : "A client-side error occurred.";
+                string title = GetStatusTitle(statusCode);
                 string detail = GetStatusDetails(statusCode);
 
                 if (exceptionFeature is not null)
@@ -49,6 +49,50 @@ namespace POwusu.Server.Endpoints
 
             builder.MapGet("/errors/throw", () => Results.NotFound());
         }
+
+        public static string GetStatusTitle(int statusCode)
+        {
+            if (statusCode >= 500 && statusCode < 600)
+            {
+                return statusCode switch
+                {
+                    500 => "Internal server occurred",
+                    501 => "Server doesn't support this feature",
+                    502 => "Invalid response from another server",
+                    503 => "Server currently unreachable",
+                    504 => "Communication timeout between servers",
+                    505 => "Server doesn't support requested HTTP version",
+                    _ => "Unexpected server error occurred",
+                };
+            }
+            else if (statusCode >= 400 && statusCode < 500)
+            {
+                return statusCode switch
+                {
+                    400 => "Invalid or malformed request",
+                    401 => "Authentication required",
+                    403 => "Access to resource forbidden",
+                    404 => "Requested resource not found",
+                    405 => "Requested method not supported",
+                    406 => "Requested representation not acceptable",
+                    407 => "Proxy requires authentication",
+                    408 => "Server waiting time expired",
+                    409 => "Request conflicts with current state",
+                    410 => "Requested resource no longer available",
+                    411 => "Content length not specified",
+                    412 => "Request preconditions not met",
+                    413 => "Request payload exceeds limit",
+                    414 => "Request URI exceeds limit",
+                    415 => "Unsupported request content type",
+                    _ => "Unexpected client error occurred",
+                };
+            }
+            else
+            {
+                return $"Unexpected status code: {statusCode}";
+            }
+        }
+
 
         public static string GetExceptionDetails(Exception exception)
         {

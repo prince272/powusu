@@ -37,7 +37,7 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   const toastId = useRef(uniqueId("_toast_")).current;
 
   const form = useForm<ResetPasswordInputs>({
@@ -100,7 +100,7 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(pathname);
+        router.replace(searchParams.get("callback") || pathname);
       }}
     >
       <ModalContent>

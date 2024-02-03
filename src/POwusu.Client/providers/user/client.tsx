@@ -15,13 +15,10 @@ import { useRouter } from "@/hooks/use-router";
 
 export type UserContextType = { user: User | null | undefined; setUser: (user: User) => void };
 
-export const UserContext = createContext<UserContextType>(undefined!);
+export const UserContext = createContext<User | null | undefined>(undefined!);
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error("useUser must be used within UserProvider");
-  }
   return context;
 };
 
@@ -35,12 +32,9 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
 
   const setUser = useCallback(
     (user: User | null | undefined) => {
-      _setUser((prevUser) => {
-        const nextUser = prevUser && user ? merge(user, prevUser) : user;
-        if (nextUser) setCookie("Identity", nextUser);
-        else deleteCookie("Identity");
-        return nextUser;
-      });
+      _setUser(user);
+      if (user) setCookie("Identity", user);
+      else deleteCookie("Identity");
     },
     [_setUser]
   );
@@ -57,7 +51,7 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
     return () => subscribition.unsubscribe();
   }, []);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };
 
 interface AuthorizeProps {
@@ -74,7 +68,7 @@ export const Authorize = ({ patterns, children }: AuthorizeProps) => {
   const matches = patterns.map((pattern) => matchPath(pattern, currentUrl));
   const currentMatch = matches.find((match) => match);
 
-  const { user: currentUser } = useUser();
+  const currentUser = useUser();
 
   useEffect(() => {
     if (currentMatch && !currentUser) {

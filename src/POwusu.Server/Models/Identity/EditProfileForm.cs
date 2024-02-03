@@ -7,6 +7,8 @@ namespace POwusu.Server.Models.Identity
 {
     public class EditProfileForm
     {
+        public string? ImageId { get; set; } = null!;
+
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;

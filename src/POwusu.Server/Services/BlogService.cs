@@ -185,7 +185,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form)
+        public async Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form)
         {
             if (string.IsNullOrEmpty(postId))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(postId)}' was specified.");
@@ -194,13 +194,9 @@ namespace POwusu.Server.Services
             var formValidation = await _validator.ValidateAsync(form);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
-            var prevStatus = await _fileStorage.CheckAsync(form.Path);
-            if (prevStatus == FileStorageStatus.Pending || prevStatus == FileStorageStatus.Processing)
-                await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
-            var currentStatus = await _fileStorage.CheckAsync(form.Path);
+            var status = await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
 
-
-            if (prevStatus == FileStorageStatus.Pending || currentStatus == FileStorageStatus.Completed)
+            if (status == FileWriteStatus.Started || status == FileWriteStatus.Completed)
             {
                 var post = await _appDbContext.Set<Post>().FindAsync(postId);
                 if (post is null) return TypedResults.NotFound();
@@ -211,20 +207,16 @@ namespace POwusu.Server.Services
                 if (currentUser.ExclusiveRoles(RoleNames.Administrator))
                     return TypedResults.Forbid();
 
-                if (prevStatus == FileStorageStatus.Completed)
+                if (status == FileWriteStatus.Completed)
                 {
                     var source = await _fileStorage.ReadAsync(form.Path);
                     if (source is null) return TypedResults.StatusCode(StatusCodes.Status424FailedDependency);
 
                     await _imageProcessor.ScaleAsync(source, _blogServiceOptions.Value.PostImageScaleWidth);
-
-                    post.ImageId = form.Path;
-                    _appDbContext.Update(post);
-                    await _appDbContext.SaveChangesAsync();
                 }
             }
 
-            return TypedResults.Ok(form.Path);
+            return TypedResults.Content(form.Path);
         }
 
         private async Task<PostModel> BuildPostModelAsync(Post post)
@@ -292,7 +284,7 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null);
 
-        Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form);
+        Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form);
     }
 
     public class BlogServiceOptions

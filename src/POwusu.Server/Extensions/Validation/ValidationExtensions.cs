@@ -1,19 +1,69 @@
 ﻿using FluentValidation;
+using Humanizer;
+using POwusu.Server.Helpers;
+using System.Reflection;
 
 namespace POwusu.Server.Extensions.Validation
 {
+
+    public static class ServiceCollection
+    {
+        public static IServiceCollection AddValidators(this IServiceCollection services, params Assembly[] assemblies)
+        {
+            services.AddScoped<IValidator, Validator>();
+
+            ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
+            ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+            ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression) =>
+            {
+                string? RelovePropertyName()
+                {
+                    if (expression != null)
+                    {
+                        var chain = FluentValidation.Internal.PropertyChain.FromExpression(expression);
+                        if (chain.Count > 0) return chain.ToString();
+                    }
+
+                    if (memberInfo != null)
+                    {
+                        return memberInfo.Name;
+                    }
+
+                    return null;
+                }
+
+                return RelovePropertyName()?.Humanize();
+            };
+
+            var validatorTypes = assemblies.SelectMany(_ => _.DefinedTypes).Select(_ => _.AsType()).Where(type => type.IsClass && !type.IsAbstract && !type.IsGenericType && type.IsCompatibleWith(typeof(IValidator<>))).ToArray();
+
+            foreach (var concreteType in validatorTypes)
+            {
+                var matchingInterfaceType = concreteType.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IValidator<>));
+
+                if (matchingInterfaceType != null)
+                {
+                    services.AddScoped(matchingInterfaceType, concreteType);
+                }
+            }
+
+            return services;
+        }
+
+    }
+
     public static class ValidationExtensions
     {
-        public static IRuleBuilderOptionsConditions<T, string> Username<T>(this IRuleBuilder<T, string> ruleBuilder)
+        public static IRuleBuilderOptionsConditions<T, string> Username<T>(this IRuleBuilder<T, string> ruleBuilder, ContactType? contactType = null)
         {
             return ruleBuilder.Custom((value, context) =>
             {
-                var contactType = ValidationHelper.GetContactType(value);
+                contactType ??= ValidationHelper.GetContactType(value);
 
-                if (contactType == ContactType.EmailAddress)
+                if (contactType == ContactType.Email)
                 {
                     try { ValidationHelper.ParseEmail(value); }
-                    catch (FormatException) { context.AddFailure("'Email address' is not valid."); }
+                    catch (FormatException) { context.AddFailure("'Email' is not valid."); }
                 }
                 else if (contactType == ContactType.PhoneNumber)
                 {

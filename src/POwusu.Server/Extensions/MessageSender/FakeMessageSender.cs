@@ -2,7 +2,7 @@
 {
     public class FakeMessageSender : IMessageSender
     {
-        public Task SendAsync(Message message, CancellationToken cancellationToken = default)
+        public Task SendAsync(TextMessage message, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }

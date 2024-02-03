@@ -179,57 +179,12 @@ try
 
     builder.Services.AddRazorViewRenderer();
 
-    builder.Services.Configure<FileCriteriaOptions>(options =>
-    {
-        options.Videos = new[] { ".mp4", ".webm", ".swf", ".flv" }.Select(extension =>
-        {
-
-            return new FileCriteria
-            {
-                Type = FileType.Video,
-                Extension = extension,
-                Length = 83886080L // 80MB
-            };
-        }).ToList();
-
-        options.Images = new[] { ".jpg", ".jpeg", ".png" }.Select(fileExtension =>
-        {
-            return new FileCriteria
-            {
-                Type = FileType.Image,
-                Extension = fileExtension,
-                Length = 20971520 // 20MB
-            };
-        }).ToList();
-
-        options.Documents = new[] { ".doc", ".docx", ".rtf", ".pdf" }.Select(fileExtension =>
-        {
-            return new FileCriteria
-            {
-                Type = FileType.Document,
-                Extension = fileExtension,
-                Length = 83886080L // 80MB
-            };
-        }).ToList();
-
-        options.Audios = new[] { ".mp3", ".wav", ".ogg" }.Select(fileExtension =>
-        {
-            return new FileCriteria
-            {
-                Type = FileType.Audio,
-                Extension = fileExtension,
-                Length = 83886080L // 80MB
-            };
-        }).ToList();
-    });
-
     builder.Services.ConfigureOptions<ConfigureLocalFileStorageOptions>();
     builder.Services.AddLocalFileStorage();
 
     builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-    builder.Services.AddScoped<IValidator, Validator>();
-    builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+    
+    builder.Services.AddValidators(Assembly.GetExecutingAssembly());
 
     builder.Services.AddMediatR(options => options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 

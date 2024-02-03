@@ -1,5 +1,6 @@
-﻿@using POwusu.Server.Entities.Identity;
-@model (User User, string Code);
+﻿@using POwusu.Server.Entities.Identity
+@using POwusu.Server.Extensions.Validation
+@model (User User, string Code)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Confirmation</title>
+    <title>Confirm Your Email Address</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,29 +37,20 @@
         .code {
             font-size: 24px;
             font-weight: bold;
-            color: #007BFF;
+            color: #000000;
             margin: 20px 0;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            color: #999;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Account Confirmation</h1>
+        <h1>Confirm Your Email Address</h1>
         <p>Hello @(Model.User.FullName),</p>
         <p>Thank you for creating an account with us. To activate your account, please use the following confirmation code:</p>
         <p class="code">@(Model.Code)</p>
         <p>If you didn't request this, you can ignore this email.</p>
         <p>Best regards,<br>Prince Owusu</p>
-    </div>
-    <div class="footer">
-        <p>&copy; @DateTimeOffset.UtcNow.Year PYO. All rights reserved.</p>
     </div>
 </body>
 

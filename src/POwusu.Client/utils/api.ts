@@ -1,7 +1,7 @@
 import { AxiosResponse, isAxiosError } from "axios";
 import { isIdempotentRequestError, isNetworkError } from "axios-retry";
 
-export const getErrorMessage = (error: any) => {
+export const getErrorMessage = (error: any, unknownMessage?: string) => {
   let message = "";
 
   if (isAxiosError(error)) {
@@ -19,7 +19,7 @@ export const getErrorMessage = (error: any) => {
     return (message = error);
   }
 
-  message = message ? message : "Something went wrong.\nPlease try again later.";
+  message = message || unknownMessage || "Something went wrong.\nPlease try again later.";
   return message;
 };
 

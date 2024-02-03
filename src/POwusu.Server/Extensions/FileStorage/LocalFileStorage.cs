@@ -7,10 +7,12 @@ namespace POwusu.Server.Extensions.FileStorage
     public class LocalFileStorage : IFileStorage
     {
         private readonly IOptions<LocalFileStorageOptions> _localFileStorageOptions;
+        private readonly ILogger<LocalFileStorage> _logger;
 
-        public LocalFileStorage(IOptions<LocalFileStorageOptions> localFileStorageOptions)
+        public LocalFileStorage(IOptions<LocalFileStorageOptions> localFileStorageOptions, ILogger<LocalFileStorage> logger)
         {
             _localFileStorageOptions = localFileStorageOptions;
+            _logger = logger;
         }
 
         public async Task WriteAsync(string path, Stream content, CancellationToken cancellationToken = default)
@@ -23,40 +25,42 @@ namespace POwusu.Server.Extensions.FileStorage
             await content.CopyToAsync(fileStream, cancellationToken);
         }
 
-        public Task<FileStorageStatus> CheckAsync(string path, CancellationToken cancellationToken = default)
-        {
-            var filePath = GetFilePath(path);
-            var tempFilePath = GetTempFilePath(path);
-            var status = !File.Exists(tempFilePath) ? FileStorageStatus.Pending : !File.Exists(filePath) ? FileStorageStatus.Processing : FileStorageStatus.Completed;
-            return Task.FromResult(status);
-        }
-
-        public async Task WriteAsync(string path, Stream chunk, long length, long offset, CancellationToken cancellationToken = default)
+        public async Task<FileWriteStatus> WriteAsync(string path, Stream chunk, long length, long offset, CancellationToken cancellationToken = default)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (chunk == null) throw new ArgumentNullException(nameof(chunk));
 
-
             var filePath = GetFilePath(path);
             var tempFilePath = GetTempFilePath(path);
+            var initialWrite = !File.Exists(filePath) && !File.Exists(tempFilePath);
 
-
-            using var tempFileStream = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.Write);
-            tempFileStream.Seek(offset, SeekOrigin.Begin);
-            await chunk.CopyToAsync(tempFileStream, cancellationToken);
-
-            var fileLength = new FileInfo(tempFilePath).Length;
-
-            if (fileLength >= length)
+            try
             {
-                if (File.Exists(filePath))
+                using (var tempFileStream = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    File.Delete(filePath);
+                    tempFileStream.Seek(offset, SeekOrigin.Begin);
+                    await chunk.CopyToAsync(tempFileStream, cancellationToken);
                 }
 
-                File.Move(tempFilePath, filePath);
+                var tempFileLength = new FileInfo(tempFilePath).Length;
+
+                if (tempFileLength >= length)
+                {
+                    File.Move(tempFilePath, filePath);
+                    return FileWriteStatus.Completed;
+                }
+                else
+                {
+                    return initialWrite ? FileWriteStatus.Started : FileWriteStatus.Processing;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while writing to file '{path}'");
+                throw;
             }
         }
+
 
         public Task<Stream?> ReadAsync(string path, CancellationToken cancellationToken = default)
         {
@@ -104,31 +108,34 @@ namespace POwusu.Server.Extensions.FileStorage
 
         private string GetFilePath(string path)
         {
-            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
 
+            var invalidFileNameChars = Path.GetFileName(path)?.Where(c => Path.GetInvalidFileNameChars().Contains(c)).ToArray() ?? Array.Empty<char>();
+            if (invalidFileNameChars.Length > 0)
+                throw new ArgumentException($"Invalid characters in file name: {string.Join(string.Empty, invalidFileNameChars)}");
 
-            var invalidFileNameChars = Path.GetFileName(path)?.Where(c => Path.GetInvalidPathChars().Concat(new[] { '/', '\\' }).Contains(c)).ToArray() ?? Array.Empty<char>();
-            if (invalidFileNameChars.Length > 0) throw new ArgumentException($"Invalid characters in file name: {string.Join(string.Empty, invalidFileNameChars)}");
-
-            var directoryNames = Path.GetDirectoryName(path)?.Split(new char[] { '/', '\\' }) ?? Array.Empty<string>();
+            var directoryNames = Path.GetDirectoryName(path)?.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) ?? Array.Empty<string>();
 
             foreach (var directoryName in directoryNames)
             {
-                var invalidDirectoryNameChars = directoryName.Where(c => Path.GetInvalidPathChars().Concat(new[] { '/', '\\' }).Contains(c)).ToArray();
-                if (invalidDirectoryNameChars.Length > 0) throw new ArgumentException($"Invalid characters in directory name: {string.Join(", ", invalidDirectoryNameChars)}");
+                var invalidDirectoryNameChars = directoryName.Where(c => Path.GetInvalidPathChars().Contains(c)).ToArray();
+                if (invalidDirectoryNameChars.Length > 0)
+                    throw new ArgumentException($"Invalid characters in directory name: {string.Join(", ", invalidDirectoryNameChars)}");
             }
 
-            var filePath = Path.Combine(_localFileStorageOptions.Value.RootPath, path.Replace('/', '\\').TrimStart('\\', '/'));
+            var filePath = Path.Combine(_localFileStorageOptions.Value.RootPath, path.Replace('/', Path.DirectorySeparatorChar).TrimStart('\\', '/'));
             var dirPath = Path.GetDirectoryName(filePath)!;
 
-            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            if (!Directory.Exists(dirPath))
+                Directory.CreateDirectory(dirPath);
 
             return filePath;
         }
 
         private string GetTempFilePath(string path)
         {
-            return $"{GetTempFilePath(path)}.temp";
+            return $"{GetFilePath(path)}.temp";
         }
     }
 }

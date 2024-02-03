@@ -16,7 +16,7 @@ import { PersonArrowRightRegular, SettingsRegular } from "@fluentui/react-icons"
 
 const Header = () => {
   const router = useRouter();
-  const { user: currentUser } = useUser();
+  const currentUser = useUser();
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -38,7 +38,7 @@ const Header = () => {
                   name={currentUser?.fullName}
                   description={currentUser?.title}
                   avatarProps={{
-                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                    src: currentUser?.imageUrl,
                   }}
                 />
               </Button>

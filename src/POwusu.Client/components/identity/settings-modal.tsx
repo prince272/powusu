@@ -9,11 +9,13 @@ import { cn } from "@/utils";
 import { getErrorMessage } from "@/utils/api";
 import { ChevronLeftRegular, PasswordRegular, PeopleSwapFilled, PeopleSwapRegular, PersonRegular, SettingsRegular } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Input, Textarea } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { Tab, Tabs } from "@nextui-org/tabs";
 import { isAxiosError } from "axios";
 import { clone, create, set, uniqueId } from "lodash";
+import { parseAsString, useQueryState } from "nuqs";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import Sticky from "react-stickynode";
@@ -23,6 +25,7 @@ import { api } from "@/lib/api";
 import { useRouter } from "@/hooks/use-router";
 import { toast } from "@/components/ui/toaster";
 
+import { FileInput } from "../ui/file-input";
 import { PasswordInput } from "../ui/password-input";
 import { Portal } from "../ui/portal";
 import { Render } from "../ui/render";
@@ -37,15 +40,15 @@ export interface SettingsModalProps {
 export interface SettingsInputs {}
 
 export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
-  const { user: currentUser } = useUser();
-  const passwordCreated = currentUser?.passwordCreated;
+  const currentUser = useUser();
+  const hasPassword = currentUser?.hasPassword;
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
   const defaultKey = "edit-profile";
-  const [selectedKey, setSelectedKey] = useState<Key | null | undefined>(defaultKey);
+  const [selectedKey, setSelectedKey] = useQueryState("view", parseAsString.withOptions({ shallow: false }).withDefault(defaultKey));
   const isMd = useBreakpoint("sm", "up");
   const footerId = useRef(uniqueId("_footer_")).current;
 
@@ -94,7 +97,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               {[
                 { key: "edit-profile", label: <>Edit profile</>, icon: <PersonRegular fontSize={24} /> },
                 { key: "change-account", label: <>Change account</>, icon: <PeopleSwapRegular fontSize={24} /> },
-                { key: "change-password", label: <>{passwordCreated ? "Change password" : "Create password"}</>, icon: <PasswordRegular fontSize={24} /> }
+                { key: "change-password", label: <>{hasPassword ? "Change password" : "Create password"}</>, icon: <PasswordRegular fontSize={24} /> }
               ].map((item) => (
                 <Button
                   key={item.key}
@@ -112,6 +115,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           <div className={cn(selectedKey ? "w-full" : "hidden sm:block")}>
             <Render switch={selectedKey}>
               <EditProfileView key="edit-profile" footerId={footerId} />
+              <ChangeAccountTabs key="change-account" footerId={footerId} />
               <ChangePasswordView key="change-password" footerId={footerId} />
             </Render>
           </div>
@@ -123,16 +127,20 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
 };
 
 interface EditProfileInputs {
+  imageId: string;
   firstName: string;
   lastName: string;
+  bio: string;
 }
 
 const EditProfileView = ({ footerId }: { footerId: string }) => {
-  const { user: currentUser } = useUser();
+  const currentUser = useUser();
   const form = useForm<EditProfileInputs>({
     defaultValues: {
+      imageId: currentUser?.imageId,
       firstName: currentUser?.firstName,
-      lastName: currentUser?.lastName
+      lastName: currentUser?.lastName,
+      bio: currentUser?.bio
     }
   });
   const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
@@ -143,7 +151,7 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
     try {
       setStatus("submitting");
 
-      const response = await api.post("/identity/edit-profile", inputs);
+      const response = await api.put("/identity/profile", inputs);
       api.user.next(response.data);
       toast.success("Profile updated.", { id: toastId });
     } catch (error) {
@@ -161,7 +169,30 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-3">
+    <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-6">
+      <FormController
+        control={form.control}
+        name="imageId"
+        render={({ field }) => (
+          <div className="col-span-12 flex items-center justify-center">
+            <FileInput
+              {...field}
+              onUploadError={(error) => {
+                toast.error(getErrorMessage(error, "Unable to upload image."), { id: toastId });
+              }}
+              onDowloadError={(error) => {
+                toast.error(getErrorMessage(error, "Unable to load image."), { id: toastId });
+              }}
+              onRevertError={(error) => {
+                toast.error(getErrorMessage(error, "Unable to remove image."), { id: toastId });
+              }}
+              className="h-44 w-44"
+              variant="circle"
+              endpoint="/identity/profile/images"
+            />
+          </div>
+        )}
+      />
       <FormController
         control={form.control}
         name="firstName"
@@ -184,7 +215,7 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
           <Input
             {...field}
             className="col-span-6"
-            placeholder="First name"
+            placeholder="Last name"
             labelPlacement="outside"
             label="Last name"
             isInvalid={!!formErrors.lastName}
@@ -192,6 +223,14 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
           />
         )}
       />
+      <FormController
+        control={form.control}
+        name="bio"
+        render={({ field }) => (
+          <Textarea {...field} className="col-span-12" maxRows={3} label="Bio" placeholder="Enter your bio" isInvalid={!!formErrors.bio} errorMessage={formErrors.bio?.message} />
+        )}
+      />
+
       <Portal rootId={footerId}>
         <Button
           className="w-full sm:w-auto"
@@ -209,6 +248,200 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
   );
 };
 
+interface ChangeAccountInputs {
+  action: "send-code" | "validate-code";
+  currentUsername: string;
+  newUsername: string;
+  code: string;
+}
+
+const ChangeAccountTabs = ({ footerId }: { footerId: string }) => {
+  const isSm = useBreakpoint("sm", "up");
+  const [contactType, setContactType] = useState<Key>("email");
+
+  return (
+    <div className="grid grid-cols-12 gap-6">
+      <div className="col-span-12">
+        <Tabs
+          aria-label="Options"
+          color="primary"
+          classNames={{ base: "justify-center w-full pb-6", tabList: "min-w-[256px]" }}
+          fullWidth={!isSm}
+          size="sm"
+          selectedKey={contactType}
+          onSelectionChange={setContactType}
+        >
+          <Tab key="email" title="Email">
+            <ChangeEmailView />
+          </Tab>
+          <Tab key="phoneNumber" title="Phone number">
+            <ChangePhoneNumberView />
+          </Tab>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
+  const ChangeAccountView = () => {
+    const currentUser = useUser();
+
+    const toastId = useRef(uniqueId("_toast_")).current;
+
+    const form = useForm<ChangeAccountInputs>({
+      defaultValues: {
+        action: "send-code",
+        currentUsername: currentUser?.[contactType],
+        newUsername: "",
+        code: ""
+      }
+    });
+    const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+
+    const resendCodeTimer = useTimer({
+      expiryTimestamp: new Date(new Date().getTime() + 59 * 1000),
+      onExpire: () => {
+        resendCodeTimer.restart(new Date(new Date().getTime() + 59 * 1000), false);
+      },
+      autoStart: false
+    });
+    const [codeSent, setCodeSent] = useState(false);
+    const [status, setStatus] = useState<"idle" | "submitting">("idle");
+
+    const submit: SubmitHandler<ChangeAccountInputs> = async ({ action, ...inputs }) => {
+      try {
+        setStatus("submitting");
+
+        switch (action) {
+          case "send-code": {
+            await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, { ...inputs, sendCode: true });
+            setCodeSent(true);
+            resendCodeTimer.start();
+            toast.success("Security code sent.", { id: toastId });
+            break;
+          }
+          case "validate-code": {
+            const response = await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, inputs);
+            api.user.next(response.data);
+            toast.success("Account updated successfully.", { id: toastId });
+            break;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+
+        const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
+        fields.forEach(([name, message]) => {
+          form.setError(name as any, { message: message?.join("\n") });
+        });
+
+        toast.error(getErrorMessage(error), { id: toastId });
+      } finally {
+        setStatus("idle");
+      }
+    };
+
+    return (
+      <form className="grid grid-cols-12 gap-y-5" onSubmit={form.handleSubmit(submit)}>
+        {form.watch("currentUsername") && (
+          <FormController
+            control={form.control}
+            name="currentUsername"
+            render={({ field }) => (
+              <Input
+                {...field}
+                className="col-span-12"
+                labelPlacement="outside"
+                label={"Current " + { email: "email", phoneNumber: "phone number" }[contactType]}
+                placeholder={"Current " + { email: "email", phoneNumber: "phone number" }[contactType]}
+                isInvalid={!!formErrors.currentUsername}
+                errorMessage={formErrors.currentUsername?.message}
+                isReadOnly
+              />
+            )}
+          />
+        )}
+        <FormController
+          control={form.control}
+          name="newUsername"
+          render={({ field }) => (
+            <Input
+              {...field}
+              className="col-span-12"
+              labelPlacement="outside"
+              label={"New " + { email: "email", phoneNumber: "phone number" }[contactType]}
+              placeholder={"New " + { email: "email", phoneNumber: "phone number" }[contactType]}
+              isInvalid={!!formErrors.newUsername}
+              errorMessage={formErrors.newUsername?.message}
+            />
+          )}
+        />
+        <FormController
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <Input
+              {...field}
+              className="col-span-12"
+              labelPlacement="outside"
+              label="Enter code"
+              placeholder="Enter code"
+              description={
+                <span className="text-default-400">
+                  {resendCodeTimer.isRunning
+                    ? `You can request the code again in ${resendCodeTimer.seconds}s.`
+                    : codeSent
+                      ? `Enter the code that was sent to your ${form.watch("currentUsername") ? "current" : "new"} ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`
+                      : `Request a code to be sent to your ${form.watch("currentUsername") ? "current" : "new"} ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`}
+                </span>
+              }
+              isInvalid={!!formErrors.code}
+              errorMessage={formErrors.code?.message}
+              endContent={
+                <Button
+                  className="-mr-2 px-7"
+                  color="default"
+                  variant="flat"
+                  size="sm"
+                  type="button"
+                  isLoading={status == "submitting" && form.watch("action") == "send-code"}
+                  spinnerPlacement="end"
+                  isDisabled={status == "submitting" || resendCodeTimer.isRunning}
+                  onPress={() => {
+                    form.setValue("action", "send-code");
+                    form.handleSubmit(submit)();
+                  }}
+                >
+                  {status == "submitting" && form.watch("action") == "send-code" ? "Requesting code..." : "Request code"}
+                </Button>
+              }
+            />
+          )}
+        />
+        <Button
+          className="col-span-12"
+          color="primary"
+          type="button"
+          isDisabled={status != "idle" || !codeSent}
+          isLoading={status == "submitting" && form.watch("action") == "validate-code"}
+          onPress={() => {
+            form.setValue("action", "validate-code");
+            form.handleSubmit(submit)();
+          }}
+        >
+          Confirm
+        </Button>
+      </form>
+    );
+  };
+
+  return ChangeAccountView;
+};
+
+const ChangeEmailView = createChangeAccountView("email");
+const ChangePhoneNumberView = createChangeAccountView("phoneNumber");
+
 interface ChangePasswordInputs {
   currentPassword: string;
   newPassword: string;
@@ -216,8 +449,8 @@ interface ChangePasswordInputs {
 }
 
 const ChangePasswordView = ({ footerId }: { footerId: string }) => {
-  const { user: currentUser } = useUser();
-  const passwordCreated = currentUser?.passwordCreated;
+  const currentUser = useUser();
+  const hasPassword = currentUser?.hasPassword;
   const form = useForm<ChangePasswordInputs>({
     defaultValues: {
       currentPassword: "",
@@ -237,7 +470,7 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
     try {
       setStatus("submitting");
 
-      await api.post(`/identity/password/${!passwordCreated ? "create" : "change"}`, inputs);
+      await api.post(`/identity/password/${!hasPassword ? "create" : "change"}`, inputs);
       form.reset();
       toast.success("Password changed.", { id: toastId });
     } catch (error) {
@@ -256,7 +489,7 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
 
   return (
     <form onSubmit={form.handleSubmit(submit)} className="grid grid-cols-12 gap-6">
-      {passwordCreated && (
+      {hasPassword && (
         <FormController
           control={form.control}
           name="currentPassword"
@@ -275,7 +508,7 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
                   as={NextLink}
                   href={queryString.stringifyUrl({
                     url: currentUrl,
-                    query: { modal: "reset-password" }
+                    query: { modal: "reset-password", callback: currentUrl }
                   })}
                   size="sm"
                 >
@@ -325,7 +558,7 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
         isLoading={status == "submitting"}
         onPress={() => form.handleSubmit(submit)()}
       >
-        {!passwordCreated ? "Create password" : "Change password"}
+        {!hasPassword ? "Create password" : "Change password"}
       </Button>
     </form>
   );

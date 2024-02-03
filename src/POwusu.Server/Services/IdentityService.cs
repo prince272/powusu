@@ -79,25 +79,25 @@ namespace POwusu.Server.Services
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
-            var formUsernameType = ValidationHelper.GetContactType(form.Username);
-            var user = formUsernameType switch
+            var contactType = ValidationHelper.GetContactType(form.Username);
+            var user = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.Email => await _userManager.FindByEmailAsync(form.Username),
                 ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
                 _ => null
             };
 
 
             if (user is not null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is already taken."] } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' is already taken."] } });
 
 
             user = _mapper.Map<User>(form);
             user.UserName = await GenerateUserNameAsync(form.FirstName, form.LastName);
-            user.Email = formUsernameType == ContactType.EmailAddress ? form.Username : null;
-            user.PhoneNumber = formUsernameType == ContactType.PhoneNumber ? form.Username : null;
+            user.Email = contactType == ContactType.Email ? form.Username : null;
+            user.PhoneNumber = contactType == ContactType.PhoneNumber ? form.Username : null;
             user.CreatedAt = DateTimeOffset.UtcNow;
-            user.PasswordCreated = true;
+            user.HasPassword = true;
 
             var result = await _userManager.CreateAsync(user, form.Password);
             if (!result.Succeeded) throw new InvalidOperationException(result.Errors.GetMessage());
@@ -114,7 +114,7 @@ namespace POwusu.Server.Services
             if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
 
             var model = await BuildUserWithTokenModelAsync(user);
             return TypedResults.Ok(model);
@@ -127,17 +127,17 @@ namespace POwusu.Server.Services
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
-            var formUsernameType = ValidationHelper.GetContactType(form.Username);
-            var user = formUsernameType switch
+            var contactType = ValidationHelper.GetContactType(form.Username);
+            var user = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.Email => await _userManager.FindByEmailAsync(form.Username),
                 ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
                 _ => null
             };
 
 
             if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
             if (!await _userManager.CheckPasswordAsync(user, form.Password)) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Password), [$"'{nameof(form.Password).Humanize(LetterCasing.Sentence)}' is not correct."] } });
@@ -145,7 +145,7 @@ namespace POwusu.Server.Services
             if ((_userManager.Options.SignIn.RequireConfirmedEmail && !user.EmailConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedPhoneNumber && !user.PhoneNumberConfirmed) ||
                 (_userManager.Options.SignIn.RequireConfirmedAccount && (!user.EmailConfirmed && !user.PhoneNumberConfirmed))) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' is not confirmed."] } }, extensions: new Dictionary<string, object?> { { "requiresConfirmation", true } });
 
             var model = await BuildUserWithTokenModelAsync(user);
             return TypedResults.Ok(model);
@@ -168,11 +168,11 @@ namespace POwusu.Server.Services
             var firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
             var lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
 
-            var formUsernameType = ValidationHelper.GetContactType(username);
+            var contactType = ValidationHelper.GetContactType(username);
 
-            var user = formUsernameType switch
+            var user = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.FindByEmailAsync(username),
+                ContactType.Email => await _userManager.FindByEmailAsync(username),
                 ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(username),
                 _ => null
             };
@@ -182,8 +182,8 @@ namespace POwusu.Server.Services
             {
                 user = new User();
                 user.UserName = await GenerateUserNameAsync(firstName, lastName);
-                user.Email = formUsernameType == ContactType.EmailAddress ? username : null;
-                user.PhoneNumber = formUsernameType == ContactType.PhoneNumber ? username : null;
+                user.Email = contactType == ContactType.Email ? username : null;
+                user.PhoneNumber = contactType == ContactType.PhoneNumber ? username : null;
                 user.CreatedAt = DateTimeOffset.UtcNow;
 
                 var result = await _userManager.CreateAsync(user);
@@ -207,23 +207,23 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string returnUrl, string[] allowedOrigins)
+        public async Task<Results<ChallengeHttpResult, ValidationProblem>> ConfigureExternalAuthenticationAsync(string provider, string origin, string[] allowedOrigins)
         {
             await Task.CompletedTask;
 
             if (string.IsNullOrEmpty(provider))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No authentication provider was specified.");
 
-            if (string.IsNullOrEmpty(returnUrl))
-                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(returnUrl)}' was specified.");
+            if (string.IsNullOrEmpty(origin))
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No origin was specified.");
 
             provider = provider.Pascalize();
 
             if (!allowedOrigins.Any(origin => Uri.Compare(new Uri(origin, UriKind.Absolute), new Uri(origin), UriComponents.SchemeAndServer, UriFormat.UriEscaped, StringComparison.OrdinalIgnoreCase) == 0))
-                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"The '{nameof(returnUrl)}' specified is not allowed.");
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"The origin specified is not allowed.");
 
             // Request a redirect to the external sign-in provider.
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, returnUrl);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, origin);
             return TypedResults.Challenge(properties, new[] { provider });
         }
 
@@ -266,22 +266,22 @@ namespace POwusu.Server.Services
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
-            var formUsernameType = ValidationHelper.GetContactType(form.Username);
-            var user = formUsernameType switch
+            var contactType = ValidationHelper.GetContactType(form.Username);
+            var user = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.Email => await _userManager.FindByEmailAsync(form.Username),
                 ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
                 _ => null
             };
 
 
             if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
 
             if (form.SendCode)
             {
-                if (formUsernameType == ContactType.EmailAddress)
+                if (contactType == ContactType.Email)
                 {
                     var code = await _userManager.GenerateChangeEmailTokenAsync(user, form.Username);
 
@@ -294,11 +294,11 @@ namespace POwusu.Server.Services
 
                     await _emailSender.SendAsync(message);
                 }
-                else if (formUsernameType == ContactType.PhoneNumber)
+                else if (contactType == ContactType.PhoneNumber)
                 {
                     var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, form.Username);
 
-                    var message = new Message
+                    var message = new TextMessage
                     {
                         Body = await _viewRenderer.RenderAsync("/Templates/Text/ConfirmAccount", (user, code)),
                         Recipients = new[] { form.Username }
@@ -310,9 +310,9 @@ namespace POwusu.Server.Services
                 return TypedResults.Ok();
             }
 
-            var result = formUsernameType switch
+            var result = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.ChangeEmailAsync(user, form.Username, form.Code),
+                ContactType.Email => await _userManager.ChangeEmailAsync(user, form.Username, form.Code),
                 ContactType.PhoneNumber => await _userManager.ChangePhoneNumberAsync(user, form.Username, form.Code),
                 _ => throw new InvalidOperationException()
             };
@@ -324,6 +324,68 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
+        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync<TChangeAccountForm>(TChangeAccountForm form)
+            where TChangeAccountForm : ChangeAccountForm
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var contactType = form switch
+            {
+                ChangeEmailForm _ => ContactType.Email,
+                ChangePhoneNumberForm _ => ContactType.PhoneNumber,
+                _ => throw new InvalidOperationException("Unsupported form type for determining contact type.")
+            };
+
+            var currentUser = await _userContext.GetUserAsync();
+            if (currentUser is null) return TypedResults.Unauthorized();
+
+            if (form.SendCode)
+            {
+                if (contactType == ContactType.Email)
+                {
+                    var code = await _userManager.GenerateChangeEmailTokenAsync(currentUser, form.NewUsername);
+
+                    var message = new EmailMessage
+                    {
+                        Subject = "Change Your Email Address",
+                        Body = await _viewRenderer.RenderAsync("/Templates/Email/ChangeAccount", (currentUser, code)),
+                        Recipients = new[] { form.CurrentUsername }
+                    };
+
+                    await _emailSender.SendAsync(message);
+                }
+                else if (contactType == ContactType.PhoneNumber)
+                {
+                    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, form.NewUsername);
+
+                    var message = new TextMessage
+                    {
+                        Body = await _viewRenderer.RenderAsync("/Templates/Text/ChangeAccount", (currentUser, code)),
+                        Recipients = new[] { form.CurrentUsername }
+                    };
+
+                    await _smsSender.SendAsync(message);
+                }
+
+                return TypedResults.Ok();
+            }
+
+            var result = contactType switch
+            {
+                ContactType.Email => await _userManager.ChangeEmailAsync(currentUser, form.NewUsername, form.Code),
+                ContactType.PhoneNumber => await _userManager.ChangePhoneNumberAsync(currentUser, form.NewUsername, form.Code),
+                _ => throw new InvalidOperationException()
+            };
+
+            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
+
+            var model = await BuildUserWithTokenModelAsync(currentUser);
+            return TypedResults.Ok(model);
+        }
+
         public async Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
@@ -331,24 +393,24 @@ namespace POwusu.Server.Services
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
 
-            var formUsernameType = ValidationHelper.GetContactType(form.Username);
-            var user = formUsernameType switch
+            var contactType = ValidationHelper.GetContactType(form.Username);
+            var user = contactType switch
             {
-                ContactType.EmailAddress => await _userManager.FindByEmailAsync(form.Username),
+                ContactType.Email => await _userManager.FindByEmailAsync(form.Username),
                 ContactType.PhoneNumber => await _userManager.FindByPhoneNumberAsync(form.Username),
                 _ => null
             };
 
 
             if (user is null) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-            { { nameof(form.Username), [$"'{formUsernameType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
+            { { nameof(form.Username), [$"'{contactType.Humanize(LetterCasing.Sentence)}' does not exist."] } });
 
 
             if (form.SendCode)
             {
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                if (formUsernameType == ContactType.EmailAddress)
+                if (contactType == ContactType.Email)
                 {
                     var message = new EmailMessage
                     {
@@ -359,9 +421,9 @@ namespace POwusu.Server.Services
 
                     await _emailSender.SendAsync(message);
                 }
-                else if (formUsernameType == ContactType.PhoneNumber)
+                else if (contactType == ContactType.PhoneNumber)
                 {
-                    var message = new Message
+                    var message = new TextMessage
                     {
                         Body = await _viewRenderer.RenderAsync("/Templates/Text/ResetPassword", (user, code)),
                         Recipients = new[] { form.Username }
@@ -403,7 +465,7 @@ namespace POwusu.Server.Services
 
             }
 
-            currentUser.PasswordCreated = true;
+            currentUser.HasPassword = true;
             await _userManager.UpdateAsync(currentUser);
 
             return TypedResults.Ok();
@@ -428,8 +490,7 @@ namespace POwusu.Server.Services
                     if (error.Code == "PasswordMismatch") errors.Add(nameof(form.CurrentPassword), new[] { $"'{nameof(form.CurrentPassword).Humanize(LetterCasing.Sentence)}' is not correct." });
                 }
 
-                return TypedResults.ValidationProblem(errors,
-                title: "Unable to change password.");
+                return TypedResults.ValidationProblem(errors, title: "Unable to change password.");
 
             }
             return TypedResults.Ok();
@@ -453,37 +514,30 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form)
+        public async Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
-            var prevStatus = await _fileStorage.CheckAsync(form.Path);
-            if (prevStatus == FileStorageStatus.Pending || prevStatus == FileStorageStatus.Processing)
-                await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
-            var currentStatus = await _fileStorage.CheckAsync(form.Path);
+            var status = await _fileStorage.WriteAsync(form.Path, form.Chunk, form.Length, form.Offset);
 
-
-            if (prevStatus == FileStorageStatus.Pending || currentStatus == FileStorageStatus.Completed)
+            if (status == FileWriteStatus.Started || status == FileWriteStatus.Completed)
             {
                 var currentUser = await _userContext.GetUserAsync();
                 if (currentUser is null) return TypedResults.Unauthorized();
 
 
-                if (prevStatus == FileStorageStatus.Completed)
+                if (status == FileWriteStatus.Completed)
                 {
                     var source = await _fileStorage.ReadAsync(form.Path);
                     if (source is null) return TypedResults.StatusCode(StatusCodes.Status424FailedDependency);
 
                     await _imageProcessor.ScaleAsync(source, _identityServiceOptions.Value.ProfileImageScaleWidth);
-
-                    currentUser.ImageId = form.Path;
-                    await _userManager.UpdateAsync(currentUser);
                 }
             }
 
-            return TypedResults.Ok(form.Path);
+            return TypedResults.Content(form.Path);
         }
 
         private async Task<string> GenerateUserNameAsync(string firstName, string lastName)
@@ -513,6 +567,7 @@ namespace POwusu.Server.Services
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             model.Roles = roles.Select(_ => _.Camelize()).ToArray();
             model.Title = user.GetTitle(roles);
+            model.ImageUrl = user.ImageId is not null ? _fileStorage.GetUrl(user.ImageId) : null;
             return model;
         }
 
@@ -528,6 +583,7 @@ namespace POwusu.Server.Services
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             model.Roles = roles.Select(_ => _.Camelize()).ToArray();
             model.Title = user.GetTitle(roles);
+            model.ImageUrl = user.ImageId is not null ? _fileStorage.GetUrl(user.ImageId) : null;
             return model;
         }
     }
@@ -548,6 +604,9 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
+        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync<TChangeAccountForm>(TChangeAccountForm form)
+            where TChangeAccountForm : ChangeAccountForm;
+
         Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
 
         Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form);
@@ -556,7 +615,7 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok<PrivateUserModel>, ValidationProblem, UnauthorizedHttpResult>> EditProfileAsync(EditProfileForm form);
 
-        Task<Results<Ok<string>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form);
+        Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadProfileImageAsync(UploadProfileImageForm form);
     }
 
     public class IdentityServiceOptions

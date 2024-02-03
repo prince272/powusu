@@ -53,13 +53,13 @@ namespace POwusu.Server.Extensions.Validation
         {
             if (value is null) throw new ArgumentNullException(nameof(value));
 
-            return !Regex.IsMatch(value.ToLower(), "^[-+0-9() ]+$") ? ContactType.EmailAddress : ContactType.PhoneNumber;
+            return !Regex.IsMatch(value.ToLower(), "^[-+0-9() ]+$") ? ContactType.Email : ContactType.PhoneNumber;
         }
     }
 
     public enum ContactType
     {
-        EmailAddress,
+        Email,
         PhoneNumber
     }
 }

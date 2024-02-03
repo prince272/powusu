@@ -1,13 +1,12 @@
-﻿@using POwusu.Server.Entities.Identity;
-@model (User User, string Code);
+﻿@using POwusu.Server.Entities.Identity
+@using POwusu.Server.Extensions.Validation
+@model (User User, string Code)
 
-Subject: Account Confirmation
+Hi @Model.User.FullName,
 
-Dear @User,
+Use code: @Model.Code to confirm your phone number.
 
-Thank you for creating an account with us. To activate your account, please use the following code:
+Ignore if it was not requested by you.
 
-Activation Code: @(Model.Code)
-
-Best,
-Your Company Name
+Regards,
+Prince Yaw Owusu

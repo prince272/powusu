@@ -1,15 +1,18 @@
 export type User = {
+  imageId?: string;
+  imageUrl?: string;
   id: string;
   fullName: string;
   firstName: string;
   lastName: string;
   userName: string;
   title: string;
-  email: string;
+  bio: string;
+  email?: string;
   emailConfirmed: boolean;
-  phoneNumber: string;
+  phoneNumber?: string;
   phoneNumberConfirmed: boolean;
-  passwordCreated: boolean;
+  hasPassword: boolean;
   createdAt: string;
   updatedAt: string | null;
   roles: string[];

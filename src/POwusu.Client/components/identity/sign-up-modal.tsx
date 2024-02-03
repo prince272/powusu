@@ -71,7 +71,7 @@ export const SignUpModal = ({ isOpen, onClose } : SignUpModalProps) => {
         }
         default: {
           const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
-          externalUrl.searchParams.set("returnUrl", window.location.origin);
+          externalUrl.searchParams.set("origin", queryString.stringifyUrl({ url: window.location.origin, query: { ["external-window"]: true } }));
           await ExternalWindow.open(externalUrl, { center: true });
 
           const response = await api.post(`/identity/tokens/${method}/generate`);
@@ -192,7 +192,7 @@ export const SignUpModal = ({ isOpen, onClose } : SignUpModalProps) => {
                   form.handleSubmit(submit)();
                 }}
               >
-                Sgin up with Google
+                Continue with Google
               </Button>
               <Button
                 className="col-span-12"

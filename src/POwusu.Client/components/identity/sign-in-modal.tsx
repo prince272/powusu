@@ -38,7 +38,7 @@ export interface SignInInputs {
   password: string;
 }
 
-export const SignInModal = ({ isOpen, onClose } : SignInModalProps) => {
+export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
   const toastId = useRef(uniqueId("_toast_")).current;
 
   const router = useRouter();
@@ -68,7 +68,8 @@ export const SignInModal = ({ isOpen, onClose } : SignInModalProps) => {
         }
         default: {
           const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
-          externalUrl.searchParams.set("returnUrl", window.location.origin);
+          externalUrl.searchParams.set("origin", queryString.stringifyUrl({ url: window.location.origin, query: { ["external-window"]: true } }));
+
           await ExternalWindow.open(externalUrl, { center: true });
 
           const response = await api.post(`/identity/tokens/${method}/generate`, inputs);
@@ -108,7 +109,7 @@ export const SignInModal = ({ isOpen, onClose } : SignInModalProps) => {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          <div className="flex items-center space-x-1 h-8">
+          <div className="flex h-8 items-center space-x-1">
             <Button
               size="sm"
               variant="light"
@@ -191,7 +192,7 @@ export const SignInModal = ({ isOpen, onClose } : SignInModalProps) => {
                   form.handleSubmit(submit)();
                 }}
               >
-                Sign in with Google
+                Continue with Google
               </Button>
               <Button
                 className="col-span-12"

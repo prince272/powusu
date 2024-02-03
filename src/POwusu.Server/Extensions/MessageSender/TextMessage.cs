@@ -1,6 +1,6 @@
 ﻿namespace POwusu.Server.Extensions.MessageSender
 {
-    public class Message
+    public class TextMessage
     {
         public string Body { get; set; } = null!;
 

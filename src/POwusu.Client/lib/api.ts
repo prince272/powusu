@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
-import { cloneDeep } from "lodash";
+import { cloneDeep, merge } from "lodash";
 import PQueue from "p-queue";
 import { ReplaySubject } from "rxjs";
 
@@ -12,12 +12,13 @@ class UserSubject extends ReplaySubject<User | null | undefined> {
   }
 
   next(value: User | null | undefined) {
-    this.value = value;
-    super.next(cloneDeep(value));
+    this.value = cloneDeep(value ? merge(this.value, value) : value);
+    super.next(cloneDeep(this.value));
   }
 }
 
-const api = Object.assign({}, axios.create(apiConfig), { user: new UserSubject() });
+const cts = axios.CancelToken.source();
+const api = Object.assign({}, axios.create({ ...apiConfig, cancelToken: cts.token }), { user: new UserSubject(), cts });
 
 const apiQueue = new PQueue({ concurrency: 1 });
 
@@ -71,6 +72,8 @@ api.interceptors.response.use(
             api.user.next(response.data);
             return api.request(requestConfig!);
           }
+
+          if (refreshError?.response?.status == HttpStatusCode.BadRequest) api.user.next(null);
           return Promise.reject(error);
         });
     });
