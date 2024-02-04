@@ -3,7 +3,7 @@
 import React, { Key, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useBreakpoint } from "@/hooks";
+import { useBreakpoint, useCurrentValue, usePreviousValue } from "@/hooks";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getErrorMessage } from "@/utils/api";
@@ -14,7 +14,7 @@ import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { Tab, Tabs } from "@nextui-org/tabs";
 import { isAxiosError } from "axios";
-import { clone, create, set, uniqueId } from "lodash";
+import { clone, cloneDeep, create, set, uniqueId } from "lodash";
 import { parseAsString, useQueryState } from "nuqs";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
@@ -47,16 +47,8 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
-  const defaultKey = "edit-profile";
-  const [selectedKey, setSelectedKey] = useQueryState("view", parseAsString.withOptions({ shallow: false }).withDefault(defaultKey));
-  const isMd = useBreakpoint("sm", "up");
+  const [selectedKey, setSelectedKey] = useQueryState("view", parseAsString.withOptions({ shallow: false }));
   const footerId = useRef(uniqueId("_footer_")).current;
-
-  useEffect(() => {
-    if (isMd && !selectedKey) {
-      setSelectedKey(defaultKey);
-    }
-  }, [isMd, selectedKey]);
 
   return (
     <Modal
@@ -64,10 +56,10 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(pathname);
+        router.push(searchParams.get("callback") || pathname);
       }}
       classNames={{ base: "min-h-[640px]" }}
-      size={"2xl"}
+      size="2xl"
       scrollBehavior="inside"
     >
       <ModalContent>
@@ -78,7 +70,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               variant="light"
               isIconOnly
               onPress={() => {
-                if (!isMd) setSelectedKey(null);
+                setSelectedKey(null);
               }}
             >
               <span className={cn(selectedKey ? "sm:hidden" : "hidden")}>
@@ -91,8 +83,8 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
             <div>Settings</div>
           </div>
         </ModalHeader>
-        <ModalBody className="flex flex-row gap-6 py-0 sm:pl-3 sm:pr-6">
-          <div className={cn("sticky top-0", selectedKey ? "hidden sm:block" : "w-full")}>
+        <ModalBody className="flex flex-row gap-6 py-0 pl-3 pr-6">
+          <div className={cn("sticky top-0 w-full sm:w-auto", selectedKey ? "hidden sm:block" : "")}>
             <div className="grid items-start gap-x-2 gap-y-3 sm:w-56">
               {[
                 { key: "edit-profile", label: <>Edit profile</>, icon: <PersonRegular fontSize={24} /> },
@@ -101,8 +93,8 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               ].map((item) => (
                 <Button
                   key={item.key}
-                  variant={item.key == selectedKey ? "flat" : "light"}
-                  color={item.key == selectedKey ? "primary" : "default"}
+                  variant={item.key == selectedKey || item.key == "edit-profile" && !selectedKey ? "flat" : "light"}
+                  color={item.key == selectedKey || item.key == "edit-profile" && !selectedKey ? "primary" : "default"}
                   className="justify-start"
                   startContent={item.icon}
                   onPress={() => setSelectedKey(item.key)}
@@ -112,15 +104,15 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               ))}
             </div>
           </div>
-          <div className={cn(selectedKey ? "w-full" : "hidden sm:block")}>
-            <Render switch={selectedKey}>
+          <div className={cn("w-full", selectedKey ? "" : "hidden sm:block")}>
+            <Render switch={selectedKey || "edit-profile"}>
               <EditProfileView key="edit-profile" footerId={footerId} />
               <ChangeAccountTabs key="change-account" footerId={footerId} />
               <ChangePasswordView key="change-password" footerId={footerId} />
             </Render>
           </div>
         </ModalBody>
-        <ModalFooter id={footerId} className="flex items-center justify-end text-center text-sm"></ModalFooter>
+        <ModalFooter id={footerId} className={cn("items-center justify-end text-center text-sm w-full", selectedKey ? "" : "hidden sm:flex")}></ModalFooter>
       </ModalContent>
     </Modal>
   );
@@ -143,7 +135,7 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
       bio: currentUser?.bio
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+  const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
   const toastId = useRef(uniqueId("_toast_")).current;
 
@@ -249,9 +241,11 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
 };
 
 interface ChangeAccountInputs {
-  action: "send-code" | "validate-code";
-  currentUsername: string;
-  newUsername: string;
+  action: "sendCode" | "validateCode";
+  currentEmail: string;
+  newEmail: string;
+  currentPhoneNumber: string;
+  newPhoneNumber: string;
   code: string;
 }
 
@@ -291,13 +285,21 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
 
     const form = useForm<ChangeAccountInputs>({
       defaultValues: {
-        action: "send-code",
-        currentUsername: currentUser?.[contactType],
-        newUsername: "",
+        action: "sendCode",
+        ...{
+          email: {
+            currentEmail: currentUser?.email,
+            newEmail: ""
+          },
+          phoneNumber: {
+            currentPhoneNumber: currentUser?.phoneNumber,
+            newPhoneNumber: ""
+          }
+        }[contactType],
         code: ""
       }
     });
-    const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+    const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
 
     const resendCodeTimer = useTimer({
       expiryTimestamp: new Date(new Date().getTime() + 59 * 1000),
@@ -314,14 +316,14 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
         setStatus("submitting");
 
         switch (action) {
-          case "send-code": {
+          case "sendCode": {
             await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, { ...inputs, sendCode: true });
             setCodeSent(true);
             resendCodeTimer.start();
             toast.success("Security code sent.", { id: toastId });
             break;
           }
-          case "validate-code": {
+          case "validateCode": {
             const response = await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, inputs);
             api.user.next(response.data);
             toast.success("Account updated successfully.", { id: toastId });
@@ -344,19 +346,19 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
 
     return (
       <form className="grid grid-cols-12 gap-y-5" onSubmit={form.handleSubmit(submit)}>
-        {form.watch("currentUsername") && (
+        {form.watch({ email: "currentEmail", phoneNumber: "currentPhoneNumber" }[contactType] as "currentEmail" | "currentPhoneNumber") && (
           <FormController
             control={form.control}
-            name="currentUsername"
+            name={{ email: "currentEmail", phoneNumber: "currentPhoneNumber" }[contactType] as "currentEmail" | "currentPhoneNumber"}
             render={({ field }) => (
               <Input
                 {...field}
                 className="col-span-12"
                 labelPlacement="outside"
-                label={"Current " + { email: "email", phoneNumber: "phone number" }[contactType]}
-                placeholder={"Current " + { email: "email", phoneNumber: "phone number" }[contactType]}
-                isInvalid={!!formErrors.currentUsername}
-                errorMessage={formErrors.currentUsername?.message}
+                label={{ email: "Current email", phoneNumber: "Current phone number" }[contactType]}
+                placeholder={{ email: "Current email", phoneNumber: "Current phone number" }[contactType]}
+                isInvalid={!!formErrors[{ email: "currentEmail", phoneNumber: "currentPhoneNumber" }[contactType] as "currentEmail" | "currentPhoneNumber"]}
+                errorMessage={formErrors[{ email: "currentEmail", phoneNumber: "currentPhoneNumber" }[contactType] as "currentEmail" | "currentPhoneNumber"]?.message}
                 isReadOnly
               />
             )}
@@ -364,16 +366,16 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
         )}
         <FormController
           control={form.control}
-          name="newUsername"
+          name={{ email: "newEmail", phoneNumber: "newPhoneNumber" }[contactType] as "newEmail" | "newPhoneNumber"}
           render={({ field }) => (
             <Input
               {...field}
               className="col-span-12"
               labelPlacement="outside"
-              label={"New " + { email: "email", phoneNumber: "phone number" }[contactType]}
-              placeholder={"New " + { email: "email", phoneNumber: "phone number" }[contactType]}
-              isInvalid={!!formErrors.newUsername}
-              errorMessage={formErrors.newUsername?.message}
+              label={{ email: "New email", phoneNumber: "New phone number" }[contactType]}
+              placeholder={{ email: "New email", phoneNumber: "New phone number" }[contactType]}
+              isInvalid={!!formErrors[{ email: "newEmail", phoneNumber: "newPhoneNumber" }[contactType] as "newEmail" | "newPhoneNumber"]}
+              errorMessage={formErrors[{ email: "newEmail", phoneNumber: "newPhoneNumber" }[contactType] as "newEmail" | "newPhoneNumber"]?.message}
             />
           )}
         />
@@ -392,8 +394,8 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
                   {resendCodeTimer.isRunning
                     ? `You can request the code again in ${resendCodeTimer.seconds}s.`
                     : codeSent
-                      ? `Enter the code that was sent to your ${form.watch("currentUsername") ? "current" : "new"} ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`
-                      : `Request a code to be sent to your ${form.watch("currentUsername") ? "current" : "new"} ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`}
+                      ? `Enter the code that was sent to your new ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`
+                      : `Request a code to be sent to your new ${{ email: "email address", phoneNumber: "phone number" }[contactType]}.`}
                 </span>
               }
               isInvalid={!!formErrors.code}
@@ -405,15 +407,15 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
                   variant="flat"
                   size="sm"
                   type="button"
-                  isLoading={status == "submitting" && form.watch("action") == "send-code"}
+                  isLoading={status == "submitting" && form.watch("action") == "sendCode"}
                   spinnerPlacement="end"
                   isDisabled={status == "submitting" || resendCodeTimer.isRunning}
                   onPress={() => {
-                    form.setValue("action", "send-code");
+                    form.setValue("action", "sendCode");
                     form.handleSubmit(submit)();
                   }}
                 >
-                  {status == "submitting" && form.watch("action") == "send-code" ? "Requesting code..." : "Request code"}
+                  {status == "submitting" && form.watch("action") == "sendCode" ? "Requesting code..." : "Request code"}
                 </Button>
               }
             />
@@ -424,13 +426,14 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
           color="primary"
           type="button"
           isDisabled={status != "idle" || !codeSent}
-          isLoading={status == "submitting" && form.watch("action") == "validate-code"}
+          isLoading={status == "submitting" && form.watch("action") == "validateCode"}
           onPress={() => {
-            form.setValue("action", "validate-code");
+            form.setValue("action", "validateCode");
             form.handleSubmit(submit)();
           }}
         >
-          Confirm
+          {form.watch({ email: "currentEmail", phoneNumber: "currentPhoneNumber" }[contactType] as "currentEmail" | "currentPhoneNumber") ? "Change" : "Add"}{" "}
+          {{ email: "email", phoneNumber: "phone number" }[contactType]}
         </Button>
       </form>
     );
@@ -458,7 +461,7 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
       confirmPassword: ""
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+  const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
   const toastId = useRef(uniqueId("_toast_")).current;
 

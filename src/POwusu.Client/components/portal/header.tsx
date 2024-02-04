@@ -44,7 +44,7 @@ const Header = () => {
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="User actions">
-              <DropdownItem key="settings" startContent={<SettingsRegular fontSize={24} />} as={NextLink} href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings" } })}>
+              <DropdownItem key="settings" startContent={<SettingsRegular fontSize={24} />} as={NextLink} href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings", callback: currentUrl } })}>
                 Settings
               </DropdownItem>
               <DropdownItem key="sign-out" startContent={<PersonArrowRightRegular fontSize={24} />} className="text-danger" color="danger" as={NextLink} href={queryString.stringifyUrl({ url: currentUrl }) + "#sign-out"}>

@@ -20,7 +20,7 @@ export interface PostsPageProps {
 
 const PostsView = ({ initialPage, initialError } : PostsPageProps) => {
   const [status, setStatus] = useState<"idle" | "loading">("idle");
-  const [searchParams, setSearchParams] = useQueryStates(postsSearchParsers);
+  const [searchParams, setSearchParams] = useQueryStates(postsSearchParsers, { shallow: false });
   const { page, pageSize } = searchParams;
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [error, setError] = useState<ApiError | null | undefined>(initialError);

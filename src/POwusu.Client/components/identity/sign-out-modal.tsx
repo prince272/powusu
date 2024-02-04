@@ -28,7 +28,7 @@ export const SignOutModal = ({ isOpen, onClose } : SignOutModalProps) => {
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(pathname);
+        router.push(searchParams.get("callback") || pathname);
       }}
     >
       <ModalContent>
@@ -43,7 +43,7 @@ export const SignOutModal = ({ isOpen, onClose } : SignOutModalProps) => {
             variant="solid"
             onClick={() => {
               onClose();
-              router.replace(pathname);
+              router.push(searchParams.get("callback") || pathname);
             }}
           >
             Cancel
@@ -55,7 +55,7 @@ export const SignOutModal = ({ isOpen, onClose } : SignOutModalProps) => {
             onClick={async () => {
               api.user.next(null);
               onClose();
-              router.replace(searchParams.get("callback") || pathname);
+              router.push(searchParams.get("callback") || pathname);
             }}
           >
             Sign out

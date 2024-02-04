@@ -8,7 +8,7 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
-import { clone, uniqueId } from "lodash";
+import { clone, cloneDeep, uniqueId } from "lodash";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import { useTimer } from "react-timer-hook";
@@ -16,6 +16,7 @@ import { useTimer } from "react-timer-hook";
 import { api } from "@/lib/api";
 import { useRouter } from "@/hooks/use-router";
 import { toast } from "@/components/ui/toaster";
+import { useCurrentValue } from "@/hooks";
 
 export interface ConfirmAccountModalProps {
   children: ReactNode;
@@ -25,7 +26,7 @@ export interface ConfirmAccountModalProps {
 }
 
 export interface ConfirmAccountInputs {
-  action: "send-code" | "validate-code";
+  action: "sendCode" | "validateCode";
   username: string;
   code: string;
 }
@@ -39,12 +40,12 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
 
   const form = useForm<ConfirmAccountInputs>({
     defaultValues: {
-      action: "send-code",
+      action: "sendCode",
       username: searchParams.get("username") || "",
       code: ""
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+  const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
 
   const resendCodeTimer = useTimer({
     expiryTimestamp: new Date(new Date().getTime() + 59 * 1000),
@@ -61,18 +62,18 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
       setStatus("submitting");
 
       switch (action) {
-        case "send-code": {
+        case "sendCode": {
           await api.post("/identity/confirm", { ...inputs, sendCode: true });
           setCodeSent(true);
           resendCodeTimer.start();
           toast.success("Security code sent.", { id: toastId });
           break;
         }
-        case "validate-code": {
+        case "validateCode": {
           const response = await api.post("/identity/confirm", inputs);
           api.user.next(response.data);
           onClose();
-          router.replace(searchParams.get("callback") || pathname);
+          router.push(searchParams.get("callback") || pathname);
           break;
         }
       }
@@ -96,7 +97,7 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(searchParams.get("callback") || pathname);
+        router.push(searchParams.get("callback") || pathname);
       }}
     >
       <ModalContent>
@@ -138,15 +139,15 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
                       variant="solid"
                       size="sm"
                       type="button"
-                      isLoading={status == "submitting" && form.watch("action") == "send-code"}
+                      isLoading={status == "submitting" && form.watch("action") == "sendCode"}
                       spinnerPlacement="end"
                       isDisabled={status == "submitting" || resendCodeTimer.isRunning}
                       onPress={() => {
-                        form.setValue("action", "send-code");
+                        form.setValue("action", "sendCode");
                         form.handleSubmit(submit)();
                       }}
                     >
-                      {status == "submitting" && form.watch("action") == "send-code" ? "Requesting code..." : "Request code"}
+                      {status == "submitting" && form.watch("action") == "sendCode" ? "Requesting code..." : "Request code"}
                     </Button>
                   }
                 />
@@ -157,9 +158,9 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
               color="primary"
               type="button"
               isDisabled={status != "idle" || !codeSent}
-              isLoading={status == "submitting" && form.watch("action") == "validate-code"}
+              isLoading={status == "submitting" && form.watch("action") == "validateCode"}
               onPress={() => {
-                form.setValue("action", "validate-code");
+                form.setValue("action", "validateCode");
                 form.handleSubmit(submit)();
               }}
             >

@@ -56,10 +56,11 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
 
 interface AuthorizeProps {
   patterns: (PathPattern<string> | string)[];
+  modals: string[];
   children: ReactNode;
 }
 
-export const Authorize = ({ patterns, children }: AuthorizeProps) => {
+export const Authorize = ({ patterns, modals, children }: AuthorizeProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -67,15 +68,15 @@ export const Authorize = ({ patterns, children }: AuthorizeProps) => {
   const previousUrl = usePreviousValue(currentUrl);
   const matches = patterns.map((pattern) => matchPath(pattern, currentUrl));
   const currentMatch = matches.find((match) => match);
-
   const currentUser = useUser();
+  const currentModal = modals.find(modal => modal == searchParams.get("modal"));
 
   useEffect(() => {
-    if (currentMatch && !currentUser) {
+    if ((currentMatch || currentModal) && !currentUser) {
       const refererUrl = !matches.some((match) => previousUrl?.startsWith(match?.pathnameBase || "")) ? previousUrl : "/";
       const callbackUrl = buildCallbackUrl({ modal: "sign-in" }, currentUrl, refererUrl);
       router.replace(callbackUrl);
     }
-  }, [!!currentUser, !!currentMatch]);
+  }, [!!currentUser, !!currentMatch, !!currentModal]);
   return <>{children}</>;
 };
