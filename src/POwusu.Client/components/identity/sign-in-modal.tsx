@@ -12,7 +12,7 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
-import { clone, uniqueId } from "lodash";
+import { clone, cloneDeep, uniqueId } from "lodash";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 
@@ -23,6 +23,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Render } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
 import { GoogleIcon } from "@/components/icons";
+import { useCurrentValue } from "@/hooks";
 
 export interface SignInModalProps {
   children: ReactNode;
@@ -53,7 +54,7 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
       method: (searchParams.get("method") as SignInMethods) || undefined
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+  const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
 
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
@@ -79,12 +80,12 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
       }
 
       onClose();
-      router.replace(searchParams.get("callback") || pathname);
+      router.push(searchParams.get("callback") || pathname);
     } catch (error) {
       console.error(error);
 
       if (isAxiosError(error) && error?.response?.data?.requiresConfirmation) {
-        router.replace(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username, modal: "confirm-account" } }));
+        router.push(queryString.stringifyUrl({ url: currentUrl, query: { username: inputs.username, modal: "confirm-account" } }));
       } else {
         const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
         fields.forEach(([name, message]) => {
@@ -104,7 +105,7 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(pathname);
+        router.push(pathname);
       }}
     >
       <ModalContent>

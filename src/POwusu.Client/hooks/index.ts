@@ -11,6 +11,7 @@ export * from "./use-isomorphic-effect";
 export * from "./use-locked-body";
 export * from "./use-media-query";
 export * from "./use-previous-value";
+export * from "./use-current-value";
 export * from "./use-scroll";
 export * from "./use-state-async";
 export * from "./use-step";

@@ -324,60 +324,38 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync<TChangeAccountForm>(TChangeAccountForm form)
-            where TChangeAccountForm : ChangeAccountForm
+        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync(ChangeEmailForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
 
-            var contactType = form switch
-            {
-                ChangeEmailForm _ => ContactType.Email,
-                ChangePhoneNumberForm _ => ContactType.PhoneNumber,
-                _ => throw new InvalidOperationException("Unsupported form type for determining contact type.")
-            };
-
             var currentUser = await _userContext.GetUserAsync();
             if (currentUser is null) return TypedResults.Unauthorized();
 
+
+            if (string.Equals(_userManager.NormalizeEmail(form.NewEmail), currentUser.NormalizedEmail, StringComparison.OrdinalIgnoreCase))
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                { { nameof(form.NewEmail), [$"'{nameof(form.NewEmail).Humanize(LetterCasing.Sentence)}' is the same as the current email."] } });
+
+
             if (form.SendCode)
             {
-                if (contactType == ContactType.Email)
+                var code = await _userManager.GenerateChangeEmailTokenAsync(currentUser, form.NewEmail);
+
+                var message = new EmailMessage
                 {
-                    var code = await _userManager.GenerateChangeEmailTokenAsync(currentUser, form.NewUsername);
+                    Subject = "Change Your Email Address",
+                    Body = await _viewRenderer.RenderAsync("/Templates/Email/ChangeAccount", (currentUser, code)),
+                    Recipients = new[] { form.NewEmail }
+                };
 
-                    var message = new EmailMessage
-                    {
-                        Subject = "Change Your Email Address",
-                        Body = await _viewRenderer.RenderAsync("/Templates/Email/ChangeAccount", (currentUser, code)),
-                        Recipients = new[] { form.CurrentUsername }
-                    };
-
-                    await _emailSender.SendAsync(message);
-                }
-                else if (contactType == ContactType.PhoneNumber)
-                {
-                    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, form.NewUsername);
-
-                    var message = new TextMessage
-                    {
-                        Body = await _viewRenderer.RenderAsync("/Templates/Text/ChangeAccount", (currentUser, code)),
-                        Recipients = new[] { form.CurrentUsername }
-                    };
-
-                    await _smsSender.SendAsync(message);
-                }
+                await _emailSender.SendAsync(message);
 
                 return TypedResults.Ok();
             }
 
-            var result = contactType switch
-            {
-                ContactType.Email => await _userManager.ChangeEmailAsync(currentUser, form.NewUsername, form.Code),
-                ContactType.PhoneNumber => await _userManager.ChangePhoneNumberAsync(currentUser, form.NewUsername, form.Code),
-                _ => throw new InvalidOperationException()
-            };
+            var result = await _userManager.ChangeEmailAsync(currentUser, form.NewEmail, form.Code);
 
             if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
@@ -385,6 +363,45 @@ namespace POwusu.Server.Services
             var model = await BuildUserWithTokenModelAsync(currentUser);
             return TypedResults.Ok(model);
         }
+
+        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync(ChangePhoneNumberForm form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+            var formValidation = await _validator.ValidateAsync(form);
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            var currentUser = await _userContext.GetUserAsync();
+            if (currentUser is null) return TypedResults.Unauthorized();
+
+            if (string.Equals(form.NewPhoneNumber, currentUser.PhoneNumber, StringComparison.OrdinalIgnoreCase))
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                { { nameof(form.NewPhoneNumber), [$"'{nameof(form.NewPhoneNumber).Humanize(LetterCasing.Sentence)}' is the same as the current phone number."] } });
+
+            if (form.SendCode)
+            {
+                var code = await _userManager.GenerateChangeEmailTokenAsync(currentUser, form.NewPhoneNumber);
+
+                var message = new EmailMessage
+                {
+                    Subject = "Change Your Email Address",
+                    Body = await _viewRenderer.RenderAsync("/Templates/Email/ChangeAccount", (currentUser, code)),
+                    Recipients = new[] { form.NewPhoneNumber }
+                };
+
+                await _emailSender.SendAsync(message);
+
+                return TypedResults.Ok();
+            }
+
+            var result = await _userManager.ChangeEmailAsync(currentUser, form.NewPhoneNumber, form.Code);
+
+            if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+            { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
+
+            var model = await BuildUserWithTokenModelAsync(currentUser);
+            return TypedResults.Ok(model);
+        }
+
 
         public async Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form)
         {
@@ -604,8 +621,9 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ConfirmAccountAsync(ConfirmAccountForm form);
 
-        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync<TChangeAccountForm>(TChangeAccountForm form)
-            where TChangeAccountForm : ChangeAccountForm;
+        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync(ChangeEmailForm form);
+
+        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync(ChangePhoneNumberForm form);
 
         Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
 

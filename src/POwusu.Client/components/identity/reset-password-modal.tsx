@@ -9,7 +9,7 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import { isAxiosError } from "axios";
-import { clone, uniqueId } from "lodash";
+import { clone, cloneDeep, uniqueId } from "lodash";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 import { useTimer } from "react-timer-hook";
@@ -18,6 +18,7 @@ import { api } from "@/lib/api";
 import { useRouter } from "@/hooks/use-router";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/toaster";
+import { useCurrentValue } from "@/hooks";
 
 export interface ResetPasswordModalProps {
   children: ReactNode;
@@ -27,7 +28,7 @@ export interface ResetPasswordModalProps {
 }
 
 export interface ResetPasswordInputs {
-  action: "send-code" | "validate-code";
+  action: "sendCode" | "validateCode";
   username: string;
   code: string;
   newPassword: string;
@@ -44,11 +45,11 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
     defaultValues: {
       username: searchParams.get("username") || "",
       code: "",
-      action: "send-code",
+      action: "sendCode",
       newPassword: ""
     }
   });
-  const formErrors = useMemo(() => clone(form.formState.errors), [form.formState.isSubmitting, form.formState.isValid]);
+  const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
 
   const resendCodeTimer = useTimer({
     expiryTimestamp: new Date(new Date().getTime() + 59 * 1000),
@@ -65,18 +66,18 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
       setStatus("submitting");
 
       switch (action) {
-        case "send-code": {
+        case "sendCode": {
           await api.post("/identity/password/reset", { ...inputs, sendCode: true });
           setCodeSent(true);
           resendCodeTimer.start();
           toast.success("Security code sent.", { id: toastId });
           break;
         }
-        case "validate-code": {
+        case "validateCode": {
           const response = await api.post("/identity/password/reset", inputs);
           api.user.next(response.data);
           onClose();
-          router.replace(searchParams.get("callback") || pathname);
+          router.push(searchParams.get("callback") || pathname);
           break;
         }
       }
@@ -100,7 +101,7 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.replace(searchParams.get("callback") || pathname);
+        router.push(searchParams.get("callback") || pathname);
       }}
     >
       <ModalContent>
@@ -142,15 +143,15 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
                       variant="solid"
                       size="sm"
                       type="button"
-                      isLoading={status == "submitting" && form.watch("action") == "send-code"}
+                      isLoading={status == "submitting" && form.watch("action") == "sendCode"}
                       spinnerPlacement="end"
                       isDisabled={status == "submitting" || resendCodeTimer.isRunning}
                       onPress={() => {
-                        form.setValue("action", "send-code");
+                        form.setValue("action", "sendCode");
                         form.handleSubmit(submit)();
                       }}
                     >
-                      {status == "submitting" && form.watch("action") == "send-code" ? "Requesting code..." : "Request code"}
+                      {status == "submitting" && form.watch("action") == "sendCode" ? "Requesting code..." : "Request code"}
                     </Button>
                   }
                 />
@@ -170,9 +171,9 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
               color="primary"
               type="button"
               isDisabled={status != "idle" || !codeSent}
-              isLoading={status == "submitting" && form.watch("action") == "validate-code"}
+              isLoading={status == "submitting" && form.watch("action") == "validateCode"}
               onPress={() => {
-                form.setValue("action", "validate-code");
+                form.setValue("action", "validateCode");
                 form.handleSubmit(submit)();
               }}
             >

@@ -4,47 +4,39 @@ using POwusu.Server.Extensions.Validation;
 
 namespace POwusu.Server.Models.Identity
 {
-    public abstract class ChangeAccountForm
+    public class ChangeEmailForm 
     {
-        public string CurrentUsername { get; set; } = null!;
-
-        public string NewUsername { get; set; } = null!;
+        public string NewEmail { get; set; } = null!;
 
         public string Code { get; set; } = null!;
 
         public bool SendCode { get; set; }
     }
 
-    public abstract class ChangeAccountFormValidator<TChangeAccountForm> : AbstractValidator<TChangeAccountForm>
-        where TChangeAccountForm : ChangeAccountForm
+    public class ChangeEmailFormValidator : AbstractValidator<ChangeEmailForm>
     {
-        protected ChangeAccountFormValidator(ContactType contactType)
+        public ChangeEmailFormValidator()
         {
-            RuleFor(_ => _.CurrentUsername).NotEmpty().WithName($"Current {contactType.ToString().Humanize(LetterCasing.LowerCase)}").MaximumLength(128).Username(contactType);
-            RuleFor(_ => _.NewUsername).NotEmpty().WithName($"New {contactType.ToString().Humanize(LetterCasing.LowerCase)}").MaximumLength(128).Username().NotEqual(_ => _.CurrentUsername);
+            RuleFor(_ => _.NewEmail).NotEmpty().MaximumLength(128).Email();
             RuleFor(_ => _.Code).NotEmpty().MaximumLength(128).When(_ => !_.SendCode, ApplyConditionTo.AllValidators);
         }
     }
 
-    public class ChangeEmailForm : ChangeAccountForm
+    public class ChangePhoneNumberForm
     {
+        public string NewPhoneNumber { get; set; } = null!;
+
+        public string Code { get; set; } = null!;
+
+        public bool SendCode { get; set; }
     }
 
-    public class ChangeEmailFormValidator : ChangeAccountFormValidator<ChangeEmailForm>
+    public class ChangePhoneNumberFormValidator : AbstractValidator<ChangePhoneNumberForm>
     {
-        public ChangeEmailFormValidator() : base(ContactType.Email)
+        public ChangePhoneNumberFormValidator()
         {
-        }
-    }
-
-    public class ChangePhoneNumberForm : ChangeAccountForm
-    {
-    }
-
-    public class ChangePhoneNumberFormValidator : ChangeAccountFormValidator<ChangePhoneNumberForm>
-    {
-        public ChangePhoneNumberFormValidator() : base(ContactType.PhoneNumber)
-        {
+            RuleFor(_ => _.NewPhoneNumber).NotEmpty().MaximumLength(128).PhoneNumber();
+            RuleFor(_ => _.Code).NotEmpty().MaximumLength(128).When(_ => !_.SendCode, ApplyConditionTo.AllValidators);
         }
     }
 }

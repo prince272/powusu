@@ -48,7 +48,9 @@ export function Providers({ children, initialUser }: ProvidersProps) {
         <ModalRouterProvider modals={modals}>
           <NextUIProvider navigate={router.push}>
             <NextThemesProvider {...{ attribute: "class", defaultTheme: "dark" }}>
-              <Authorize patterns={["/portal/*"]}>{children}</Authorize>
+              <Authorize patterns={["/portal/*"]} modals={["settings", "sign-out"]}>
+                {children}
+              </Authorize>
               <Toaster />
               <NextTopLoader color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" showSpinner={false} />
             </NextThemesProvider>

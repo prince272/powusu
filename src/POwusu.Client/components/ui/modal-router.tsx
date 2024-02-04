@@ -59,7 +59,7 @@ export const ModalRouterProvider = ({ children, modals } : ModalRouterProps) => 
 
       if (currentModal.key) {
         modalProps.onClose();
-        await sleep(300);
+        await sleep(100);
         await setCurrentModal(emptyModal);
       }
 

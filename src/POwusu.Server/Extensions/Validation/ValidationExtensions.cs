@@ -77,22 +77,24 @@ namespace POwusu.Server.Extensions.Validation
             });
         }
 
-        public static IRuleBuilderOptionsConditions<T, string> Email<T>(this IRuleBuilder<T, string> ruleBuilder)
+        public static IRuleBuilderOptions<T, string> Email<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            return ruleBuilder.Custom((value, context) =>
+            return ruleBuilder.Must((value) =>
             {
-                try { ValidationHelper.ParseEmail(value); }
-                catch (FormatException) { context.AddFailure("'{PropertyName}' is not valid."); }
-            });
+                try { ValidationHelper.ParseEmail(value); return true; }
+                catch (FormatException) { }
+                return false;
+            }).WithMessage("'{PropertyName}' is not valid.");
         }
 
-        public static IRuleBuilderOptionsConditions<T, string> PhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
+        public static IRuleBuilderOptions<T, string> PhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            return ruleBuilder.Custom((value, context) =>
+            return ruleBuilder.Must((value) =>
             {
-                try { ValidationHelper.ParsePhoneNumber(value); }
-                catch (FormatException) { context.AddFailure("'{PropertyName}' is not valid."); }
-            });
+                try { ValidationHelper.ParsePhoneNumber(value); return true; }
+                catch (FormatException) { }
+                return false;
+            }).WithMessage("'{PropertyName}' is not valid.");
         }
 
         // How can I create strong passwords with FluentValidation?
