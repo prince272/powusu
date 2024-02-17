@@ -1,13 +1,13 @@
 "use client";
 
 import React, { Key, ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import NextLink from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useBreakpoint, useCurrentValue, usePreviousValue } from "@/hooks";
+import { Link as NextLink } from "@/providers/navigation";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
-import { getErrorMessage } from "@/utils/api";
-import { ChevronLeftRegular, PasswordRegular, PeopleSwapFilled, PeopleSwapRegular, PersonRegular, SettingsRegular } from "@fluentui/react-icons";
+import { getApiResponse, getErrorTitle } from "@/utils/api";
+import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Input, Textarea } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -18,17 +18,15 @@ import { clone, cloneDeep, create, set, uniqueId } from "lodash";
 import { parseAsString, useQueryState } from "nuqs";
 import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
-import Sticky from "react-stickynode";
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
-import { useRouter } from "@/hooks/use-router";
 import { toast } from "@/components/ui/toaster";
 
 import { FileInput } from "../ui/file-input";
 import { PasswordInput } from "../ui/password-input";
 import { Portal } from "../ui/portal";
-import { Render } from "../ui/render";
+import { Switch } from "../ui/render";
 
 export interface SettingsModalProps {
   children: ReactNode;
@@ -50,6 +48,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const [selectedKey, setSelectedKey] = useQueryState("view", parseAsString.withOptions({ shallow: false }));
   const footerId = useRef(uniqueId("_footer_")).current;
 
+  const sm = useBreakpoint({ sm: "up" });
   return (
     <Modal
       isDismissable={false}
@@ -74,10 +73,10 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               }}
             >
               <span className={cn(selectedKey ? "sm:hidden" : "hidden")}>
-                <ChevronLeftRegular fontSize={20} />
+                <Icon icon="solar:alt-arrow-left-outline" width="24" height="24" />
               </span>
               <span className={cn(selectedKey ? "hidden sm:block" : "")}>
-                <SettingsRegular fontSize={20} />
+                <Icon icon="solar:settings-bold" width="24" height="24" />
               </span>
             </Button>
             <div>Settings</div>
@@ -87,14 +86,14 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           <div className={cn("sticky top-0 w-full pl-3 pr-3 sm:w-auto", selectedKey ? "hidden sm:block" : "")}>
             <div className="grid items-start gap-x-2 gap-y-3 sm:w-56">
               {[
-                { key: "edit-profile", label: <>Edit profile</>, icon: <PersonRegular fontSize={24} /> },
-                { key: "change-account", label: <>Change account</>, icon: <PeopleSwapRegular fontSize={24} /> },
-                { key: "change-password", label: <>{hasPassword ? "Change password" : "Create password"}</>, icon: <PasswordRegular fontSize={24} /> }
+                { key: "edit-profile", label: <>Edit profile</>, icon: <Icon icon="solar:user-bold" width="24" height="24" /> },
+                { key: "change-account", label: <>Change account</>, icon: <Icon icon="solar:users-group-rounded-bold" width="24" height="24" /> },
+                { key: "change-password", label: <>{hasPassword ? "Change password" : "Create password"}</>, icon: <Icon icon="solar:lock-keyhole-bold" width="24" height="24" /> }
               ].map((item) => (
                 <Button
                   key={item.key}
-                  variant={item.key == selectedKey ? "flat" : "light"}
-                  color={item.key == selectedKey ? "primary" : "default"}
+                  variant={(selectedKey ? item.key == selectedKey : item.key == "edit-profile" && sm) ? "flat" : "light"}
+                  color={(selectedKey ? item.key == selectedKey : item.key == "edit-profile" && sm) ? "primary" : "default"}
                   className="justify-start"
                   startContent={item.icon}
                   onPress={() => setSelectedKey(item.key)}
@@ -105,11 +104,11 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
             </div>
           </div>
           <div className={cn("w-full px-6 sm:pl-3 sm:pr-6", selectedKey ? "" : "hidden sm:block")}>
-            <Render switch={selectedKey || "edit-profile"}>
+            <Switch switch={selectedKey || "edit-profile"}>
               <EditProfileView key="edit-profile" footerId={footerId} />
               <ChangeAccountTabs key="change-account" footerId={footerId} />
               <ChangePasswordView key="change-password" footerId={footerId} />
-            </Render>
+            </Switch>
           </div>
         </ModalBody>
         <ModalFooter id={footerId} className={cn("w-full items-center justify-end text-center text-sm", selectedKey ? "" : "hidden sm:flex")}></ModalFooter>
@@ -130,9 +129,9 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
   const form = useForm<EditProfileInputs>({
     defaultValues: {
       imageId: currentUser?.imageId,
-      firstName: currentUser?.firstName,
-      lastName: currentUser?.lastName,
-      bio: currentUser?.bio
+      firstName: currentUser?.firstName || "",
+      lastName: currentUser?.lastName || "",
+      bio: currentUser?.bio || ""
     }
   });
   const formErrors = useCurrentValue(cloneDeep(form.formState.errors), () => form.formState.isSubmitting);
@@ -140,24 +139,23 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
   const toastId = useRef(uniqueId("_toast_")).current;
 
   const submit: SubmitHandler<EditProfileInputs> = async (inputs) => {
-    try {
-      setStatus("submitting");
+    setStatus("submitting");
 
-      const response = await api.put("/identity/profile", inputs);
-      api.user.next(response.data);
-      toast.success("Profile updated.", { id: toastId });
-    } catch (error) {
-      console.error(error);
+    const { data: nextUser, error } = await getApiResponse(api.put("/identity/profile", inputs));
 
-      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
-      fields.forEach(([name, message]) => {
+    if (error) {
+      error.fields.forEach(([name, message]) => {
         form.setError(name as any, { message: message?.join("\n") });
       });
 
-      toast.error(getErrorMessage(error), { id: toastId });
-    } finally {
       setStatus("idle");
+      toast.error(error.title, { id: toastId });
+      return;
     }
+
+    api.user.next(nextUser);
+    setStatus("idle");
+    toast.success("Profile updated.", { id: toastId });
   };
 
   return (
@@ -170,13 +168,13 @@ const EditProfileView = ({ footerId }: { footerId: string }) => {
             <FileInput
               {...field}
               onUploadError={(error) => {
-                toast.error(getErrorMessage(error, "Unable to upload image."), { id: toastId });
+                toast.error(getErrorTitle(error, "Unable to upload image."), { id: toastId });
               }}
               onDowloadError={(error) => {
-                toast.error(getErrorMessage(error, "Unable to load image."), { id: toastId });
+                toast.error(getErrorTitle(error, "Unable to load image."), { id: toastId });
               }}
               onRevertError={(error) => {
-                toast.error(getErrorMessage(error, "Unable to remove image."), { id: toastId });
+                // toast.error(getErrorTitle(error, "Unable to remove image."), { id: toastId });
               }}
               className="h-44 w-44"
               variant="circle"
@@ -288,11 +286,11 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
         action: "sendCode",
         ...{
           email: {
-            currentEmail: currentUser?.email,
+            currentEmail: currentUser?.email || "",
             newEmail: ""
           },
           phoneNumber: {
-            currentPhoneNumber: currentUser?.phoneNumber,
+            currentPhoneNumber: currentUser?.phoneNumber || "",
             newPhoneNumber: ""
           }
         }[contactType],
@@ -312,35 +310,60 @@ const createChangeAccountView = (contactType: "email" | "phoneNumber") => {
     const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
     const submit: SubmitHandler<ChangeAccountInputs> = async ({ action, ...inputs }) => {
-      try {
-        setStatus("submitting");
+      setStatus("submitting");
 
-        switch (action) {
-          case "sendCode": {
-            await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, { ...inputs, sendCode: true });
-            setCodeSent(true);
-            resendCodeTimer.start();
-            toast.success("Security code sent.", { id: toastId });
-            break;
+      switch (action) {
+        case "sendCode": {
+          const { error } = await getApiResponse(api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, { ...inputs, sendCode: true }));
+
+          if (error) {
+            error.fields.forEach(([name, message]) => {
+              form.setError(name as any, { message: message?.join("\n") });
+            });
+
+            setStatus("idle");
+            toast.error(error.title, { id: toastId });
+            return;
           }
-          case "validateCode": {
-            const response = await api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, inputs);
-            api.user.next(response.data);
-            toast.success("Account updated successfully.", { id: toastId });
-            break;
-          }
+
+          setCodeSent(true);
+          setStatus("idle");
+          resendCodeTimer.start();
+          toast.success("Security code sent.", { id: toastId });
+          break;
         }
-      } catch (error) {
-        console.error(error);
+        case "validateCode": {
+          const { data: nextUser, error } = await getApiResponse(api.post(`/identity/${{ email: "email", phoneNumber: "phone-number" }[contactType]}/change`, inputs));
 
-        const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
-        fields.forEach(([name, message]) => {
-          form.setError(name as any, { message: message?.join("\n") });
-        });
+          if (error) {
+            error.fields.forEach(([name, message]) => {
+              form.setError(name as any, { message: message?.join("\n") });
+            });
 
-        toast.error(getErrorMessage(error), { id: toastId });
-      } finally {
-        setStatus("idle");
+            setStatus("idle");
+            toast.error(error.title, { id: toastId });
+            return;
+          }
+
+          api.user.next(nextUser);
+          form.reset({
+            action: "sendCode",
+            ...{
+              email: {
+                currentEmail: nextUser?.email,
+                newEmail: ""
+              },
+              phoneNumber: {
+                currentPhoneNumber: nextUser?.phoneNumber,
+                newPhoneNumber: ""
+              }
+            }[contactType],
+            code: ""
+          });
+          setStatus("idle");
+          toast.success("Account updated successfully.", { id: toastId });
+          break;
+        }
       }
     };
 
@@ -470,24 +493,24 @@ const ChangePasswordView = ({ footerId }: { footerId: string }) => {
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
 
   const submit: SubmitHandler<ChangePasswordInputs> = async (inputs) => {
-    try {
-      setStatus("submitting");
+    setStatus("submitting");
 
-      await api.post(`/identity/password/${!hasPassword ? "create" : "change"}`, inputs);
-      form.reset();
-      toast.success("Password changed.", { id: toastId });
-    } catch (error) {
-      console.error(error);
+    const { data: nextUser, error } = await getApiResponse(api.post(`/identity/password/${!hasPassword ? "create" : "change"}`, inputs));
 
-      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
-      fields.forEach(([name, message]) => {
+    if (error) {
+      error.fields.forEach(([name, message]) => {
         form.setError(name as any, { message: message?.join("\n") });
       });
 
-      toast.error(getErrorMessage(error), { id: toastId });
-    } finally {
       setStatus("idle");
+      toast.error(error.title, { id: toastId });
+      return;
     }
+
+    api.user.next(nextUser);
+    form.reset();
+    setStatus("idle");
+    toast.success("Password changed.", { id: toastId });
   };
 
   return (

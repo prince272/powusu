@@ -18,11 +18,6 @@ namespace POwusu.Server.Extensions.Identity
         {
             var principal = await base.CreateAsync(user);
 
-            ((ClaimsIdentity)principal.Identity!).AddClaims(new Claim[] {
-                new (ClaimTypes.GivenName, user.FirstName),
-                new (ClaimTypes.Surname, user.LastName),
-            });
-
             return principal;
         }
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { usePreviousValue, useStateAsync } from "@/hooks";
 import { buildCallbackUrl } from "@/utils";
 import { matchPath, PathPattern } from "@/utils/matchPath";
@@ -11,7 +11,6 @@ import queryString from "query-string";
 
 import { User } from "@/types/user";
 import { api } from "@/lib/api";
-import { useRouter } from "@/hooks/use-router";
 
 export type UserContextType = { user: User | null | undefined; setUser: (user: User) => void };
 
@@ -42,13 +41,13 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
   useEffect(() => {
     api.user.next(initialUser);
 
-    const subscribition = api.user.subscribe({
+    const subscription = api.user.subscribe({
       next: (nextUser) => {
         setUser(nextUser);
       }
     });
 
-    return () => subscribition.unsubscribe();
+    return () => subscription.unsubscribe();
   }, []);
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
@@ -69,7 +68,7 @@ export const Authorize = ({ patterns, modals, children }: AuthorizeProps) => {
   const matches = patterns.map((pattern) => matchPath(pattern, currentUrl));
   const currentMatch = matches.find((match) => match);
   const currentUser = useUser();
-  const currentModal = modals.find(modal => modal == searchParams.get("modal"));
+  const currentModal = modals.find((modal) => modal == searchParams.get("modal"));
 
   useEffect(() => {
     if ((currentMatch || currentModal) && !currentUser) {

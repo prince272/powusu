@@ -1,7 +1,7 @@
 "use client";
 
 import { Metadata } from "next";
-import NextLink from "next/link";
+import { Link as NextLink } from "@/providers/navigation";
 import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 

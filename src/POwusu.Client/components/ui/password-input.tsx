@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementRef, forwardRef, useState } from "react";
-import { EyeOffRegular, EyeRegular } from "@fluentui/react-icons";
+import { Icon } from "@iconify/react";
 import { Input, InputProps } from "@nextui-org/input";
 
 const PasswordInput = forwardRef<ElementRef<typeof Input>, InputProps>((props, ref) => {
@@ -13,9 +13,9 @@ const PasswordInput = forwardRef<ElementRef<typeof Input>, InputProps>((props, r
       endContent={
         <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
           {isVisible ? (
-            <EyeOffRegular fontSize={24} className="pointer-events-none text-default-400" />
+            <Icon className="pointer-events-none text-default-400" icon="solar:eye-closed-bold" width="24" height="24" />
           ) : (
-            <EyeRegular fontSize={24} className="pointer-events-none text-default-400" />
+            <Icon className="pointer-events-none text-default-400" icon="solar:eye-bold" width="24" height="24" />
           )}
         </button>
       }

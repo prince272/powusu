@@ -40,6 +40,8 @@ namespace POwusu.Server.Models.Blog
 
         public DateTimeOffset? PublishedAt { get; set; }
 
+        public bool Published { get; set; }
+
         public DateTimeOffset? DeletedAt { get; set; }
 
         public bool Deleted { get; set; }

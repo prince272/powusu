@@ -1,12 +1,15 @@
 ﻿using FluentValidation;
+using System.ComponentModel;
 
 namespace POwusu.Server.Models.Blog
 {
     public class PostsFilter
     {
-        public int? Page { get; set; }
+        [DefaultValue(1)]
+        public int Page { get; set; } = 1;
 
-        public int? PageSize { get; set; }
+        [DefaultValue(25)]
+        public int PageSize { get; set; } = 25;
     }
 
     public class PostsFilterValidator : AbstractValidator<PostsFilter>

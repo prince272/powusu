@@ -19,3 +19,4 @@ export * from "./use-throttled-callback";
 export * from "./use-timeout";
 export * from "./use-window-event";
 export * from "./use-hash-state";
+export * from "./use-interval";

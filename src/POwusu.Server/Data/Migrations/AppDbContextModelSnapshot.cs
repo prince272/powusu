@@ -129,6 +129,9 @@ namespace POwusu.Server.Data.Migrations
                     b.Property<string>("ImageId")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Published")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("TEXT");
 
@@ -140,7 +143,6 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Summary")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -169,7 +171,6 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -229,7 +230,6 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("HasPassword")
@@ -242,7 +242,6 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")

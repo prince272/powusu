@@ -165,8 +165,8 @@ namespace POwusu.Server.Services
                 externalLoginInfo.Principal.FindFirstValue(ClaimTypes.OtherPhone) ??
                 externalLoginInfo.Principal.FindFirstValue(ClaimTypes.HomePhone))!;
 
-            var firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
-            var lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
+            var firstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
+            var lastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
 
             var contactType = ValidationHelper.GetContactType(username);
 
@@ -181,7 +181,9 @@ namespace POwusu.Server.Services
             if (user is null)
             {
                 user = new User();
-                user.UserName = await GenerateUserNameAsync(firstName, lastName);
+                user.FirstName = firstName;
+                user.LastName = lastName;
+                user.UserName = await GenerateUserNameAsync(firstName ?? string.Empty, lastName ?? string.Empty);
                 user.Email = contactType == ContactType.Email ? username : null;
                 user.PhoneNumber = contactType == ContactType.PhoneNumber ? username : null;
                 user.CreatedAt = DateTimeOffset.UtcNow;
@@ -334,7 +336,7 @@ namespace POwusu.Server.Services
             if (currentUser is null) return TypedResults.Unauthorized();
 
 
-            if (string.Equals(_userManager.NormalizeEmail(form.NewEmail), currentUser.NormalizedEmail, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(currentUser.NormalizedEmail) && string.Equals(_userManager.NormalizeEmail(form.NewEmail), currentUser.NormalizedEmail, StringComparison.OrdinalIgnoreCase))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>
                 { { nameof(form.NewEmail), [$"'{nameof(form.NewEmail).Humanize(LetterCasing.Sentence)}' is the same as the current email."] } });
 
@@ -373,7 +375,7 @@ namespace POwusu.Server.Services
             var currentUser = await _userContext.GetUserAsync();
             if (currentUser is null) return TypedResults.Unauthorized();
 
-            if (string.Equals(form.NewPhoneNumber, currentUser.PhoneNumber, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(currentUser.PhoneNumber) && string.Equals(form.NewPhoneNumber, currentUser.PhoneNumber, StringComparison.OrdinalIgnoreCase))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>
                 { { nameof(form.NewPhoneNumber), [$"'{nameof(form.NewPhoneNumber).Humanize(LetterCasing.Sentence)}' is the same as the current phone number."] } });
 
@@ -403,7 +405,7 @@ namespace POwusu.Server.Services
         }
 
 
-        public async Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form)
+        public async Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -456,10 +458,11 @@ namespace POwusu.Server.Services
             if (!result.Succeeded) return TypedResults.ValidationProblem(new Dictionary<string, string[]>
             { { nameof(form.Code), [$"'{nameof(form.Code).Humanize(LetterCasing.Sentence)}' is not valid."] } });
 
-            return TypedResults.Ok();
+            var model = await BuildUserWithTokenModelAsync(user);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -485,10 +488,11 @@ namespace POwusu.Server.Services
             currentUser.HasPassword = true;
             await _userManager.UpdateAsync(currentUser);
 
-            return TypedResults.Ok();
+            var model = await BuildUserWithTokenModelAsync(currentUser);
+            return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form)
+        public async Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -510,7 +514,9 @@ namespace POwusu.Server.Services
                 return TypedResults.ValidationProblem(errors, title: "Unable to change password.");
 
             }
-            return TypedResults.Ok();
+
+            var model = await BuildUserWithTokenModelAsync(currentUser);
+            return TypedResults.Ok(model);
         }
 
         public async Task<Results<Ok<PrivateUserModel>, ValidationProblem, UnauthorizedHttpResult>> EditProfileAsync(EditProfileForm form)
@@ -625,11 +631,11 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> UpdateAccountAsync(ChangePhoneNumberForm form);
 
-        Task<Results<Ok, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
+        Task<Results<Ok, Ok<PrivateUserWithTokenModel>, ValidationProblem>> ResetPasswordAsync(ResetPasswordForm form);
 
-        Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> CreatePasswordAsync(CreatePasswordForm form);
 
-        Task<Results<Ok, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form);
+        Task<Results<Ok<PrivateUserWithTokenModel>, ValidationProblem, UnauthorizedHttpResult>> ChangePasswordAsync(ChangePasswordForm form);
 
         Task<Results<Ok<PrivateUserModel>, ValidationProblem, UnauthorizedHttpResult>> EditProfileAsync(EditProfileForm form);
 

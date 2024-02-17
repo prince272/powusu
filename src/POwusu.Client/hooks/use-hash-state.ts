@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import queryString from "query-string";
 
-import { useRouter } from "./use-router";
 
 // How do I get the pathname with hash.
 // source: https://github.com/vercel/next.js/discussions/49465

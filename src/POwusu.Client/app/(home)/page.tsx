@@ -1,4 +1,3 @@
-import NextLink from "next/link";
 import { Code } from "@nextui-org/code";
 import { Link } from "@nextui-org/link";
 import { Snippet } from "@nextui-org/snippet";
@@ -8,9 +7,9 @@ import queryString from "query-string";
 import { siteConfig } from "@/config/site";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
+import { Link as NextLink } from "@/providers/navigation";
 
 const Home = () => {
-
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="inline-block max-w-lg justify-center text-center">

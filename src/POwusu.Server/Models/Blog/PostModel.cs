@@ -18,6 +18,8 @@ namespace POwusu.Server.Models.Blog
 
         public string Slug { get; set; } = null!;
 
+        public string? ImageId { get; set; } = null!;
+
         public string? ImageUrl { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
@@ -25,6 +27,8 @@ namespace POwusu.Server.Models.Blog
         public DateTimeOffset? UpdatedAt { get; set; }
 
         public DateTimeOffset? PublishedAt { get; set; }
+
+        public bool Published { get; set; }
 
         public DateTimeOffset? DeletedAt { get; set; }
 

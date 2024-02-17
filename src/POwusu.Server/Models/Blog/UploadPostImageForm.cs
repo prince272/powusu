@@ -21,7 +21,7 @@ namespace POwusu.Server.Models.Blog
         public Stream Chunk { get; set; } = null!;
     }
 
-    public abstract class UploadPostImageFormValidator : AbstractValidator<UploadPostImageForm>
+    public class UploadPostImageFormValidator : AbstractValidator<UploadPostImageForm>
     {
         public UploadPostImageFormValidator(IOptions<BlogServiceOptions> blogServiceOptions)
         {

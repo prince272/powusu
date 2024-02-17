@@ -135,9 +135,9 @@ export type DefaultBreakpointMap = BreakpointMap<DefaultBreakpoints>;
 
 export const useBreakpoint = createBreakpointHook<DefaultBreakpoints>({
   xs: 0,
-  sm: 576,
+  sm: 640,
   md: 768,
-  lg: 992,
-  xl: 1200,
-  xxl: 1400
+  lg: 1024,
+  xl: 1280,
+  xxl: 1536
 });

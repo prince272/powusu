@@ -1,11 +1,20 @@
 import { ClassValue, clsx } from "clsx";
 import queryString, { StringifiableRecord } from "query-string";
+import React from "react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const forwardPropsToChildren = (children: React.ReactNode, props: any) => {
+  return React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, props);
+    }
+    return child;
+  });
+};
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -12,7 +12,7 @@ namespace POwusu.Server.Entities.Blog
 
         public string Title { get; set; } = null!;
 
-        public string Summary { get; set; } = null!;
+        public string? Summary { get; set; } = null!;
 
         public virtual PostContent Content { get; set; } = null!;
 
@@ -27,6 +27,8 @@ namespace POwusu.Server.Entities.Blog
         public DateTimeOffset? UpdatedAt { get; set; }
 
         public DateTimeOffset? PublishedAt { get; set; }
+
+        public bool Published { get; set; }
 
         public DateTimeOffset? DeletedAt { get; set; }
 

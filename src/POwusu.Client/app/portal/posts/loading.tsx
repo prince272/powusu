@@ -1,7 +1,10 @@
-import { Loader } from "@/components/ui/loader";
+import { PostsPage } from "@/components/portal/posts/posts-page";
 
-const Loading = () => {
-  return <Loader />;
+export interface PageProps {
+}
+
+const Loading = async (props: PageProps) => {
+  return <PostsPage initialStatus="mounting" />;
 };
 
 export default Loading;

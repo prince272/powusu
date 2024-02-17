@@ -1,14 +1,12 @@
 "use client";
 
 import { ComponentType, createContext, ReactNode, use, useContext, useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
 import { compareSearchParams, sleep } from "@/utils";
 import { useDisclosure } from "@nextui-org/modal";
 import PQueue from "p-queue";
 import queryString, { StringifiableRecord } from "query-string";
-
-import { useRouter } from "@/hooks/use-router";
 
 export interface ModalRouterProps {
   children: ReactNode;
@@ -35,7 +33,7 @@ export const useModalRouter = () => {
 const EmptyModalComponent = () => <></>;
 const emptyModal = { key: "", Component: EmptyModalComponent } as ModalRouterState;
 
-export const ModalRouterProvider = ({ children, modals } : ModalRouterProps) => {
+export const ModalRouterProvider = ({ children, modals }: ModalRouterProps) => {
   const queue = new PQueue({ concurrency: 1 });
 
   const [{ key, Component: ModalComponent }, setCurrentModal] = useStateAsync(useState<ModalRouterState>(emptyModal));

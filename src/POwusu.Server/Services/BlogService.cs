@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using POwusu.Server.Data;
 using POwusu.Server.Entities.Blog;
@@ -47,7 +48,7 @@ namespace POwusu.Server.Services
             _blogServiceOptions = blogServiceOptions;
         }
 
-        public async Task<Results<Ok<PostModel>, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> CreatePostAsync(CreatePostForm form)
+        public async Task<Results<Ok<PostModel>, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> CreatePostAsync(PostForm form)
         {
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
@@ -74,7 +75,7 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<Ok<PostModel>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> EditPostAsync(string postId, EditPostForm form)
+        public async Task<Results<Ok<PostModel>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> EditPostAsync(string postId, PostForm form)
         {
             if (string.IsNullOrEmpty(postId))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(postId)}' was specified.");
@@ -138,7 +139,7 @@ namespace POwusu.Server.Services
             if (string.IsNullOrEmpty(postId))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(postId)}' was specified.");
 
-            var post = await _appDbContext.Set<Post>().Include(_ => _.Content).FirstOrDefaultAsync(_ => _.Id == postId);
+            var post = await _appDbContext.Set<Post>().Include(_ => _.Content).Include(_ => _.Author).FirstOrDefaultAsync(_ => _.Id == postId);
             if (post is null) return TypedResults.NotFound();
 
             var currentUser = await _userContext.GetUserAsync();
@@ -151,8 +152,6 @@ namespace POwusu.Server.Services
         public async Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null)
         {
             filter ??= new PostsFilter();
-            filter.Page ??= 1;
-            filter.PageSize ??= 25;
 
             var formValidation = await _validator.ValidateAsync(filter);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
@@ -166,12 +165,12 @@ namespace POwusu.Server.Services
 
 
             var totalItems = await query.LongCountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalItems / filter.PageSize.Value);
-            var currentPage = Math.Max(1, Math.Min(filter.Page.Value, totalPages));
+            var totalPages = (int)Math.Ceiling((double)totalItems / filter.PageSize);
+            var currentPage = Math.Max(0, Math.Min(filter.Page, totalPages));
 
             var items = await query
-                .LongSkip((filter.Page.Value - 1) * filter.PageSize.Value)
-                .Take(filter.PageSize.Value)
+                .LongSkip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
                 .Include(_ => _.Author)
                 .ToListAsync();       
 
@@ -185,11 +184,8 @@ namespace POwusu.Server.Services
             return TypedResults.Ok(model);
         }
 
-        public async Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form)
+        public async Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(UploadPostImageForm form)
         {
-            if (string.IsNullOrEmpty(postId))
-                return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No '{nameof(postId)}' was specified.");
-
             if (form is null) throw new ArgumentNullException(nameof(form));
             var formValidation = await _validator.ValidateAsync(form);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
@@ -198,9 +194,6 @@ namespace POwusu.Server.Services
 
             if (status == FileWriteStatus.Started || status == FileWriteStatus.Completed)
             {
-                var post = await _appDbContext.Set<Post>().FindAsync(postId);
-                if (post is null) return TypedResults.NotFound();
-
                 var currentUser = await _userContext.GetUserAsync();
                 if (currentUser is null) return TypedResults.Unauthorized();
 
@@ -236,6 +229,7 @@ namespace POwusu.Server.Services
 
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             model.Title = user.GetTitle(roles);
+            model.ImageUrl = user.ImageId is not null ? _fileStorage.GetUrl(user.ImageId) : null;
             return model;
         }
 
@@ -274,9 +268,9 @@ namespace POwusu.Server.Services
 
     public interface IBlogService
     {
-        Task<Results<Ok<PostModel>, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> CreatePostAsync(CreatePostForm form);
+        Task<Results<Ok<PostModel>, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> CreatePostAsync(PostForm form);
 
-        Task<Results<Ok<PostModel>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> EditPostAsync(string postId, EditPostForm form);
+        Task<Results<Ok<PostModel>, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> EditPostAsync(string postId, PostForm form);
 
         Task<Results<Ok, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult>> DeletePostAsync(string postId);
 
@@ -284,7 +278,7 @@ namespace POwusu.Server.Services
 
         Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null);
 
-        Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(string postId, UploadPostImageForm form);
+        Task<Results<ContentHttpResult, NotFound, ValidationProblem, UnauthorizedHttpResult, ForbidHttpResult, StatusCodeHttpResult>> UploadPostImageAsync(UploadPostImageForm form);
     }
 
     public class BlogServiceOptions

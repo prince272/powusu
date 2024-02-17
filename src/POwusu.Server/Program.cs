@@ -72,7 +72,7 @@ try
         options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
-        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
     });
 
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -154,12 +154,12 @@ try
             var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>();
 
             policy
-            .WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
             .WithExposedHeaders("Content-Disposition")
-            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
+            .WithOrigins(allowedOrigins);
         });
     });
 

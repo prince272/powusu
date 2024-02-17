@@ -6,12 +6,11 @@ interface PortalProps {
   children: ReactNode;
 }
 
-export const Portal = ({ rootId, children } : PortalProps) => {
+export const Portal = ({ rootId, children }: PortalProps) => {
   const [target, setTarget] = useState<HTMLElement | null>(() => document.getElementById(rootId));
 
   useEffect(() => {
-
-    setTarget( document.getElementById(rootId));
+    setTarget(document.getElementById(rootId));
 
     const cleanup = () => {
       window.requestAnimationFrame(() => {

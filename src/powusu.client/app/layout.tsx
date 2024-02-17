@@ -2,7 +2,8 @@ import "@/styles/globals.css";
 
 import { ReactNode } from "react";
 import { Metadata } from "next";
-import { Providers } from "@/providers";
+import { AppProviders } from "@/providers";
+import { RouteChangeProvider } from "@/providers/navigation";
 import { getUser } from "@/providers/user/server";
 import { cn } from "@/utils";
 
@@ -33,7 +34,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
-        <Providers initialUser={currentUser}>{children}</Providers>
+        <RouteChangeProvider>
+          <AppProviders initialUser={currentUser}>{children}</AppProviders>
+        </RouteChangeProvider>
       </body>
     </html>
   );

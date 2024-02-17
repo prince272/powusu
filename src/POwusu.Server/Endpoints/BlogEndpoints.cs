@@ -19,25 +19,27 @@ namespace POwusu.Server.Endpoints
         {
             builder = builder.MapGroup("/blog");
 
-            builder.MapPost("/posts", ([FromServices] IBlogService blogService, [FromBody] CreatePostForm form)
+            builder.MapPost("/posts", ([FromServices] IBlogService blogService, [FromBody] PostForm form)
                 => blogService.CreatePostAsync(form));
 
-            builder.MapPut("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId, [FromBody] EditPostForm form)
+            builder.MapPut("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId, [FromBody] PostForm form)
                 => blogService.EditPostAsync(postId, form));
 
             builder.MapDelete("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
                 => blogService.DeletePostAsync(postId));
+            
+            builder.MapGet("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
+                => blogService.GetPostAsync(postId));
 
             builder.MapGet("/posts", ([FromServices] IBlogService blogService, [AsParameters] PostsFilter filter)
                 => blogService.GetPostsAsync(filter));
 
-            builder.MapPost("/posts/{postId}/images", async ([FromServices] IBlogService blogService, HttpContext httpContext, [FromRoute] string postId,
+            builder.MapPost("/posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length) =>
             {
-                var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(name)}".ToLower();
-                var path = httpContext.Request.Path.ToString().AppendPathSegment(uniqueName).ToString().ToLower();
-                await blogService.UploadPostImageAsync(postId, new UploadPostImageForm
+                var path = $"/posts/images/{Guid.NewGuid()}{Path.GetExtension(name)}".ToLower();
+                var result = await blogService.UploadPostImageAsync(new UploadPostImageForm
                 {
                     Name = name,
                     Path = path,
@@ -46,16 +48,15 @@ namespace POwusu.Server.Endpoints
                     Chunk = await httpContext.Request.Body.ToMemoryStreamAsync()
                 });
 
-                return Results.Content(path);
+                return result;
             });
 
-            builder.MapPatch("/posts/{postId}/images/{imageId}", async ([FromServices] IBlogService blogService, HttpContext httpContext, [FromRoute] string postId, [FromRoute] string imageId,
+            builder.MapPatch("/posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext, [FromQuery] string path,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length,
                 [FromHeader(Name = "Upload-Offset")] long offset) =>
             {
-                var path = httpContext.Request.Path.ToString().ToLower();
-                await blogService.UploadPostImageAsync(postId, new UploadPostImageForm
+                var result = await blogService.UploadPostImageAsync(new UploadPostImageForm
                 {
                     Name = name,
                     Path = path,
@@ -64,7 +65,7 @@ namespace POwusu.Server.Endpoints
                     Chunk = await httpContext.Request.Body.ToMemoryStreamAsync()
                 });
 
-                return Results.Ok();
+                return result;
             });
         }
     }

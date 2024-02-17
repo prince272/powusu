@@ -12,21 +12,24 @@ import {
   JSXElementConstructor,
   Key,
   ReactElement,
-  ReactNode
+  ReactNode,
+  useEffect,
+  useState
 } from "react";
 import { Merge } from "type-fest";
 
-export interface RenderProps {
+export interface SwitchProps {
   children?: ReactNode;
   switch?: Key[] | Key | null | ((value: Key | null) => boolean);
 }
 
-const Render = polly<ComponentType, RenderProps>(function Render({ as: Component = Fragment, children, switch: condition, ...rest }, ref?) {
-  const getChildren = (): ReactNode[] => {
+const Switch = polly<ComponentType, SwitchProps>(function Switch({ as: Component = Fragment, children: unknownChildren, switch: condition, ...rest }, ref?) {
+
+  const children = (() => {
     let cases: ReactNode[] = [];
     let defaults: ReactNode[] = [];
 
-    Children.forEach(Array.isArray(children) ? children : [children], (child) => {
+    Children.forEach(Array.isArray(unknownChildren) ? unknownChildren : [unknownChildren], (child) => {
       if (isValidElement(child)) {
         switch (child.key != null ? "case" : "default") {
           case "case":
@@ -54,6 +57,8 @@ const Render = polly<ComponentType, RenderProps>(function Render({ as: Component
             defaults.push(child);
             break;
         }
+      } else {
+        defaults.push(child);
       }
     });
 
@@ -62,18 +67,48 @@ const Render = polly<ComponentType, RenderProps>(function Render({ as: Component
     }
 
     return defaults;
-  };
-
-  const childrenArray = getChildren();
+  })();
 
   return (
     <Component {...rest} ref={ref}>
-      {childrenArray.length === 0 ? null : childrenArray}
+      {children}
     </Component>
   );
 });
 
-export { Render };
+const Mount = ({ children, clientOnly, interval } : { children: () => ReactNode, clientOnly?: boolean, interval?: number }) => {
+  const [key, setKey] = useState<number | null>();
+  const [isClient, setIsClient] = useState(!clientOnly);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (interval) {
+      intervalId = setInterval(() => {
+        // Generate a new key to trigger re-render
+        setKey((prevKey) => (prevKey || 0) + 1);
+      }, interval);
+    }
+
+    return () => {
+      // Clear interval on component unmount
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [interval]);
+
+  return <Fragment key={key}>{isClient ? children() : null}</Fragment>;
+};
+
+export { Switch, Mount };
+
+
 
 // React Polly
 // source: https://github.com/dgca/react-polly

@@ -1,7 +1,7 @@
 "use client";
 
-import NextLink from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { Link as NextLink } from "@/providers/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
@@ -9,10 +9,8 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navb
 import { User } from "@nextui-org/user";
 import queryString from "query-string";
 
-import { useRouter } from "@/hooks/use-router";
-
 import { AcmeLogo } from "../icons";
-import { PersonArrowRightRegular, SettingsRegular } from "@fluentui/react-icons";
+import { Icon } from "@iconify/react";
 
 const Header = () => {
   const router = useRouter();
@@ -23,7 +21,7 @@ const Header = () => {
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
 
   return (
-    <Navbar className="border-b-1 border-default-100" classNames={{ wrapper: "max-w-[1400px]" }}>
+    <Navbar className="border-b-1 border-default-100" classNames={{ wrapper: "max-w-[1400px] px-3 md:px-6" }}>
       <NavbarBrand>
         <AcmeLogo />
         <p className="font-bold text-inherit">ACME</p>
@@ -38,16 +36,28 @@ const Header = () => {
                   name={currentUser?.fullName}
                   description={currentUser?.title}
                   avatarProps={{
-                    src: currentUser?.imageUrl,
+                    src: currentUser?.imageUrl
                   }}
                 />
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="User actions">
-              <DropdownItem key="settings" startContent={<SettingsRegular fontSize={24} />} as={NextLink} href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings", callback: currentUrl } })}>
+              <DropdownItem
+                key="settings"
+                startContent={<Icon icon="solar:settings-bold" width="20" height="20" />}
+                as={NextLink}
+                href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings", callback: currentUrl } })}
+              >
                 Settings
               </DropdownItem>
-              <DropdownItem key="sign-out" startContent={<PersonArrowRightRegular fontSize={24} />} className="text-danger" color="danger" as={NextLink} href={queryString.stringifyUrl({ url: currentUrl }) + "#sign-out"}>
+              <DropdownItem
+                key="sign-out"
+                startContent={<Icon icon="solar:logout-2-bold" width="20" height="20" />}
+                className="text-danger"
+                color="danger"
+                as={NextLink}
+                href={queryString.stringifyUrl({ url: currentUrl }) + "#sign-out"}
+              >
                 Sign out
               </DropdownItem>
             </DropdownMenu>

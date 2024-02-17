@@ -17,11 +17,17 @@ namespace POwusu.Server.Entities.Identity
 
         public string? ImageId { get; set; } = null!;
 
-        public string FullName => $"{FirstName} {LastName}".Trim();
+        public string? FullName
+        {
+            get
+            {
+                return FirstName is not null || LastName is not null ? $"{FirstName} {LastName}".Trim() : null;
+            }
+        }
 
-        public string FirstName { get; set; } = null!;
+        public string? FirstName { get; set; } = null!;
 
-        public string LastName { get; set; } = null!;
+        public string? LastName { get; set; } = null!;
 
         public string? Bio { get; set; }
 

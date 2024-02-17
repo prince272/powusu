@@ -9,7 +9,7 @@ import "filepond/dist/filepond.min.css";
 
 import { useUser } from "@/providers/user/client";
 import { parseJSON } from "@/utils";
-import { getErrorMessage } from "@/utils/api";
+import { getErrorTitle } from "@/utils/api";
 import { FilePondCallbackProps, FilePondFile, FilePondInitialFile, FilePondServerConfigProps, FilePondStyleProps } from "filepond";
 import { uniqueId } from "lodash";
 
@@ -104,7 +104,7 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
             load();
           } catch (e) {
             // Handle any errors here
-            error(getErrorMessage(e, "Unable to revert file. Please try again."));
+            error(getErrorTitle(e, "Unable to revert file. Please try again."));
             onRevertError?.(e);
           }
         },
@@ -113,6 +113,10 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
             // Make an Axios request to fetch the file from the server
             const response = await api.get(source, {
               responseType: "blob", // Set the responseType to 'blob' for binary data
+              headers: {
+                "Cache-Control": "no-cache",
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
               onDownloadProgress: (e) => {
                 // Update the progress as the file is being downloaded
                 const loadedSize = e.loaded;
@@ -128,7 +132,7 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
             load(fileBlob);
           } catch (e) {
             // If there's an error, call the error method with the error information
-            error(getErrorMessage(e, "Unable to download file. Please try again."));
+            error(getErrorTitle(e, "Unable to download file. Please try again."));
             onDowloadError?.(e);
           }
 

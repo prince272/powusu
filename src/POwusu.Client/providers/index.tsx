@@ -1,17 +1,14 @@
 "use client";
 
-import * as React from "react";
-import { ReactNode, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { ReactNode, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useHashState } from "@/hooks";
 import { NextUIProvider } from "@nextui-org/system";
 import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import NextTopLoader from "nextjs-toploader";
+import TopLoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 
-import { ExternalWindow } from "@/lib/external-window";
-import { useRouter } from "@/hooks/use-router";
 import { Loader } from "@/components/ui/loader";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
 import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
@@ -22,6 +19,7 @@ import { SignUpModal } from "@/components/identity/sign-up-modal";
 
 import { ModalRouterProvider } from "../components/ui/modal-router";
 import { Toaster } from "../components/ui/toaster";
+import { useRouteChange } from "./navigation";
 import { Authorize, UserProvider, UserProviderProps } from "./user/client";
 
 export const modals = {
@@ -38,9 +36,23 @@ export interface ProvidersProps {
   initialUser?: UserProviderProps["initialUser"];
 }
 
-export function Providers({ children, initialUser }: ProvidersProps) {
+export function AppProviders({ children, initialUser }: ProvidersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const topLoadingBarRef = useRef<LoadingBarRef>(null);
+
+  useEffect(() => {
+    topLoadingBarRef.current?.continuousStart();
+  }, []);
+  
+  useRouteChange({
+    onRouteChangeStart: () => {
+      topLoadingBarRef.current?.continuousStart();
+    },
+    onRouteChangeComplete: () => {
+      topLoadingBarRef.current?.complete();
+    }
+  });
 
   return (
     <>
@@ -52,7 +64,7 @@ export function Providers({ children, initialUser }: ProvidersProps) {
                 {children}
               </Authorize>
               <Toaster />
-              <NextTopLoader color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" showSpinner={false} />
+              <TopLoadingBar ref={topLoadingBarRef} color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" height={4} />
             </NextThemesProvider>
           </NextUIProvider>
         </ModalRouterProvider>

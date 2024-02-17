@@ -6,6 +6,7 @@ import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
 import queryString from "query-string";
+
 import { api } from "@/lib/api";
 
 export interface SignOutModalProps {
@@ -17,7 +18,7 @@ export interface SignOutModalProps {
 
 export interface SignOutInputs {}
 
-export const SignOutModal = ({ isOpen, onClose } : SignOutModalProps) => {
+export const SignOutModal = ({ isOpen, onClose }: SignOutModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

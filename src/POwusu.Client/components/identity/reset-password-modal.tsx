@@ -1,9 +1,10 @@
 "use client";
 
 import React, { ReactNode, useMemo, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useCurrentValue } from "@/hooks";
 import { useUser } from "@/providers/user/client";
-import { getErrorMessage } from "@/utils/api";
+import { getApiResponse } from "@/utils/api";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -15,10 +16,8 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
-import { useRouter } from "@/hooks/use-router";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/components/ui/toaster";
-import { useCurrentValue } from "@/hooks";
 
 export interface ResetPasswordModalProps {
   children: ReactNode;
@@ -34,7 +33,7 @@ export interface ResetPasswordInputs {
   newPassword: string;
 }
 
-export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps) => {
+export const ResetPasswordModal = ({ isOpen, onClose }: ResetPasswordModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -62,36 +61,46 @@ export const ResetPasswordModal = ({ isOpen, onClose } : ResetPasswordModalProps
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
   const submit: SubmitHandler<ResetPasswordInputs> = async ({ action, ...inputs }) => {
-    try {
-      setStatus("submitting");
+    setStatus("submitting");
 
-      switch (action) {
-        case "sendCode": {
-          await api.post("/identity/password/reset", { ...inputs, sendCode: true });
-          setCodeSent(true);
-          resendCodeTimer.start();
-          toast.success("Security code sent.", { id: toastId });
-          break;
+    switch (action) {
+      case "sendCode": {
+        const { error } = await getApiResponse(api.post("/identity/password/reset", { ...inputs, sendCode: true }));
+
+        if (error) {
+          error.fields.forEach(([name, message]) => {
+            form.setError(name as any, { message: message?.join("\n") });
+          });
+
+          setStatus("idle");
+          toast.error(error.title, { id: toastId });
+          return;
         }
-        case "validateCode": {
-          const response = await api.post("/identity/password/reset", inputs);
-          api.user.next(response.data);
-          onClose();
-          router.push(searchParams.get("callback") || pathname);
-          break;
-        }
+
+        setCodeSent(true);
+        setStatus("idle");
+        resendCodeTimer.start();
+        toast.success("Security code sent.", { id: toastId });
+        break;
       }
-    } catch (error) {
-      console.error(error);
 
-      const fields = Object.entries<string[]>(isAxiosError(error) ? error?.response?.data?.errors || {} : {});
-      fields.forEach(([name, message]) => {
-        form.setError(name as any, { message: message?.join("\n") });
-      });
+      case "validateCode": {
+        const { data: nextUser, error } = await getApiResponse(api.post("/identity/password/reset", inputs));
 
-      toast.error(getErrorMessage(error), { id: toastId });
-    } finally {
-      setStatus("idle");
+        if (error) {
+          error.fields.forEach(([name, message]) => {
+            form.setError(name as any, { message: message?.join("\n") });
+          });
+
+          setStatus("idle");
+          toast.error(error.title, { id: toastId });
+          return;
+        }
+
+        api.user.next(nextUser);
+        onClose();
+        router.push(searchParams.get("callback") || pathname);
+      }
     }
   };
 
