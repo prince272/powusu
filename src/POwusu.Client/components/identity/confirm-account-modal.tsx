@@ -20,8 +20,6 @@ import { toast } from "@/components/ui/toaster";
 export interface ConfirmAccountModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
 export interface ConfirmAccountInputs {
@@ -30,7 +28,7 @@ export interface ConfirmAccountInputs {
   code: string;
 }
 
-export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProps) => {
+export const ConfirmAccountModal = ({ isOpen }: ConfirmAccountModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -93,8 +91,7 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
         break;
       }
     }
@@ -105,7 +102,6 @@ export const ConfirmAccountModal = ({ isOpen, onClose }: ConfirmAccountModalProp
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
         router.push(searchParams.get("callback") || pathname);
       }}
     >

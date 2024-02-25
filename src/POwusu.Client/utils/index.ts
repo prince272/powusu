@@ -68,21 +68,6 @@ export function compareSearchParams(params1: URLSearchParams, params2: URLSearch
   return true;
 }
 
-export const buildCallbackUrl = (query: StringifiableRecord, callbackUrl: string, previousUrl?: string | null) => {
-  callbackUrl = removeBaseUrl(callbackUrl);
-  previousUrl = previousUrl ? removeBaseUrl(previousUrl) : "/";
-
-  callbackUrl = queryString.stringifyUrl({
-    url: previousUrl,
-    query: {
-      callback: callbackUrl,
-      ...query
-    }
-  });
-
-  return callbackUrl;
-};
-
 export function removeBaseUrl(url: string) {
   /*
    * Replace base URL in given string, if it exists, and return the result.

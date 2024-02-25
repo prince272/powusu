@@ -22,8 +22,6 @@ import { toast } from "@/components/ui/toaster";
 export interface ResetPasswordModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
 export interface ResetPasswordInputs {
@@ -33,7 +31,7 @@ export interface ResetPasswordInputs {
   newPassword: string;
 }
 
-export const ResetPasswordModal = ({ isOpen, onClose }: ResetPasswordModalProps) => {
+export const ResetPasswordModal = ({ isOpen }: ResetPasswordModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -98,8 +96,7 @@ export const ResetPasswordModal = ({ isOpen, onClose }: ResetPasswordModalProps)
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
       }
     }
   };
@@ -109,7 +106,6 @@ export const ResetPasswordModal = ({ isOpen, onClose }: ResetPasswordModalProps)
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
         router.push(searchParams.get("callback") || pathname);
       }}
     >

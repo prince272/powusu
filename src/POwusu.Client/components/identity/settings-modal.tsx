@@ -31,13 +31,11 @@ import { Switch } from "../ui/render";
 export interface SettingsModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
 export interface SettingsInputs {}
 
-export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
+export const SettingsModal = ({ isOpen }: SettingsModalProps) => {
   const currentUser = useUser();
   const hasPassword = currentUser?.hasPassword;
 
@@ -54,7 +52,6 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
         router.push(searchParams.get("callback") || pathname);
       }}
       classNames={{ base: "min-h-[640px]" }}

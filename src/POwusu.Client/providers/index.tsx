@@ -9,23 +9,22 @@ import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import TopLoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 
-import { Loader } from "@/components/ui/loader";
+import { PageLoader } from "@/components/ui/page-loader";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
 import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
 import { SettingsModal } from "@/components/identity/settings-modal";
 import { SignInModal } from "@/components/identity/sign-in-modal";
-import { SignOutModal } from "@/components/identity/sign-out-modal";
 import { SignUpModal } from "@/components/identity/sign-up-modal";
 
-import { ModalRouterProvider } from "../components/ui/modal-router";
+import { ModalRouterProvider } from "./modal-router";
 import { Toaster } from "../components/ui/toaster";
 import { useRouteChange } from "./navigation";
 import { Authorize, UserProvider, UserProviderProps } from "./user/client";
+import { api } from "@/lib/api";
 
 export const modals = {
   "sign-in": SignInModal,
   "sign-up": SignUpModal,
-  "sign-out": SignOutModal,
   "confirm-account": ConfirmAccountModal,
   "reset-password": ResetPasswordModal,
   settings: SettingsModal
@@ -75,7 +74,7 @@ export function AppProviders({ children, initialUser }: ProvidersProps) {
           window.opener["external-window"].close();
         }
       `}</Script>
-      {searchParams.has("external-window") && <Loader />}
+      {searchParams.has("external-window") && <PageLoader />}
     </>
   );
 }

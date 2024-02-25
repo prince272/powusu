@@ -1,13 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link as NextLink } from "@/providers/navigation";
 import { useRouter } from "next/navigation";
 import { useCurrentValue } from "@/hooks";
+import { Link as NextLink } from "@/providers/navigation";
 import { parseJSON, stringifyJSON } from "@/utils";
 import { ApiError, getApiResponse, getError, getErrorTitle } from "@/utils/api";
 import EditorJS from "@editorjs/editorjs";
-import { ChevronLeftFilled } from "@fluentui/react-icons";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
 import { Textarea } from "@nextui-org/input";
@@ -18,23 +17,25 @@ import TextareaAutosize from "react-textarea-autosize";
 
 import { Post } from "@/types/post";
 import { api } from "@/lib/api";
+import { events } from "@/lib/events";
 import { Editor, getEditorInfo } from "@/components/ui/editor";
 import { FileInput } from "@/components/ui/file-input";
+import { Icon } from "@/components/ui/icon";
 import { toast } from "@/components/ui/toaster";
 
-interface PostPageProps {
+interface AddPostPageProps {
   postId?: string;
   initialPost?: Post | null | undefined;
   initialError?: ApiError | null | undefined;
 }
 
-interface PostPageInputs {
+interface AddPostPageInputs {
   title: string;
   content: string;
   imageId: string;
 }
 
-const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
+const AddPostPage = ({ postId, initialPost, initialError }: AddPostPageProps) => {
   const [post, setPost] = useState(initialPost);
   const [error, setError] = useState(initialError);
 
@@ -45,7 +46,7 @@ const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
 
   const toastId = useRef(uniqueId("_toast_")).current;
 
-  const form = useForm<PostPageInputs>({
+  const form = useForm<AddPostPageInputs>({
     defaultValues: {
       title: post?.title,
       content: post?.content,
@@ -61,14 +62,14 @@ const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
     }
   }, [initialPost, postId, toastId]);
 
-  const submit: SubmitHandler<PostPageInputs> = async (inputs) => {
+  const submit: SubmitHandler<AddPostPageInputs> = async (inputs) => {
     setStatus("submitting");
 
     const content = parseJSON(inputs.content);
     const { readingDuration, summary } = getEditorInfo(content);
     inputs = { ...inputs, readingDuration, summary } as any;
 
-    const { data: updatedPost, error } = await getApiResponse<Post>(!postId ? api.post("/blog/posts", inputs) : api.put(`/blog/posts/${postId}`, inputs));
+    const { data: newPost, error } = await getApiResponse<Post>(!postId ? api.post("/blog/posts", inputs) : api.put(`/blog/posts/${postId}`, inputs));
 
     if (error) {
       error.fields.forEach(([name, message]) => {
@@ -83,13 +84,16 @@ const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
       return;
     }
 
-    setPost(updatedPost);
+    setPost(newPost);
     setError(null);
     setStatus("idle");
     toast.success(!postId ? "Post created." : "Post updated.", { id: toastId });
 
     if (!postId) {
-      router.replace(`/portal/posts/${updatedPost!.id}`);
+      events.next({ key: "blog.posts.created", value: newPost });
+      router.replace(`/portal/posts/${newPost!.id}`);
+    } else {
+      events.next({ key: "blog.posts.updated", value: newPost });
     }
 
     router.refresh();
@@ -100,7 +104,7 @@ const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
       <div className="grid w-full gap-5">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center space-x-5">
-            <Button as={NextLink} href="/portal/posts" variant="light" startContent={<ChevronLeftFilled fontSize={24} />}>
+            <Button as={NextLink} href="/portal/posts" variant="light" startContent={<Icon icon="solar:alt-arrow-left-outline" width="24" height="24" />}>
               Back
             </Button>
           </div>
@@ -178,4 +182,4 @@ const PostPage = ({ postId, initialPost, initialError }: PostPageProps) => {
   );
 };
 
-export { PostPage };
+export { AddPostPage };

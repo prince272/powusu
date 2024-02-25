@@ -20,3 +20,4 @@ export * from "./use-timeout";
 export * from "./use-window-event";
 export * from "./use-hash-state";
 export * from "./use-interval";
+export * from "./use-effect-after-mount";

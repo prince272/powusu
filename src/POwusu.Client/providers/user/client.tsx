@@ -2,23 +2,21 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { usePreviousValue, useStateAsync } from "@/hooks";
-import { buildCallbackUrl } from "@/utils";
+import { useDebouncedCallback, usePreviousValue, useStateAsync } from "@/hooks";
 import { matchPath, PathPattern } from "@/utils/matchPath";
 import { deleteCookie, setCookie } from "cookies-next";
-import { merge } from "lodash";
 import queryString from "query-string";
 
 import { User } from "@/types/user";
 import { api } from "@/lib/api";
 
-export type UserContextType = { user: User | null | undefined; setUser: (user: User) => void };
+export type UserContextType = { user: User | null | undefined; setUser: (user: User | null | undefined) => void };
 
-export const UserContext = createContext<User | null | undefined>(undefined!);
+export const UserContext = createContext<UserContextType>(undefined!);
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  return context;
+  return context.user;
 };
 
 export interface UserProviderProps {
@@ -27,7 +25,12 @@ export interface UserProviderProps {
 }
 
 export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
-  const [user, _setUser] = useStateAsync(useState<User | null | undefined>(initialUser));
+  const [user, _setUser] = useStateAsync(
+    useState<User | null | undefined>(() => {
+      api.user.next(initialUser);
+      return initialUser;
+    })
+  );
 
   const setUser = useCallback(
     (user: User | null | undefined) => {
@@ -39,7 +42,6 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
   );
 
   useEffect(() => {
-    api.user.next(initialUser);
 
     const subscription = api.user.subscribe({
       next: (nextUser) => {
@@ -49,8 +51,8 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  
+  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 
 interface AuthorizeProps {
@@ -64,18 +66,34 @@ export const Authorize = ({ patterns, modals, children }: AuthorizeProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
-  const previousUrl = usePreviousValue(currentUrl);
-  const matches = patterns.map((pattern) => matchPath(pattern, currentUrl));
+
+  const matches = patterns.map((pattern) => matchPath(pattern, currentUrl)).filter((_) => _);
   const currentMatch = matches.find((match) => match);
   const currentUser = useUser();
   const currentModal = modals.find((modal) => modal == searchParams.get("modal"));
 
+  const unauthorize = useDebouncedCallback(
+    () => {
+      if ((currentMatch || currentModal) && !currentUser) {
+        const returnUrl = queryString.stringifyUrl({
+          url: "/",
+          query: {
+            modal: "sign-in",
+            callback: searchParams.get("callback") || pathname
+          }
+        });
+
+        router.replace(returnUrl);
+      } else if (currentUser) {
+      }
+    },
+    [!!currentUser, !!currentMatch, !!currentModal],
+    500
+  );
+
   useEffect(() => {
-    if ((currentMatch || currentModal) && !currentUser) {
-      const refererUrl = !matches.some((match) => previousUrl?.startsWith(match?.pathnameBase || "")) ? previousUrl : "/";
-      const callbackUrl = buildCallbackUrl({ modal: "sign-in" }, currentUrl, refererUrl);
-      router.replace(callbackUrl);
-    }
+    unauthorize();
   }, [!!currentUser, !!currentMatch, !!currentModal]);
+
   return <>{children}</>;
 };

@@ -1,12 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
 import { cloneDeep, merge } from "lodash";
 import PQueue from "p-queue";
-import { ReplaySubject } from "rxjs";
+import { Subject  } from "rxjs";
 
 import { User } from "@/types/user";
 import { apiConfig } from "@/config/api";
 
-class UserSubject extends ReplaySubject<User | null | undefined> {
+class UserSubject extends Subject<User | null | undefined> {
   constructor(public value?: User | null | undefined) {
     super();
   }

@@ -2,7 +2,7 @@ import { getApiResponse } from "@/utils/api";
 
 import { Post } from "@/types/post";
 import { api } from "@/lib/api";
-import { PostPage } from "@/components/portal/posts/post-page";
+import { AddPostPage } from "@/components/portal/posts/add-post-page";
 
 export interface PageProps {
   params: { id: string };
@@ -10,10 +10,10 @@ export interface PageProps {
 
 const Page = async ({ params: { id: postId } }: PageProps) => {
   if (postId == "new") {
-    return <PostPage />;
+    return <AddPostPage />;
   } else {
     const response = await getApiResponse<Post>(api.get(`/blog/posts/${postId}`));
-    return <PostPage postId={postId} initialPost={response.data} initialError={response.error} />;
+    return <AddPostPage postId={postId} initialPost={response.data} initialError={response.error} />;
   }
 };
 

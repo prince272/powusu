@@ -25,8 +25,6 @@ import { toast } from "@/components/ui/toaster";
 export interface SignUpModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
 export type SignUpMethods = "credentials" | "google";
@@ -38,7 +36,7 @@ export interface SignUpInputs {
   password: string;
 }
 
-export const SignUpModal = ({ isOpen, onClose }: SignUpModalProps) => {
+export const SignUpModal = ({ isOpen }: SignUpModalProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -82,8 +80,7 @@ export const SignUpModal = ({ isOpen, onClose }: SignUpModalProps) => {
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
         break;
       }
 
@@ -115,8 +112,7 @@ export const SignUpModal = ({ isOpen, onClose }: SignUpModalProps) => {
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
       }
     }
   };
@@ -126,7 +122,6 @@ export const SignUpModal = ({ isOpen, onClose }: SignUpModalProps) => {
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
         router.push(pathname);
       }}
     >

@@ -1,18 +1,22 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useModalRouter } from "@/providers/modal-router";
 import { Link as NextLink } from "@/providers/navigation";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@/providers/user/client";
+import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
 import { User } from "@nextui-org/user";
 import queryString from "query-string";
 
-import { AcmeLogo } from "../icons";
-import { Icon } from "@iconify/react";
+import { SignOutModal } from "../identity/sign-out-modal";
+import { AppIcon } from "../ui/icon";
 
 const Header = () => {
+  const modalRouter = useModalRouter();
+
   const router = useRouter();
   const currentUser = useUser();
 
@@ -21,9 +25,9 @@ const Header = () => {
   const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
 
   return (
-    <Navbar className="border-b-1 border-default-100" classNames={{ wrapper: "max-w-[1400px] px-3 md:px-6" }}>
+    <Navbar className="absolute" classNames={{ wrapper: "max-w-[1400px] px-3 md:px-6" }}>
       <NavbarBrand>
-        <AcmeLogo />
+        <AppIcon />
         <p className="font-bold text-inherit">ACME</p>
       </NavbarBrand>
       <NavbarContent justify="end">
@@ -44,7 +48,7 @@ const Header = () => {
             <DropdownMenu aria-label="User actions">
               <DropdownItem
                 key="settings"
-                startContent={<Icon icon="solar:settings-bold" width="20" height="20" />}
+                startContent={<Icon icon="solar:settings-bold" width="24" height="24" />}
                 as={NextLink}
                 href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings", callback: currentUrl } })}
               >
@@ -55,8 +59,12 @@ const Header = () => {
                 startContent={<Icon icon="solar:logout-2-bold" width="20" height="20" />}
                 className="text-danger"
                 color="danger"
-                as={NextLink}
-                href={queryString.stringifyUrl({ url: currentUrl }) + "#sign-out"}
+                onPress={() => {
+                  modalRouter.open({
+                    key: "sign-out",
+                    Component: SignOutModal
+                  });
+                }}
               >
                 Sign out
               </DropdownItem>

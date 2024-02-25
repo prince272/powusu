@@ -26,8 +26,6 @@ import { Icon } from "@iconify/react";
 export interface SignInModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
 }
 
 export type SignInMethods = "credentials" | "google";
@@ -37,7 +35,7 @@ export interface SignInInputs {
   password: string;
 }
 
-export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
+export const SignInModal = ({ isOpen }: SignInModalProps) => {
   const toastId = useRef(uniqueId("_toast_")).current;
 
   const router = useRouter();
@@ -79,8 +77,7 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
         break;
       }
 
@@ -112,8 +109,7 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
         }
 
         api.user.next(nextUser);
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        router.replace(searchParams.get("callback") || pathname);
       }
     }
   };
@@ -123,7 +119,6 @@ export const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
         router.push(pathname);
       }}
     >

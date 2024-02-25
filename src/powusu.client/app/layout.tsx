@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { ReactNode } from "react";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { AppProviders } from "@/providers";
 import { RouteChangeProvider } from "@/providers/navigation";
 import { getUser } from "@/providers/user/server";
@@ -9,31 +9,98 @@ import { cn } from "@/utils";
 
 import { siteConfig } from "@/config/site";
 import { fontHeading, fontSans } from "@/components/fonts";
+import { cookies } from "next/headers";
+import { api } from "@/lib/api";
+
+const APP_NAME = "Prince App";
+const APP_DEFAULT_TITLE = "Prince Owusu";
+const APP_TITLE_TEMPLATE = "%s - Prince Owusu";
+const APP_DESCRIPTION = "Best PWA app in the world!";
 
 export const metadata: Metadata = {
+  manifest: "/manifest.json",
+  applicationName: APP_NAME,
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE
   },
-  description: siteConfig.description,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" }
-  ],
+  description: APP_DESCRIPTION,
+  other: {
+    "apple-mobile-web-app-title": "Prince",
+    "application-name": "Prince",
+    "msapplication-TileColor": "#ffffff",
+    "msapplication-config": "/browserconfig.xml"
+  },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png"
+    apple: {
+      url: "/apple-touch-icon.png",
+      sizes: "180x180"
+    },
+    icon: [
+      {
+        url: "/favicon-32x32.png",
+        type: "image/png",
+        sizes: "32x32"
+      },
+      {
+        url: "/favicon-16x16.png",
+        type: "image/png",
+        sizes: "16x16"
+      }
+    ],
+    shortcut: {
+      url: "/favicon.ico"
+    },
+    other: [
+      {
+        url: "/safari-pinned-tab.svg",
+        color: "#5bbad5"
+      }
+    ]
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_DEFAULT_TITLE
+    // startUpImage: [],
+  },
+  formatDetection: {
+    telephone: false
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE
+    },
+    description: APP_DESCRIPTION
+  },
+  twitter: {
+    card: "summary",
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE
+    },
+    description: APP_DESCRIPTION
   }
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" }
+  ]
+};
+
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  const currentUser = getUser();
+  const currentUser = getUser(cookies);
+  api.user.next(currentUser);
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
+      <body className={cn("bg-default-50 text-default-foreground font-sans antialiased", fontSans.variable, fontHeading.variable)}>
         <RouteChangeProvider>
           <AppProviders initialUser={currentUser}>{children}</AppProviders>
         </RouteChangeProvider>

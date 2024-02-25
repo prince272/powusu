@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
@@ -8,28 +8,35 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextu
 import queryString from "query-string";
 
 import { api } from "@/lib/api";
+import { getApiResponse } from "@/utils/api";
+import { toast } from "../ui/toaster";
+import { uniqueId } from "lodash";
 
 export interface SignOutModalProps {
   children: ReactNode;
   isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
+  close: () => void;
 }
 
 export interface SignOutInputs {}
 
-export const SignOutModal = ({ isOpen, onClose }: SignOutModalProps) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export const SignOutModal = ({ isOpen, close }: SignOutModalProps) => {
+  const toastId = useRef(uniqueId("_toast_")).current;
+  const user = useUser();
+  const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
+  const signOut = async () => { 
+    setStatus("submitting");
+    await getApiResponse(api.post(`/identity/tokens/revoke`, { token: user?.refreshToken }));
+    api.user.next(null);
+  };
+  
   return (
     <Modal
       isDismissable={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose();
-        router.push(searchParams.get("callback") || pathname);
+        close();
       }}
     >
       <ModalContent>
@@ -42,9 +49,8 @@ export const SignOutModal = ({ isOpen, onClose }: SignOutModalProps) => {
             className="w-full"
             color="default"
             variant="solid"
-            onClick={() => {
-              onClose();
-              router.push(searchParams.get("callback") || pathname);
+            onPress={() => {
+              close();
             }}
           >
             Cancel
@@ -53,10 +59,9 @@ export const SignOutModal = ({ isOpen, onClose }: SignOutModalProps) => {
             className="w-full"
             color="danger"
             variant="solid"
-            onClick={async () => {
-              api.user.next(null);
-              onClose();
-              router.push(searchParams.get("callback") || pathname);
+            isLoading={status === "submitting"}
+            onPress={async () => {
+              await signOut();
             }}
           >
             Sign out

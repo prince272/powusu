@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/utils";
 import { Spinner } from "@nextui-org/spinner";
 
-const Loader = ({ timeout }: { timeout?: number }) => {
+const PageLoader = ({ timeout }: { timeout?: number }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,10 +21,10 @@ const Loader = ({ timeout }: { timeout?: number }) => {
   }, [timeout]);
 
   return (
-    <div className={cn("absolute top-0 z-50 flex h-full w-full items-center justify-center bg-background", !loading && "hidden")}>
-      <Spinner className="mb-16" size="lg" aria-label="Loading..." />
+    <div className={cn("fixed top-0 z-50 h-screen w-full bg-background", !loading && "hidden")}>
+      <div className="h-screen flex items-center justify-center"><Spinner className="mb-16" size="lg" aria-label="Loading..." /></div>
     </div>
   );
 };
 
-export { Loader };
+export { PageLoader };

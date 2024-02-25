@@ -7,6 +7,7 @@ import * as moment from "moment";
 
 import "moment-duration-format";
 
+import { useModalRouter } from "@/providers/modal-router";
 import { Link as NextLink } from "@/providers/navigation";
 import { cn, forwardPropsToChildren } from "@/utils";
 import { Avatar } from "@nextui-org/avatar";
@@ -17,19 +18,23 @@ import { Skeleton } from "@nextui-org/skeleton";
 
 import { PostItem } from "@/types/post";
 import { Mount, Switch } from "@/components/ui/render";
+import { DeletePostModal } from "./delete-post-modal";
 
 export interface PostCardProps extends React.HTMLAttributes<HTMLDivElement> {
   post?: PostItem | null | undefined;
   isEditable?: boolean;
+  isLoaded?: boolean;
 }
 
-const PostCard = ({ post, isEditable, className, ...props }: PostCardProps) => {
+const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardProps) => {
+  const modalRouter = useModalRouter();
+
   return (
     <div className={cn("relative", className)} {...props}>
       <Card>
         <CardBody>
           <NextLink className="relative" href={`/portal/posts/${post?.id}`}>
-            <Skeleton className="rounded-xl" isLoaded={!!post}>
+            <Skeleton className="rounded-xl z-20" isLoaded={isLoaded}>
               <Switch as="div" className="flex aspect-[4/3] items-center justify-center rounded-xl border border-default-200" switch={post?.imageUrl ? "image" : "blank"}>
                 <Image key="image" alt={post?.title} className="aspect-[4/3] rounded-xl object-cover object-center" src={post?.imageUrl} />
                 <Icon key="blank" className="text-default-200" icon="solar:gallery-bold" width="96" height="96" />
@@ -45,14 +50,14 @@ const PostCard = ({ post, isEditable, className, ...props }: PostCardProps) => {
           </NextLink>
         </CardBody>
         <CardFooter className="flex-col items-stretch space-y-3 pt-0">
-          <Skeleton className="rounded-xl" isLoaded={!!post}>
+          <Skeleton className="rounded-xl z-20" isLoaded={isLoaded}>
             <div className={cn("line-clamp-2 h-12", isEditable && "pr-8")}>
               <NextLink href={`/portal/posts/${post?.id}`}>
                 <b>{post?.title}</b>
               </NextLink>
             </div>
           </Skeleton>
-          <Skeleton className="rounded-xl" isLoaded={!!post}>
+          <Skeleton className="rounded-xl z-20" isLoaded={isLoaded}>
             <div className="flex items-center justify-between space-x-2">
               <div className="flex items-center justify-center space-x-1 text-xs">
                 <div>
@@ -70,10 +75,10 @@ const PostCard = ({ post, isEditable, className, ...props }: PostCardProps) => {
               </div>
             </div>
           </Skeleton>
-          {isEditable && !!post && (
+          {isEditable && !!post && isLoaded && (
             <Dropdown>
               <DropdownTrigger>
-                <Button className="absolute bottom-0 end-0 !mb-16 mr-1" isIconOnly variant="light" size="sm">
+                <Button className="absolute bottom-0 end-0 !mb-16 mr-1 z-30" isIconOnly variant="light" size="sm">
                   <Icon icon="solar:menu-dots-bold" width="20" height="20" className="rotate-90" />
                 </Button>
               </DropdownTrigger>
@@ -81,7 +86,14 @@ const PostCard = ({ post, isEditable, className, ...props }: PostCardProps) => {
                 <DropdownItem key="settings" startContent={<Icon icon="solar:pen-bold" width="20" height="20" />} as={NextLink} href={`/portal/posts/${post?.id}`}>
                   Edit
                 </DropdownItem>
-                <DropdownItem key="sign-out" startContent={<Icon icon="solar:trash-bin-trash-bold" width="20" height="20" />} color="danger">
+                <DropdownItem
+                  key="sign-out"
+                  startContent={<Icon icon="solar:trash-bin-trash-bold" width="20" height="20" />}
+                  color="danger"
+                  onPress={() => {
+                    modalRouter.open({ key: "delete-post", Component: DeletePostModal, props: { post }});
+                  }}
+                >
                   Delete
                 </DropdownItem>
               </DropdownMenu>

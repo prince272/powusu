@@ -152,6 +152,7 @@ namespace POwusu.Server.Services
         public async Task<Results<Ok<PostsPageModel>, ValidationProblem>> GetPostsAsync(PostsFilter? filter = null)
         {
             filter ??= new PostsFilter();
+            filter.SetDefaultValues();
 
             var formValidation = await _validator.ValidateAsync(filter);
             if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
@@ -160,17 +161,25 @@ namespace POwusu.Server.Services
 
             var query = _appDbContext.Set<Post>().AsQueryable();
 
-            if (currentUser is null || currentUser.ExclusiveRoles(RoleNames.Administrator))
+            if (currentUser is not null && currentUser.InclusiveRoles(RoleNames.Administrator))
+            {
+                if (filter.Deleted.HasValue)
+                    query = query.Where(_ => _.Deleted == filter.Deleted);
+            }
+            else
+            {
                 query = query.Where(_ => !_.Deleted);
+            }
 
+            query = query.OrderByDescending(_ => _.UpdatedAt);
 
             var totalItems = await query.LongCountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalItems / filter.PageSize);
-            var currentPage = Math.Max(0, Math.Min(filter.Page, totalPages));
+            var totalPages = (int)Math.Ceiling((double)totalItems / filter.PageSize!.Value);
+            var currentPage = Math.Max(0, Math.Min(filter.Page!.Value, totalPages));
 
             var items = await query
-                .LongSkip((filter.Page - 1) * filter.PageSize)
-                .Take(filter.PageSize)
+                .LongSkip((filter.Page.Value - 1) * filter.PageSize.Value)
+                .Take(filter.PageSize.Value)
                 .Include(_ => _.Author)
                 .ToListAsync();       
 
