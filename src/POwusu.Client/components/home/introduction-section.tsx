@@ -55,7 +55,7 @@ export const IntroductionSection = () => {
             <div className="col-span-12 flex items-center lg:col-span-8">
               <div className="max-w-[600px]">
                 <div className="mb-6 flex justify-center sm:justify-start">
-                  <div className="relative">
+                  <div className="relative animate-updown">
                     <Image className="h-48 w-48 rounded-full border-5 border-white bg-white object-contain object-center" src="/assets/profile/1.png" alt="Prince Owusu" />
                     <Image classNames={{ wrapper: "absolute bottom-0 right-0 z-10 mb-2 mr-6" }} width={32} height={32} src="/favicon-32x32.png" alt="Prince Owusu Logo" />
                   </div>

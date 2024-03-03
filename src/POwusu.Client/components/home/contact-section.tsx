@@ -3,6 +3,7 @@
 import NextLink from "next/link";
 import ConversationIllustration from "@/assets/illustrations/conversation.svg";
 import { Button } from "@nextui-org/button";
+import { Tooltip } from "@nextui-org/tooltip";
 
 import { siteConfig } from "@/config/site";
 
@@ -10,7 +11,7 @@ import { Icon } from "../ui/icon";
 
 export const ContactSection = () => {
   return (
-    <section id="contact" className="bg-default-50 py-24">
+    <section id="contact" className="bg-background py-24">
       <div className="container relative mx-auto max-w-screen-xl">
         <div className="mb-6 flex justify-center">
           <div className="flex max-w-xl flex-col text-center">
@@ -24,14 +25,17 @@ export const ContactSection = () => {
         <div className="grid grid-cols-12 gap-6">
           <div className="relative col-span-12 md:col-span-5">
             <div className="flex aspect-[4/3] justify-center">
-              <ConversationIllustration className="animate-updown max-h-[384px] max-w-[384px] text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
+              <ConversationIllustration className="max-h-[384px] max-w-[384px] animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
             </div>
           </div>
           <div className="md:order-0 order-1 col-span-12 md:col-span-7">
             <h2 className="mb-3 font-heading text-2xl font-medium uppercase tracking-tight">Reach Out to Me</h2>
             <p className="mb-3">
-            Your thoughts, questions, and feedback matter to me. Whether you&apos;re interested in learning more about me, what I offer or just want to say hi, don&apos;t hesitate to get in touch.
-              <br /><br />Let&apos;s start a conversation today!
+              Your thoughts, questions, and feedback matter to me. Whether you&apos;re interested in learning more about me, what I offer or just want to say hi, don&apos;t
+              hesitate to get in touch.
+              <br />
+              <br />
+              Let&apos;s start a conversation today!
             </p>
             <div className="space-y-4">
               <div className="relative flex items-center">
@@ -55,21 +59,31 @@ export const ContactSection = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <Button as={NextLink} href={siteConfig.links.github} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                  <Icon icon="mdi:github" className="text-primary" width="32" height="32" />
-                </Button>
-                <Button as={NextLink} href={siteConfig.links.twitter} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                  <Icon icon="ri:twitter-x-fill" className="text-primary" width="32" height="32" />
-                </Button>
-                <Button as={NextLink} href={siteConfig.links.whatsapp} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                  <Icon icon="ri:whatsapp-fill" width="32" height="32" />
-                </Button>
-                <Button as={NextLink} href={siteConfig.links.linkedin} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                  <Icon icon="mdi:linkedin" width="32" height="32" />
-                </Button>
-                <Button as={NextLink} href={siteConfig.links.telegram} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                  <Icon icon="ic:baseline-telegram" width="32" height="32" />
-                </Button>
+                <Tooltip content="Github">
+                  <Button as={NextLink} href={siteConfig.links.github} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="mdi:github" className="text-primary" width="32" height="32" />
+                  </Button>
+                </Tooltip>
+                <Tooltip  content="Twitter">
+                  <Button as={NextLink} href={siteConfig.links.twitter} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="ri:twitter-x-fill" className="text-primary" width="32" height="32" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="WhatsApp">
+                  <Button as={NextLink} href={siteConfig.links.whatsapp} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="ri:whatsapp-fill" width="32" height="32" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="LinkedIn">
+                  <Button as={NextLink} href={siteConfig.links.linkedin} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="mdi:linkedin" width="32" height="32" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Telegram">
+                  <Button as={NextLink} href={siteConfig.links.telegram} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="ic:baseline-telegram" width="32" height="32" />
+                  </Button>
+                </Tooltip>
               </div>
             </div>
           </div>

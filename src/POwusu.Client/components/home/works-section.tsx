@@ -5,7 +5,7 @@ import { Link as NextLink } from "@/providers/navigation";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Image } from "@nextui-org/image";
-import { Pagination as SwiperPagination } from "swiper/modules";
+import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination } from "swiper/modules";
 import Lightbox, { Slide as LightboxSlide } from "yet-another-react-lightbox";
 
 import "yet-another-react-lightbox/styles.css";
@@ -41,7 +41,7 @@ export const WorksSection = () => {
               return `<span class="${cn(className, "!w-3 !h-3 [&.swiper-pagination-bullet-active]:!bg-primary [&.swiper-pagination-bullet]:bg-default-300 !opacity-100")}"></span>`;
             }
           }}
-          modules={[SwiperPagination]}
+          modules={[SwiperPagination, SwiperAutoplay]}
           breakpoints={{
             640: {
               slidesPerView: 2,
@@ -59,7 +59,7 @@ export const WorksSection = () => {
           slidesPerView={1}
           spaceBetween={30}
           autoplay={{
-            delay: 2500,
+            delay: 5000,
             disableOnInteraction: false
           }}
           className="flex w-full"
@@ -90,7 +90,7 @@ export const WorksSection = () => {
                   />
                 </CardHeader>
                 <CardBody className="relative pt-0">
-                  <Chip className="mb-2">{work.id}</Chip>
+                  <Chip className="mb-2">{work.name.toLowerCase()}</Chip>
                   <h3 className={cn("mb-1 line-clamp-1 text-large font-bold", index % 2 == 0 ? "text-primary" : "text-secondary")}>{work.title}</h3>
                   <p className="mb-3 line-clamp-3 h-[72px] text-default-500">{work.description}</p>
                   <Button

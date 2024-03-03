@@ -15,8 +15,9 @@ export const siteConfig = {
   ],
   works: [
     {
-      id: "neimart",
+      id: "b13273c2-2af7-4f8e-961f-8d4871f2730e",
       title: "Neighborhood Market",
+      name: "Neimart",
       description: "Neimart is an e-commerce platform that provides an end-to-end business solution allowing you to start, grow, and manage your retail business.",
       images: [
         "/assets/profile/works/neimart/1.png",
@@ -29,8 +30,9 @@ export const siteConfig = {
       link: "https://github.com/prince272/neimart"
     },
     {
-      id: "academy",
+      id: "e56e2db9-7a49-45d4-bd67-fda3997c92a0",
       title: "Academy Of Ours",
+      name: "Academy",
       description: "Academy of Ours is an e-learning platform that helps you to learn a variety of courses and concepts through interactive checkpoints, lessons, and videos with certificates awarded automatically after each course.",
       images: [
         "/assets/profile/works/academy/1.png",
@@ -43,8 +45,9 @@ export const siteConfig = {
       link: "https://github.com/prince272/academy"
     },
     {
-      id: "precious",
+      id: "40ff2d5a-1f2f-4f5b-80f6-8351a17d7889",
       title: "Precious Assistant",
+      name: "Precious",
       description: "Precious is digital life assistant that allows you to interact with your computer 24 hours a day, 7 days in a week. Just tell it to find content, get answers, play music, and connect with friends and friends. It works seamlessly with many popular desktops applications and has very friendly disposition.",
       images: [
         "/assets/profile/works/precious/1.png",
