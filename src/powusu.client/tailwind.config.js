@@ -99,7 +99,20 @@ module.exports = {
             "--tw-prose-invert-td-borders": semanticColors.dark.default[700]
           }
         }
-      })
+      }),
+      keyframes: {
+        updown: {
+          '0%, 100%': {
+            transform: 'translateY(0)',
+          },
+          '50%': {
+            transform: 'translateY(-30px)',
+          },
+        },
+      },
+      animation: {
+        updown: 'updown 3s ease-in-out infinite',
+      }
     }
   },
   darkMode: "class",

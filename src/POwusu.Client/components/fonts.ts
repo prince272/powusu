@@ -1,4 +1,4 @@
-import { Fira_Code as FontMono, Open_Sans as FontSans } from "next/font/google";
+import { Fira_Code as FontMono, Open_Sans as FontSans, Fira_Sans as FontHeading } from "next/font/google";
 import localFont from "next/font/local";
 
 export const fontSans = FontSans({
@@ -11,7 +11,8 @@ export const fontMono = FontMono({
   variable: "--font-mono"
 });
 
-export const fontHeading = localFont({
-  src: "../assets/fonts/CalSans-SemiBold.woff2",
-  variable: "--font-heading"
+export const fontHeading = FontHeading({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: "700"
 });

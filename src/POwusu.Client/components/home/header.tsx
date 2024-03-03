@@ -1,16 +1,30 @@
+"use client";
+
+import { usePathname, useSearchParams } from "next/navigation";
+import { useModalRouter } from "@/providers/modal-router";
 import { Link as NextLink } from "@/providers/navigation";
+import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, Navbar } from "@nextui-org/navbar";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/navbar";
 import { link as linkStyles } from "@nextui-org/theme";
 import clsx from "clsx";
+import queryString from "query-string";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
+import { AccountButton } from "../identity/account-button";
 import { AppIcon, Icon } from "../ui/icon";
+import { Switch } from "../ui/render";
 
 export const Header = () => {
+  const modalRouter = useModalRouter();
+  const currentUser = useUser();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl = queryString.stringifyUrl({ url: pathname, query: Object.fromEntries(searchParams) });
+
   return (
     <Navbar position="sticky" maxWidth="xl">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -32,39 +46,28 @@ export const Header = () => {
       </NavbarContent>
       <NavbarContent className="hidden basis-1/5 sm:flex sm:basis-full" justify="end">
         <NavbarItem className="hidden gap-2 sm:flex">
-          <Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
-            <Icon icon="ri:twitter-x-fill" className="text-default-500" width={24} height={24} />
-          </Link>
-          <Link isExternal href={siteConfig.links.discord} aria-label="Discord">
-            <Icon icon="ic:outline-discord" className="text-default-500" width={24} height={24} />
-          </Link>
-          <Link isExternal href={siteConfig.links.github} aria-label="Github">
-            <Icon icon="mdi:github" className="text-default-500" width={24} height={24} />
-          </Link>
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="bg-default-100 text-sm font-normal text-default-600"
-            href={siteConfig.links.sponsor}
-            startContent={<Icon icon="solar:heart-bold" className="text-danger" width={24} height={24} />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
+          <Switch switch={!!currentUser ? "authenticated" : "anonymous"}>
+            <div key="authenticated">
+              <AccountButton />
+            </div>
+            <div key="anonymous">
+              <Button variant="solid" color="primary" as={NextLink} href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "sign-in" } })}>
+                Sign in
+              </Button>
+            </div>
+          </Switch>
         </NavbarItem>
       </NavbarContent>
-
       <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
         <Link isExternal href={siteConfig.links.github} aria-label="Github">
-          <Icon icon="mdi:github" className="text-default-500" width={24} height={24} />
+          <Icon icon="mdi:github" className="text-default-500" width="24" height="24" />
         </Link>
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
-      
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navItems.map((item, index) => (

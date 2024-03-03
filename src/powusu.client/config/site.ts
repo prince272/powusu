@@ -13,19 +13,19 @@ export const siteConfig = {
       href: "/blog"
     }
   ],
-  projects: [
+  works: [
     {
       id: "neimart",
       title: "Neighborhood Market",
       description: "Neimart is an e-commerce platform that provides an end-to-end business solution allowing you to start, grow, and manage your retail business.",
       images: [
-        "/assets/profile/projects/neimart/1.png",
-        "/assets/profile/projects/neimart/2.png",
-        "/assets/profile/projects/neimart/3.png",
-        "/assets/profile/projects/neimart/4.png"
+        "/assets/profile/works/neimart/1.png",
+        "/assets/profile/works/neimart/2.png",
+        "/assets/profile/works/neimart/3.png",
+        "/assets/profile/works/neimart/4.png"
       ],
-      defaultImage: "/assets/profile/projects/neimart/1.png",
-      logo: "/assets/profile/projects/neimart/logo.png",
+      defaultImage: "/assets/profile/works/neimart/1.png",
+      logo: "/assets/profile/works/neimart/logo.png",
       link: "https://github.com/prince272/neimart"
     },
     {
@@ -33,13 +33,13 @@ export const siteConfig = {
       title: "Academy Of Ours",
       description: "Academy of Ours is an e-learning platform that helps you to learn a variety of courses and concepts through interactive checkpoints, lessons, and videos with certificates awarded automatically after each course.",
       images: [
-        "/assets/profile/projects/academy/1.png",
-        "/assets/profile/projects/academy/2.png",
-        "/assets/profile/projects/academy/3.png",
-        "/assets/profile/projects/academy/4.png"
+        "/assets/profile/works/academy/1.png",
+        "/assets/profile/works/academy/2.png",
+        "/assets/profile/works/academy/3.png",
+        "/assets/profile/works/academy/4.png"
       ],
-      defaultImage: "/assets/profile/projects/academy/1.png",
-      logo: "/assets/profile/projects/academy/logo.png",
+      defaultImage: "/assets/profile/works/academy/1.png",
+      logo: "/assets/profile/works/academy/logo.png",
       link: "https://github.com/prince272/academy"
     },
     {
@@ -47,21 +47,44 @@ export const siteConfig = {
       title: "Precious Assistant",
       description: "Precious is digital life assistant that allows you to interact with your computer 24 hours a day, 7 days in a week. Just tell it to find content, get answers, play music, and connect with friends and friends. It works seamlessly with many popular desktops applications and has very friendly disposition.",
       images: [
-        "/assets/profile/projects/precious/1.png",
-        "/assets/profile/projects/precious/2.png",
-        "/assets/profile/projects/precious/3.png"
+        "/assets/profile/works/precious/1.png",
+        "/assets/profile/works/precious/2.png",
+        "/assets/profile/works/precious/3.png"
       ],
-      defaultImage: "/assets/profile/projects/precious/1.png",
-      logo: "/assets/profile/projects/precious/logo.png",
+      defaultImage: "/assets/profile/works/precious/1.png",
+      logo: "/assets/profile/works/precious/logo.png",
       link: "https://github.com/prince272/precious-assistant"
     }
   ],
+  certificates: [
+    {
+      id: "756b048a-8c32-4c94-bd39-dc15a5f7a89f",
+      title: "Winner of MTN Ayoba Hackathon Certificate",
+      image: "/assets/profile/certificates/Winner of MTN Ayoba Hackathon Certificate.png",
+      document: "/assets/profile/certificates/Winner of MTN Ayoba Hackathon Certificate.pdf",
+      year: 2021
+    },
+    {
+      id: "a2f0e7e9-16d5-4cb8-98a5-813e5c0732d7",
+      title: "African Science and Technical Development Certificate",
+      image: "/assets/profile/certificates/African Science and Technical Development Certificate.png",
+      document: "/assets/profile/certificates/African Science and Technical Development Certificate.pdf",
+      year: 2019
+    },
+    {
+      id: "5fd688ac-6a91-4958-8041-2106d1d308d2",
+      title: "Technology, Creativity & Skills Development Certificate",
+      image: "/assets/profile/certificates/Technology, Creativity & Skills Development Certificate.png",
+      document: "/assets/profile/certificates/Technology, Creativity & Skills Development Certificate.pdf",
+      year: 2019
+    }
+  ],
   links: {
-    github: "https://github.com/nextui-org/nextui",
-    twitter: "https://twitter.com/getnextui",
-    docs: "https://nextui.org",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev"
+    github: "https://github.com/prince272",
+    twitter: "https://twitter.com/OwusuPrince272",
+    whatsapp: "https://api.whatsapp.com/send?phone=233550362337&text=Let%27s%20connect.",
+    linkedin: "https://www.linkedin.com/in/prince-owusu-799438108",
+    telegram: "https://t.me/princeowusu272",
   }
 };
 

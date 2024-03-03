@@ -13,7 +13,7 @@ import { useTheme } from "next-themes";
 
 import { Icon } from "../ui/icon";
 
-export const IntroSection = () => {
+export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
   const vantaRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -50,9 +50,9 @@ export const IntroSection = () => {
     <section id="intro" ref={vantaRef} className="relative dark h-full bg-primary-50 text-foreground">
       <div className="absolute h-full w-full backdrop-blur-sm md:backdrop-blur-none"></div>
       <div className="h-full">
-        <div className="container relative mx-auto h-full">
+        <div className="container max-w-screen-xl relative mx-auto h-full">
           <section className="align-items-center grid h-full grid-cols-12 space-x-10 pt-16 pb-32">
-            <div className="col-span-12 flex items-center justify-center lg:col-span-8">
+            <div className="col-span-12 flex items-center lg:col-span-8">
               <div className="max-w-[600px]">
                 <div className="mb-6 flex justify-center sm:justify-start">
                   <div className="relative">
@@ -68,7 +68,7 @@ export const IntroSection = () => {
                   I am a highly skilled Software Engineer with a passion for crafting seamless user
                   experiences. I specialize in developing end-to-end applications that not only meet requirements, but exceed user expectations.
                 </p>
-                <Button endContent={<Icon icon="solar:alt-arrow-right-outline" width={20} height={20} />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
+                <Button endContent={<Icon icon="solar:alt-arrow-right-outline" width="24" height="24" />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
                   More about Me
                 </Button>
               </div>

@@ -28,6 +28,7 @@ export const SignOutModal = ({ isOpen, close }: SignOutModalProps) => {
   const signOut = async () => { 
     setStatus("submitting");
     await getApiResponse(api.post(`/identity/tokens/revoke`, { token: user?.refreshToken }));
+    close();
     api.user.next(null);
   };
   

@@ -54,7 +54,7 @@ export const ThemeSwitch = ({ className, classNames }: ThemeSwitchProps) => {
           )
         })}
       >
-        {!isSelected || isSSR ? <Icon icon="solar:sun-bold" width={24} height={24} /> : <Icon icon="solar:moon-bold" width={24} height={24} />}
+        {!isSelected || isSSR ? <Icon icon="solar:sun-bold" width="24" height="24" /> : <Icon icon="solar:moon-bold" width="24" height="24" />}
       </div>
     </Component>
   );

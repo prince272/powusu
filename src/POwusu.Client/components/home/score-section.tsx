@@ -8,17 +8,17 @@ import { Icon } from "../ui/icon";
 export const ScoreSection = () => {
   return (
     <section id="score" className="z-10 -mt-24 pt-10 pb-20">
-      <div className="container relative mx-auto h-full">
+      <div className="container max-w-screen-xl relative mx-auto h-full">
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
           <Card className="bg-background/70 p-4 backdrop-blur-lg backdrop-saturate-150">
             <CardBody className="flex flex-col items-center justify-center">
               <Icon icon="solar:check-circle-bold" width={72} height={72} className="mb-3 text-primary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
-                  <CountUp duration={10} end={25} />
+                  <CountUp duration={10} end={350} />
                   <span className="align-top text-xl">+</span>
                 </h3>
-                <p className="text-sm text-default-500">Projects Completed</p>
+                <p className="text-sm text-default-500">Works Completed</p>
               </div>
             </CardBody>
           </Card>

@@ -112,7 +112,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
                   color="default"
                   variant="solid"
                   isLoading={status == "loading"}
-                  startContent={status != "loading" && <Icon icon="solar:restart-linear" width={24} height={24} />}
+                  startContent={status != "loading" && <Icon icon="solar:restart-linear" width="24" height="24" />}
                   onClick={() => loadPage(searchParams)}
                 >
                   Reload

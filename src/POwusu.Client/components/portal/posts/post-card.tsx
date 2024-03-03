@@ -61,7 +61,7 @@ const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardP
             <div className="flex items-center justify-between space-x-2">
               <div className="flex items-center justify-center space-x-1 text-xs">
                 <div>
-                  <Icon className="text-default-500" icon="solar:calendar-minimalistic-bold" width="20" height="20" />
+                  <Icon className="text-default-500" icon="solar:calendar-minimalistic-bold" width="24" height="24" />
                 </div>
                 <Mount interval={1000} clientOnly>
                   {() => <div>{moment.default(post?.createdAt).fromNow()}</div>}

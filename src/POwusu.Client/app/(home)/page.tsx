@@ -2,16 +2,20 @@ import { Link as NextLink } from "@/providers/navigation";
 import { Button } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
 
-import { IntroSection } from "@/components/home/intro-section";
+import { IntroductionSection } from "@/components/home/introduction-section";
 import { ScoreSection } from "@/components/home/score-section";
-import { ProjectsSection } from "@/components/home/projects-section";
+import { WorksSection } from "@/components/home/works-section";
+import { ContactSection } from "@/components/home/contact-section";
+import { CertificatesSection } from "@/components/home/certificates-section";
 
 const Home = () => {
   return (
     <>
-      <IntroSection />
+      <IntroductionSection />
       <ScoreSection />
-      <ProjectsSection />
+      <WorksSection />
+      <CertificatesSection />
+      <ContactSection />
     </>
   );
 };
