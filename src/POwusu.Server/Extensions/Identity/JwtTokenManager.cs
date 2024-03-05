@@ -12,17 +12,17 @@ using System.Text;
 
 namespace POwusu.Server.Extensions.Identity
 {
-    public class JwtTokenManager : IJwtTokenManager
+    public class JwtTokenManager<TDbContext> : IJwtTokenManager where TDbContext : DbContext
     {
         private readonly IOptions<JwtTokenOptions> _jwtTokenOptions;
-        private readonly AppDbContext _appDbContext;
+        private readonly TDbContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
 
-        public JwtTokenManager(IOptions<JwtTokenOptions> jwtTokenOptions, AppDbContext appDbContext, IHttpContextAccessor httpContextAccessor, IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory)
+        public JwtTokenManager(IOptions<JwtTokenOptions> jwtTokenOptions, TDbContext dbContext, IHttpContextAccessor httpContextAccessor, IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory)
         {
             _jwtTokenOptions = jwtTokenOptions;
-            _appDbContext = appDbContext;
+            _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         }
@@ -36,7 +36,7 @@ namespace POwusu.Server.Extensions.Identity
             var (accessToken, accessTokenExpiresAt) = GenerateAccessToken(claims, currentTime);
             var (refreshToken, refreshTokenExpiresAt) = GenerateRefreshToken(currentTime);
 
-            await _appDbContext.AddAsync(new JwtToken
+            await _dbContext.AddAsync(new JwtToken
             {
                 UserId = user.Id,
 
@@ -49,7 +49,7 @@ namespace POwusu.Server.Extensions.Identity
                 RefreshTokenExpiresAt = refreshTokenExpiresAt
             }, cancellationToken);
 
-            await _appDbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new JwtTokenInfo
             {
@@ -114,31 +114,31 @@ namespace POwusu.Server.Extensions.Identity
 
             var tokenHash = HashHelper.GenerateSHA256Hash(token);
 
-            var tokenObject = await _appDbContext.Set<JwtToken>().FirstOrDefaultAsync(_ => _.AccessTokenHash == tokenHash || _.RefreshTokenHash == tokenHash, cancellationToken);
+            var tokenObject = await _dbContext.Set<JwtToken>().FirstOrDefaultAsync(_ => _.AccessTokenHash == tokenHash || _.RefreshTokenHash == tokenHash, cancellationToken);
 
             if (tokenObject == null || tokenObject.RefreshTokenExpiresAt < DateTimeOffset.UtcNow) return null;
-            return await _appDbContext.FindAsync<User>(keyValues: new object[] { tokenObject.UserId }, cancellationToken);
+            return await _dbContext.FindAsync<User>(keyValues: new object[] { tokenObject.UserId }, cancellationToken);
         }
 
         public async Task InvalidateAsync(User user, string token, CancellationToken cancellationToken = default)
         {
             if (!_jwtTokenOptions.Value.AllowMultipleTokens)
             {
-                await _appDbContext.Set<JwtToken>().Where(_ => _.UserId == user.Id).ForEachAsync(session => _appDbContext.Remove(session), cancellationToken);
+                await _dbContext.Set<JwtToken>().Where(_ => _.UserId == user.Id).ForEachAsync(session => _dbContext.Remove(session), cancellationToken);
             }
             else
             {
                 var tokenHash = HashHelper.GenerateSHA256Hash(token);
                 var currentTime = DateTimeOffset.UtcNow;
 
-                await _appDbContext.Set<JwtToken>()
+                await _dbContext.Set<JwtToken>()
                     .Where(_ => _.UserId == user.Id)
                     .Where(_ => _.AccessTokenHash == tokenHash || _.RefreshTokenHash == tokenHash)
                     .Where(_ => _.AccessTokenExpiresAt < currentTime)
-                    .ForEachAsync(session => _appDbContext.Remove(session), cancellationToken);
+                    .ForEachAsync(session => _dbContext.Remove(session), cancellationToken);
             }
 
-            await _appDbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<bool> ValidateAsync(string token, CancellationToken cancellationToken = default)
@@ -147,7 +147,7 @@ namespace POwusu.Server.Extensions.Identity
 
             var tokenHash = HashHelper.GenerateSHA256Hash(token);
 
-            var tokenObject = await _appDbContext.Set<JwtToken>().FirstOrDefaultAsync(_ => _.AccessTokenHash == tokenHash || _.RefreshTokenHash == tokenHash, cancellationToken);
+            var tokenObject = await _dbContext.Set<JwtToken>().FirstOrDefaultAsync(_ => _.AccessTokenHash == tokenHash || _.RefreshTokenHash == tokenHash, cancellationToken);
 
             return tokenObject != null && tokenObject.RefreshTokenExpiresAt >= DateTimeOffset.UtcNow;
         }

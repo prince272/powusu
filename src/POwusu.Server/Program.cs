@@ -15,6 +15,7 @@ using POwusu.Server.Extensions.MessageSender;
 using POwusu.Server.Extensions.Routing;
 using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Extensions.ViewRenderer;
+using POwusu.Server.Extensions.WebPusher;
 using POwusu.Server.Hubs;
 using POwusu.Server.Middlewares;
 using POwusu.Server.Options;
@@ -124,7 +125,7 @@ try
 
     builder.Services.ConfigureOptions<ConfigureJwtTokenOptions>();
 
-    builder.Services.AddJwtTokenManager();
+    builder.Services.AddJwtTokenManager<AppDbContext>();
 
     builder.Services.AddAuthentication(options =>
     {
@@ -138,13 +139,13 @@ try
         {
             options.SignInScheme = IdentityConstants.ExternalScheme;
 
-            builder.Configuration.GetRequiredSection("AuthenticationOptions:Google").Bind(options);
+            builder.Configuration.GetRequiredSection("Authentication:Google").Bind(options);
         });
+
+    builder.Services.AddEndpointsApiExplorer();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.ConfigureOptions<ConfigureSwaggerGenOptions>();
-
-    builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddCors(options =>
@@ -169,12 +170,17 @@ try
 
     builder.Services.AddMailKitEmailSender(options =>
     {
-        builder.Configuration.GetRequiredSection("MailingOptions:MailKit").Bind(options);
+        builder.Configuration.GetRequiredSection("MailKitOptions").Bind(options);
     });
 
     builder.Services.AddFakeMessageSender(options =>
     {
-        builder.Configuration.GetRequiredSection("MessagingOptions:FakeSms").Bind(options);
+        builder.Configuration.GetRequiredSection("FakeSmsOptions").Bind(options);
+    });
+
+    builder.Services.AddWebPusher<AppDbContext>(options =>
+    {
+        builder.Configuration.GetRequiredSection("WebPusherOptions").Bind(options);
     });
 
     builder.Services.AddRazorViewRenderer();

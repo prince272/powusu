@@ -75,6 +75,27 @@ export const siteConfig = {
       year: 2019
     },
     {
+      id: "b70e9980-7e88-48a3-9a83-4a2b0d08d374",
+      title: "Codecademy - C#",
+      image: "/assets/profile/certificates/Codecademy - CSharp.png",
+      document: "/assets/profile/certificates/Codecademy - CSharp.pdf",
+      year: 2023
+    },
+    {
+      id: "ed0296f7-b438-4b2b-9c06-97914a7ec161",
+      title: "Codecademy - Build Web Apps with ASP.NET Skill Path",
+      image: "/assets/profile/certificates/Codecademy - Build Web Apps with ASP.NET Skill Path.png",
+      document: "/assets/profile/certificates/Codecademy - Build Web Apps with ASP.NET Skill Path.pdf",
+      year: 2023
+    },
+    {
+      id: "356e2cf4-4274-4aeb-9779-39ca20f91226",
+      title: "Sololearn - C#",
+      image: "/assets/profile/certificates/Sololearn - CSharp.png",
+      document: "/assets/profile/certificates/Sololearn - CSharp.pdf",
+      year: 2017
+    },
+    {
       id: "5fd688ac-6a91-4958-8041-2106d1d308d2",
       title: "Technology, Creativity & Skills Development Certificate",
       image: "/assets/profile/certificates/Technology, Creativity & Skills Development Certificate.png",
