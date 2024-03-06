@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace POwusu.Server.Extensions.WebPusher
+namespace POwusu.Server.Models.Push
 {
     /// <summary>
     /// <see href="https://notifications.spec.whatwg.org/#dictdef-notificationoptions">Notification API Standard</see>
     /// </summary>
-    public class WebPushNotification
+    public class PushNotificationForm
     {
 
         [JsonPropertyName("title")]
@@ -37,13 +37,13 @@ namespace POwusu.Server.Extensions.WebPusher
         public bool RequireInteraction { get; set; } = false;
 
         [JsonPropertyName("actions")]
-        public List<WebPushNotificationAction> Actions { get; set; } = new List<WebPushNotificationAction>();
+        public List<PushNotificationAction> Actions { get; set; } = new List<PushNotificationAction>();
     }
 
     /// <summary>
     /// <see href="https://notifications.spec.whatwg.org/#dictdef-notificationaction">Notification API Standard</see>
     /// </summary>
-    public class WebPushNotificationAction
+    public class PushNotificationAction
     {
         [JsonPropertyName("action")]
         public string Action { get; set; } = null!;

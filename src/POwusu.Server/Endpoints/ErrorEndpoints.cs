@@ -17,7 +17,7 @@ namespace POwusu.Server.Endpoints
         {
             builder = builder.MapGroup("/");
 
-            builder.Map("/errors/{statusCode}", (HttpContext httpContext, int statusCode) =>
+            builder.Map("errors/{statusCode}", (HttpContext httpContext, int statusCode) =>
             {
                 var exceptionFeature = httpContext.Features.Get<IExceptionHandlerFeature>();
                 var statusCodeFeature = httpContext.Features.Get<IStatusCodeReExecuteFeature>();
@@ -47,7 +47,7 @@ namespace POwusu.Server.Endpoints
                 }
             }).ExcludeFromDescription();
 
-            builder.MapGet("/errors/throw", () => Results.NotFound());
+            builder.MapGet("errors/throw", () => Results.NotFound());
         }
 
         public static string GetStatusTitle(int statusCode)

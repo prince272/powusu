@@ -15,7 +15,6 @@ using POwusu.Server.Extensions.MessageSender;
 using POwusu.Server.Extensions.Routing;
 using POwusu.Server.Extensions.Validation;
 using POwusu.Server.Extensions.ViewRenderer;
-using POwusu.Server.Extensions.WebPusher;
 using POwusu.Server.Hubs;
 using POwusu.Server.Middlewares;
 using POwusu.Server.Options;
@@ -26,7 +25,6 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using IValidator = POwusu.Server.Extensions.Validation.IValidator;
 
 try
 {
@@ -178,9 +176,16 @@ try
         builder.Configuration.GetRequiredSection("FakeSmsOptions").Bind(options);
     });
 
-    builder.Services.AddWebPusher<AppDbContext>(options =>
+    builder.Services.AddDistributedMemoryCache();
+
+    builder.Services.AddResponseCompression();
+
+    // Needed by Wangkanai Detection
+    builder.Services.AddSession(options =>
     {
-        builder.Configuration.GetRequiredSection("WebPusherOptions").Bind(options);
+        options.IdleTimeout = TimeSpan.FromSeconds(10);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
     });
 
     builder.Services.AddRazorViewRenderer();
@@ -198,17 +203,18 @@ try
 
     builder.Services.AddIdentityService(options =>
     {
-        options.ProfileImageScaleWidth = 128;
-        options.ProfileImageFileExtensions = new[] { ".jpg", ".jpeg", ".png" };
-        options.ProfileImageFileMaxSize = 20971520; // 20MB
+        builder.Configuration.GetRequiredSection(nameof(IdentityServiceOptions)).Bind(options);
     });
 
     builder.Services.AddBlogService(options =>
     {
-        options.PostImageScaleWidth = 512;
-        options.PostImageFileExtensions = new[] { ".jpg", ".jpeg", ".png" };
-        options.PostImageFileMaxSize = 20971520; // 20MB
+        builder.Configuration.GetRequiredSection(nameof(BlogServiceOptions)).Bind(options);
 
+    });
+
+    builder.Services.AddPushService(options =>
+    {
+        builder.Configuration.GetRequiredSection(nameof(PushServiceOptions)).Bind(options);
     });
 
     builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
@@ -234,17 +240,25 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseStaticFiles();
+
     app.UseCors();
 
-    app.UseStaticFiles();
+    app.UseSession();
 
     app.UseAnonymousId();
 
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
     app.UseDbTransaction<AppDbContext>();
 
-    app.MapEndpoints();
+    app.UseResponseCompression();
 
     app.MapHub<SignalRHub>("/signalr");
+
+    app.MapEndpoints();
 
     app.Run();
 }

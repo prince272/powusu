@@ -26,46 +26,46 @@ namespace POwusu.Server.Endpoints
         {
             builder = builder.MapGroup("/identity");
 
-            builder.MapPost("/register", ([FromServices] IIdentityService identityService, [FromBody] RegisterAccountForm form)
+            builder.MapPost("register", ([FromServices] IIdentityService identityService, [FromBody] RegisterAccountForm form)
                 => identityService.RegisterAccountAsync(form));
 
-            builder.MapPost("/confirm", ([FromServices] IIdentityService identityService, [FromBody] ConfirmAccountForm form)
+            builder.MapPost("confirm", ([FromServices] IIdentityService identityService, [FromBody] ConfirmAccountForm form)
                 => identityService.ConfirmAccountAsync(form));
 
-            builder.MapPost("/email/change", ([FromServices] IIdentityService identityService, [FromBody] ChangeEmailForm form)
+            builder.MapPost("email/change", ([FromServices] IIdentityService identityService, [FromBody] ChangeEmailForm form)
                 => identityService.UpdateAccountAsync(form));
 
-            builder.MapPost("/phone-number/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePhoneNumberForm form)
+            builder.MapPost("phone-number/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePhoneNumberForm form)
                 => identityService.UpdateAccountAsync(form));
 
-            builder.MapPost("/password/create", ([FromServices] IIdentityService identityService, [FromBody] CreatePasswordForm form)
+            builder.MapPost("password/create", ([FromServices] IIdentityService identityService, [FromBody] CreatePasswordForm form)
                 => identityService.CreatePasswordAsync(form));
 
-            builder.MapPost("/password/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePasswordForm form)
+            builder.MapPost("password/change", ([FromServices] IIdentityService identityService, [FromBody] ChangePasswordForm form)
                 => identityService.ChangePasswordAsync(form));
 
-            builder.MapPost("/password/reset", ([FromServices] IIdentityService identityService, [FromBody] ResetPasswordForm form)
+            builder.MapPost("password/reset", ([FromServices] IIdentityService identityService, [FromBody] ResetPasswordForm form)
                 => identityService.ResetPasswordAsync(form));
 
-            builder.MapPost("/tokens/generate", ([FromServices] IIdentityService identityService, [FromBody] GenerateTokenForm form)
+            builder.MapPost("tokens/generate", ([FromServices] IIdentityService identityService, [FromBody] GenerateTokenForm form)
                 => identityService.GenerateTokenAsync(form));
 
-            builder.MapPost("/tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider)
+            builder.MapPost("tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider)
                 => identityService.GenerateTokenFromExternalAuthenticationAsync(provider));
 
-            builder.MapGet("/tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider, [FromQuery] string origin, IConfiguration configuration)
+            builder.MapGet("tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider, [FromQuery] string origin, IConfiguration configuration)
                 => identityService.ConfigureExternalAuthenticationAsync(provider, origin, configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>()));
 
-            builder.MapPost("/tokens/refresh", ([FromServices] IIdentityService identityService, [FromBody] RefreshTokenForm form)
+            builder.MapPost("tokens/refresh", ([FromServices] IIdentityService identityService, [FromBody] RefreshTokenForm form)
                 => identityService.RefreshTokenAsync(form));
 
-            builder.MapPost("/tokens/revoke", ([FromServices] IIdentityService identityService, [FromBody] RevokeTokenForm form)
+            builder.MapPost("tokens/revoke", ([FromServices] IIdentityService identityService, [FromBody] RevokeTokenForm form)
                 => identityService.RevokeTokenAsync(form));
 
-            builder.MapPut("/profile", ([FromServices] IIdentityService identityService, [FromBody] EditProfileForm form)
+            builder.MapPut("profile", ([FromServices] IIdentityService identityService, [FromBody] EditProfileForm form)
                 => identityService.EditProfileAsync(form));
 
-            builder.MapPost("/profile/images", async ([FromServices] IIdentityService identityService, HttpContext httpContext,
+            builder.MapPost("profile/images", async ([FromServices] IIdentityService identityService, HttpContext httpContext,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length) =>
             {
@@ -82,7 +82,7 @@ namespace POwusu.Server.Endpoints
                 return result;
             });
 
-            builder.MapPatch("/profile/images", async ([FromServices] IIdentityService identityService, HttpContext httpContext, [FromQuery] string path,
+            builder.MapPatch("profile/images", async ([FromServices] IIdentityService identityService, HttpContext httpContext, [FromQuery] string path,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length,
                 [FromHeader(Name = "Upload-Offset")] long offset) =>

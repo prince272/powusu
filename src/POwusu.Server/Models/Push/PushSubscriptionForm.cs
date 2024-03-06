@@ -1,19 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using POwusu.Server.Entities.Identity;
+using FluentValidation;
+using POwusu.Server.Models.Identity;
 
-namespace POwusu.Server.Extensions.WebPusher
+namespace POwusu.Server.Models.Push
 {
     /// <summary>
     /// Database representation of a push subscription
     /// </summary>
-    public class WebPushSubscription
+    public class PushSubscriptionForm
     {
-        /// <summary>
-        /// Subscriber id associated with the push subscription.
-        /// </summary>
-        public string SubscriberId { get; set; } = null!;
-
         /// <summary>
         /// The endpoint associated with the push subscription.
         /// </summary>
@@ -38,5 +35,15 @@ namespace POwusu.Server.Extensions.WebPusher
         /// <see href="https://tools.ietf.org/html/draft-ietf-webpush-encryption-08">Message Encryption for Web Push</see>.
         /// </summary>
         public string Auth { get; set; } = null!;
+    }
+
+    public class PushSubscriptionFormValidator : AbstractValidator<PushSubscriptionForm>
+    {
+        public PushSubscriptionFormValidator()
+        {
+            RuleFor(_ => _.P256Dh).NotEmpty();
+            RuleFor(_ => _.Auth).NotEmpty();
+            RuleFor(_ => _.Endpoint).NotEmpty();           
+        }
     }
 }

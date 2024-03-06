@@ -8,6 +8,8 @@ namespace POwusu.Server.Extensions.Identity
 
         string? UserId { get; }
 
+        string? UserAgent { get; }
+
         Task<User?> GetUserAsync();
     }
 }

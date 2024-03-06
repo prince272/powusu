@@ -19,22 +19,22 @@ namespace POwusu.Server.Endpoints
         {
             builder = builder.MapGroup("/blog");
 
-            builder.MapPost("/posts", ([FromServices] IBlogService blogService, [FromBody] PostForm form)
+            builder.MapPost("posts", ([FromServices] IBlogService blogService, [FromBody] PostForm form)
                 => blogService.CreatePostAsync(form));
 
-            builder.MapPut("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId, [FromBody] PostForm form)
+            builder.MapPut("posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId, [FromBody] PostForm form)
                 => blogService.EditPostAsync(postId, form));
 
-            builder.MapDelete("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
+            builder.MapDelete("posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
                 => blogService.DeletePostAsync(postId));
             
-            builder.MapGet("/posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
+            builder.MapGet("posts/{postId}", ([FromServices] IBlogService blogService, [FromRoute] string postId)
                 => blogService.GetPostAsync(postId));
 
-            builder.MapGet("/posts", ([FromServices] IBlogService blogService, [AsParameters] PostsFilter filter)
+            builder.MapGet("posts", ([FromServices] IBlogService blogService, [AsParameters] PostsFilter filter)
                 => blogService.GetPostsAsync(filter));
 
-            builder.MapPost("/posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext,
+            builder.MapPost("posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length) =>
             {
@@ -51,7 +51,7 @@ namespace POwusu.Server.Endpoints
                 return result;
             });
 
-            builder.MapPatch("/posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext, [FromQuery] string path,
+            builder.MapPatch("posts/images", async ([FromServices] IBlogService blogService, HttpContext httpContext, [FromQuery] string path,
                 [FromHeader(Name = "Upload-Name")] string name,
                 [FromHeader(Name = "Upload-Length")] long length,
                 [FromHeader(Name = "Upload-Offset")] long offset) =>
