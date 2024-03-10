@@ -1,3 +1,4 @@
+import { PlateEditor } from "@/components/plate-ui";
 import { AboutSection } from "@/components/profile/about-section";
 import { CertificatesSection } from "@/components/profile/certificates-section";
 import { ContactSection } from "@/components/profile/contact-section";
@@ -18,6 +19,7 @@ const Home = () => {
       <AboutSection />
       <QuoteSection />
       <ContactSection />
+      <PlateEditor />
     </>
   );
 };
