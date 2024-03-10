@@ -13,7 +13,7 @@ export const TooltipContent = withCn(
   withProps(TooltipPrimitive.Content, {
     sideOffset: 4
   }),
-  "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md"
+  "z-50 overflow-hidden rounded-md border border-default-200 bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md"
 );
 
 export function withTooltip<T extends React.ComponentType<any> | keyof HTMLElementTagNameMap>(Component: T) {

@@ -13,9 +13,9 @@ const PasswordInput = forwardRef<ElementRef<typeof Input>, InputProps>((props, r
       endContent={
         <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
           {isVisible ? (
-            <Icon className="pointer-events-none text-default-400" icon="solar:eye-closed-bold" width="24" height="24" />
+            <Icon className="pointer-events-none text-default-200" icon="solar:eye-closed-bold" width="24" height="24" />
           ) : (
-            <Icon className="pointer-events-none text-default-400" icon="solar:eye-bold" width="24" height="24" />
+            <Icon className="pointer-events-none text-default-200" icon="solar:eye-bold" width="24" height="24" />
           )}
         </button>
       }

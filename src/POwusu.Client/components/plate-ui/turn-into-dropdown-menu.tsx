@@ -9,6 +9,8 @@ import { Icons } from "@/components/plate-ui/icons";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger, useOpenState } from "./dropdown-menu";
 import { ToolbarButton } from "./toolbar";
+import { KEY_LIST_STYLE_TYPE, toggleIndentList } from "@udecode/plate-indent-list";
+import { toggleList, unwrapList } from "@udecode/plate-list";
 
 const items = [
   {
@@ -40,19 +42,19 @@ const items = [
     label: "Quote",
     description: "Quote (⌘+⇧+.)",
     icon: Icons.blockquote
-  }
-  // {
-  //   value: 'ul',
-  //   label: 'Bulleted list',
-  //   description: 'Bulleted list',
-  //   icon: Icons.ul,
-  // },
-  // {
-  //   value: 'ol',
-  //   label: 'Numbered list',
-  //   description: 'Numbered list',
-  //   icon: Icons.ol,
-  // },
+  },
+  {
+    value: 'ul',
+    label: 'Bulleted list',
+    description: 'Bulleted list',
+    icon: Icons.ul,
+  },
+  {
+    value: 'ol',
+    label: 'Numbered list',
+    description: 'Numbered list',
+    icon: Icons.ol,
+  },
 ];
 
 const defaultItem = items.find((item) => item.value === ELEMENT_PARAGRAPH)!;
@@ -94,18 +96,18 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
           className="flex flex-col gap-0.5"
           value={value}
           onValueChange={(type) => {
-            // if (type === 'ul' || type === 'ol') {
-            //   if (settingsStore.get.checkedId(KEY_LIST_STYLE_TYPE)) {
-            //     toggleIndentList(editor, {
-            //       listStyleType: type === 'ul' ? 'disc' : 'decimal',
-            //     });
-            //   } else if (settingsStore.get.checkedId('list')) {
-            //     toggleList(editor, { type });
-            //   }
-            // } else {
-            //   unwrapList(editor);
+            if (type === 'ul' || type === 'ol') {
+              // if (settingsStore.get.checkedId(KEY_LIST_STYLE_TYPE)) {
+                toggleIndentList(editor, {
+                  listStyleType: type === 'ul' ? 'disc' : 'decimal',
+                });
+              // } else if (settingsStore.get.checkedId('list')) {
+              //   toggleList(editor, { type });
+              // }
+            } else {
+              unwrapList(editor);
             toggleNodeType(editor, { activeType: type });
-            // }
+            }
 
             collapseSelection(editor);
             focusEditor(editor);

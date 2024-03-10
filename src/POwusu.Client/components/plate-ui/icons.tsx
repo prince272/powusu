@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Eye,
   FileCode,
+  Film,
   GripVertical,
   Heading1,
   Heading2,
@@ -40,6 +41,7 @@ import {
   MoreHorizontal,
   Outdent,
   PaintBucket,
+  PenTool,
   Pilcrow,
   Plus,
   Quote,
@@ -168,7 +170,10 @@ export const Icons = {
   underline: Underline,
   unlink: Link2Off,
   viewing: Eye,
-
+  embed: Film,
+  hr: Minus,
+  excalidraw: PenTool,
+  
   // www
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>

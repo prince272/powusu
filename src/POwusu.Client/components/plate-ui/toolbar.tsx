@@ -16,7 +16,7 @@ export const ToolbarToggleGroup = withCn(ToolbarPrimitive.ToolbarToggleGroup, "f
 
 export const ToolbarLink = withCn(ToolbarPrimitive.Link, "font-medium underline underline-offset-4");
 
-export const ToolbarSeparator = withCn(ToolbarPrimitive.Separator, "my-1 w-[1px] shrink-0 bg-border");
+export const ToolbarSeparator = withCn(ToolbarPrimitive.Separator, "my-1 w-[1px] shrink-0 bg-default-200");
 
 const toolbarButtonVariants = cva(
   cn(
@@ -27,7 +27,7 @@ const toolbarButtonVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground",
-        outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
+        outline: "border border-default-200 bg-transparent hover:bg-accent hover:text-accent-foreground"
       },
       size: {
         default: "h-10 px-3",

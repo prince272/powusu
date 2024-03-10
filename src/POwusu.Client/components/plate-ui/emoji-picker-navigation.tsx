@@ -21,7 +21,7 @@ export function EmojiPickerNavigation({ i18n, icons, emojiLibrary, focusedCatego
   const { width, position } = getBarProperty(emojiLibrary, focusedCategory);
 
   return (
-    <nav id="emoji-nav" className="mb-2.5 border-0 border-b border-solid border-b-gray-100 p-3">
+    <nav id="emoji-nav" className="mb-2.5 border-0 border-b border-solid border-b-default-200 p-3">
       <div className="relative flex">
         {emojiLibrary
           .getGrid()

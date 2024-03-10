@@ -17,7 +17,7 @@ const editorVariants = cva(
   {
     variants: {
       variant: {
-        outline: "border border-input",
+        outline: "border border-default-200",
         ghost: ""
       },
       focused: {

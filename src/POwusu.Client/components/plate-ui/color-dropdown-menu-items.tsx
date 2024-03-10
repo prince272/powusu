@@ -27,7 +27,7 @@ export function ColorDropdownMenuItem({ name, value, isBrightColor, isSelected, 
           variant: "outline",
           isMenu: true
         }),
-        "size-6 border-muted border border-solid p-0",
+        "size-6 border-default-200 border border-solid p-0",
         !isBrightColor && "border-transparent text-white",
         className
       )}

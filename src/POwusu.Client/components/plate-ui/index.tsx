@@ -49,7 +49,7 @@ export function PlateEditor() {
                 <FixedToolbarButtons />
               </FixedToolbar>
 
-              <Editor className="px-[96px] py-16" autoFocus focusRing={false} variant="ghost" size="md" />
+              <Editor className="p-8" autoFocus focusRing={false} variant="ghost" size="sm" />
 
               <FloatingToolbar>
                 <FloatingToolbarButtons />
