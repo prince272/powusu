@@ -1,7 +1,9 @@
-// source: https://github.com/antonioru/beautiful-react-hooks/blob/master/src/useThrottledCallback.ts
-
-import { useCallback, useEffect, useRef, type DependencyList } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { throttle } from "lodash";
+
+import type { DependencyList } from "react";
+
+// source: https://github.com/antonioru/beautiful-react-hooks/blob/master/src/useThrottledCallback.ts
 
 interface ThrottleSettings {
   leading?: boolean | undefined;

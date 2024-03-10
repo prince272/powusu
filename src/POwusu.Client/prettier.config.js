@@ -25,7 +25,13 @@ module.exports = {
     "^@/styles/(.*)$",
     "^@/app/(.*)$",
     "",
-    "^[./]"
+    "^[./]",
+    "",
+    "<TYPES>^[./]",
+    "<TYPES>^react",
+    "<TYPES>^next",
+    "<TYPES>^@/",
+    "<TYPES>"
   ],
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"]
 };

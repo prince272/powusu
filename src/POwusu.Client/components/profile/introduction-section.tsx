@@ -47,11 +47,11 @@ export const IntroductionSection = () => {
   }, [vantaEffect, theme]);
 
   return (
-    <section id="intro" ref={vantaRef} className="relative dark h-full bg-primary-50 text-foreground">
+    <section id="intro" ref={vantaRef} className="relative h-full bg-primary-50 text-foreground dark">
       <div className="absolute h-full w-full backdrop-blur-sm md:backdrop-blur-none"></div>
       <div className="h-full">
-        <div className="container max-w-screen-xl relative mx-auto h-full">
-          <section className="align-items-center grid h-full grid-cols-12 space-x-10 pt-16 pb-32">
+        <div className="container relative mx-auto h-full max-w-screen-xl">
+          <section className="align-items-center grid h-full grid-cols-12 space-x-10 pb-32 pt-16">
             <div className="col-span-12 flex items-center lg:col-span-8">
               <div className="max-w-[600px]">
                 <div className="mb-6 flex justify-center sm:justify-start">
@@ -65,8 +65,8 @@ export const IntroductionSection = () => {
                   <span className="block text-xl lg:text-2xl">👨‍💻 Software Engineer</span>
                 </h1>
                 <p className="mb-3 leading-9 tracking-wider drop-shadow-md">
-                  I am a highly skilled Software Engineer with a passion for crafting seamless user
-                  experiences. I specialize in developing end-to-end applications that not only meet requirements, but exceed user expectations.
+                  I am a highly skilled Software Engineer with a passion for crafting seamless user experiences. I specialize in developing end-to-end applications that not only
+                  meet requirements, but exceed user expectations.
                 </p>
                 <Button endContent={<Icon icon="solar:alt-arrow-right-outline" width="24" height="24" />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
                   More about Me

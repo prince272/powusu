@@ -241,13 +241,6 @@ export const SkillsSection = () => {
                   </CardBody>
                 </Card>
               </Tooltip>
-              <Tooltip content="JWT authentication">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:jwt-icon" width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
             </div>
           </div>
         </div>

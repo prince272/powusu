@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import queryString from "query-string";
 
-
 // How do I get the pathname with hash.
 // source: https://github.com/vercel/next.js/discussions/49465
 export const useHashState = () => {

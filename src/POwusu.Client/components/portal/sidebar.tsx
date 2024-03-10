@@ -1,14 +1,15 @@
 "use client";
 
-import { Link as NextLink } from "@/providers/navigation";
 import { usePathname } from "next/navigation";
-import { Button } from "@nextui-org/button";
 import { Icon } from "@iconify/react";
+import { Button } from "@nextui-org/button";
+
+import { Link as NextLink } from "@/components/ui/navigation";
 
 const Sidebar = () => {
   const pathname = usePathname();
   return (
-    <div className="relative hidden h-full flex-col pt-6 px-6 md:flex">
+    <div className="relative hidden h-full flex-col px-6 pt-6 md:flex">
       <div className="fixed min-w-[200px]">
         <div className="grid h-full w-full items-start gap-x-2 gap-y-3">
           {[

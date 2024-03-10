@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Link as NextLink } from "@/providers/navigation";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Image } from "@nextui-org/image";
 import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination } from "swiper/modules";
 import Lightbox, { Slide as LightboxSlide } from "yet-another-react-lightbox";
+
+import { Link as NextLink } from "@/components/ui/navigation";
 
 import "yet-another-react-lightbox/styles.css";
 import "swiper/css";
@@ -69,7 +70,7 @@ export const CertificatesSection = () => {
               <Card className="flex flex-col gap-4">
                 <CardHeader className="relative pb-0" onClick={() => setSelectedCertificate(certificate)}>
                   <div className="group relative">
-                    <Image removeWrapper alt={certificate.title} className="aspect-[4/3] rounded-xl object-cover object-center" src={certificate.image} />
+                    <Image removeWrapper alt={certificate.title} className="aspect-[4/3] w-full rounded-xl object-cover object-center" src={certificate.image} />
                     <div className="absolute top-0 z-20 flex h-full w-full items-center justify-center bg-black/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <Button
                         startContent={<Icon icon="solar:gallery-bold" width="24" height="24" />}

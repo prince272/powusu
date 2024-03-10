@@ -119,41 +119,64 @@ namespace POwusu.Server.Services
 
         private async Task<Results<Ok, ValidationProblem>> SendAsync(PushNotificationForm form, IQueryable<PushSubscription> query)
         {
+
+            if (form is null) throw new ArgumentNullException(nameof(form));
+
+            var formValidation = await _validator.ValidateAsync(form);
+
+            if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+
+            try
             {
-                if (form is null) throw new ArgumentNullException(nameof(form));
+                await _lock.WaitAsync();
 
-                var formValidation = await _validator.ValidateAsync(form);
+                var totalSubscriptions = await query.CountAsync();
 
-                if (!formValidation.IsValid) return TypedResults.ValidationProblem(formValidation.Errors);
+                var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-                try
+                foreach (var (skip, take) in new Chunks(totalSubscriptions, 1000))
                 {
-                    await _lock.WaitAsync();
+                    var subscriptions = await query.Skip(skip).Take(take).ToArrayAsync();
 
-                    var totalSubscriptions = await query.CountAsync();
-
-                    var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-
-                    foreach (var (skip, take) in new Chunks(totalSubscriptions, 1000))
+                    foreach (var subscription in subscriptions)
                     {
-                        var subscriptions = await query.Skip(skip).Take(take).ToArrayAsync();
-
-                        foreach (var subscription in subscriptions)
+                        try
                         {
                             var payload = JsonSerializer.Serialize(form, serializationOptions);
                             await _client.SendNotificationAsync(new WebPush.PushSubscription(subscription.Endpoint, subscription.P256Dh, subscription.Auth), payload, _pushServiceOptions.Value.VapidDetails);
                         }
+                        catch (WebPush.WebPushException ex)
+                        {
+                            if (ex.Message == "Subscription no longer valid")
+                            {
+                                _dbContext.Set<PushSubscription>().Remove(subscription);
+                                await _dbContext.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                // Track exception with eg. AppInsights
+                            }
+                        }
+                        catch (ArgumentException)
+                        {
+                            _dbContext.Set<PushSubscription>().Remove(subscription);
+                            await _dbContext.SaveChangesAsync();
+                        }
+                        catch (Exception)
+                        {
+                            // Track exception with eg. AppInsights
+                        }
                     }
+                }
 
-                    return TypedResults.Ok();
-                }
-                finally
-                {
-                    _lock.Release();
-                }
+                return TypedResults.Ok();
+            }
+            finally
+            {
+                _lock.Release();
             }
         }
-
+        
         #region Implement IDisposable
         private bool disposed = false;
 

@@ -2,7 +2,6 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useModalRouter } from "@/providers/modal-router";
-import { Link as NextLink } from "@/providers/navigation";
 import { useUser } from "@/providers/user/client";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
@@ -12,6 +11,7 @@ import clsx from "clsx";
 import queryString from "query-string";
 
 import { siteConfig } from "@/config/site";
+import { Link as NextLink } from "@/components/ui/navigation";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 import { AccountButton } from "../identity/account-button";

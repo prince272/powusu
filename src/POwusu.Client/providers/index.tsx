@@ -9,6 +9,8 @@ import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import TopLoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 
+import { api } from "@/lib/api";
+import { AutoPushNotificationModal } from "@/components/ui/auto-push-notification-modal";
 import { PageLoader } from "@/components/ui/page-loader";
 import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
 import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
@@ -16,11 +18,10 @@ import { SettingsModal } from "@/components/identity/settings-modal";
 import { SignInModal } from "@/components/identity/sign-in-modal";
 import { SignUpModal } from "@/components/identity/sign-up-modal";
 
-import { ModalRouterProvider } from "./modal-router";
+import { useRouteChange } from "../components/ui/navigation";
 import { Toaster } from "../components/ui/toaster";
-import { useRouteChange } from "./navigation";
+import { ModalRouterProvider } from "./modal-router";
 import { Authorize, UserProvider, UserProviderProps } from "./user/client";
-import { api } from "@/lib/api";
 
 export const modals = {
   "sign-in": SignInModal,
@@ -43,7 +44,7 @@ export function AppProviders({ children, initialUser }: ProvidersProps) {
   useEffect(() => {
     topLoadingBarRef.current?.continuousStart();
   }, []);
-  
+
   useRouteChange({
     onRouteChangeStart: () => {
       topLoadingBarRef.current?.continuousStart();
@@ -64,6 +65,7 @@ export function AppProviders({ children, initialUser }: ProvidersProps) {
               </Authorize>
               <Toaster />
               <TopLoadingBar ref={topLoadingBarRef} color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" height={4} />
+              <AutoPushNotificationModal />
             </NextThemesProvider>
           </NextUIProvider>
         </ModalRouterProvider>

@@ -1,14 +1,11 @@
-import { Link as NextLink } from "@/providers/navigation";
-import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
-
-import { IntroductionSection } from "@/components/home/introduction-section";
-import { ScoreSection } from "@/components/home/score-section";
-import { WorksSection } from "@/components/home/works-section";
-import { ContactSection } from "@/components/home/contact-section";
-import { CertificatesSection } from "@/components/home/certificates-section";
-import { QuoteSection } from "@/components/home/quote-section";
-import { SkillsSection } from "@/components/home/skills-section";
+import { AboutSection } from "@/components/profile/about-section";
+import { CertificatesSection } from "@/components/profile/certificates-section";
+import { ContactSection } from "@/components/profile/contact-section";
+import { IntroductionSection } from "@/components/profile/introduction-section";
+import { QuoteSection } from "@/components/profile/quote-section";
+import { ScoreSection } from "@/components/profile/score-section";
+import { SkillsSection } from "@/components/profile/skills-section";
+import { WorksSection } from "@/components/profile/works-section";
 
 const Home = () => {
   return (
@@ -18,6 +15,7 @@ const Home = () => {
       <WorksSection />
       <CertificatesSection />
       <SkillsSection />
+      <AboutSection />
       <QuoteSection />
       <ContactSection />
     </>

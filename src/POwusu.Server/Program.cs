@@ -240,9 +240,9 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseStaticFiles();
-
     app.UseCors();
+
+    app.UseStaticFiles();
 
     app.UseSession();
 

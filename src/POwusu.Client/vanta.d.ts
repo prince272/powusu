@@ -15,7 +15,7 @@ export interface VantaGlobeParams {
 }
 
 export interface VantaGlobeInstance {
-  setOptions: (options: Omit<VantaGlobeParams, 'el'>) => void;
+  setOptions: (options: Omit<VantaGlobeParams, "el">) => void;
   resize: () => void;
   destroy: () => void;
 }

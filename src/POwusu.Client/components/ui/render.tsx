@@ -24,7 +24,6 @@ export interface SwitchProps {
 }
 
 const Switch = polly<ComponentType, SwitchProps>(function Switch({ as: Component = Fragment, children: unknownChildren, switch: condition, ...rest }, ref?) {
-
   const children = (() => {
     let cases: ReactNode[] = [];
     let defaults: ReactNode[] = [];
@@ -76,14 +75,13 @@ const Switch = polly<ComponentType, SwitchProps>(function Switch({ as: Component
   );
 });
 
-const Mount = ({ children, clientOnly, interval } : { children: () => ReactNode, clientOnly?: boolean, interval?: number }) => {
+const Mount = ({ children, clientOnly, interval }: { children: () => ReactNode; clientOnly?: boolean; interval?: number }) => {
   const [key, setKey] = useState<number | null>();
   const [isClient, setIsClient] = useState(!clientOnly);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -107,8 +105,6 @@ const Mount = ({ children, clientOnly, interval } : { children: () => ReactNode,
 };
 
 export { Switch, Mount };
-
-
 
 // React Polly
 // source: https://github.com/dgca/react-polly

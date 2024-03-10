@@ -3,14 +3,15 @@
 import React, { ReactNode, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
+import { getApiResponse } from "@/utils/api";
 import { Button } from "@nextui-org/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { uniqueId } from "lodash";
 import queryString from "query-string";
 
 import { api } from "@/lib/api";
-import { getApiResponse } from "@/utils/api";
+
 import { toast } from "../ui/toaster";
-import { uniqueId } from "lodash";
 
 export interface SignOutModalProps {
   children: ReactNode;
@@ -25,13 +26,13 @@ export const SignOutModal = ({ isOpen, close }: SignOutModalProps) => {
   const user = useUser();
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
-  const signOut = async () => { 
+  const signOut = async () => {
     setStatus("submitting");
     await getApiResponse(api.post(`/identity/tokens/revoke`, { token: user?.refreshToken }));
     close();
     api.user.next(null);
   };
-  
+
   return (
     <Modal
       isDismissable={false}

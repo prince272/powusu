@@ -102,16 +102,16 @@ module.exports = {
       }),
       keyframes: {
         updown: {
-          '0%, 100%': {
-            transform: 'translateY(0)',
+          "0%, 100%": {
+            transform: "translateY(0)"
           },
-          '50%': {
-            transform: 'translateY(-30px)',
-          },
-        },
+          "50%": {
+            transform: "translateY(-30px)"
+          }
+        }
       },
       animation: {
-        updown: 'updown 3s ease-in-out infinite',
+        updown: "updown 3s ease-in-out infinite"
       }
     }
   },

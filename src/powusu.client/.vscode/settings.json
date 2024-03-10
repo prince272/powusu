@@ -1,11 +1,4 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "tailwindCSS.experimental.classRegex": [
-    [
-      "[\"'`]([^\"'`]*).*?[\"'`]"
-    ]
-  ],
-  "cSpell.words": [
-    "neimart"
-  ]
+  "tailwindCSS.experimental.classRegex": [["[\"'`]([^\"'`]*).*?[\"'`]"]]
 }

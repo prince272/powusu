@@ -56,7 +56,7 @@ export const DeletePostModal = ({ isOpen, close, post }: DeletePostModalProps) =
         <ModalHeader className="flex flex-col gap-1">
           <div className="h-8">Delete post</div>
         </ModalHeader>
-        <ModalBody>Are you sure you want to delete '{post.title}' post?</ModalBody>
+        <ModalBody>Are you sure you want to delete &#39;{post.title}&#39; post?</ModalBody>
         <ModalFooter className="flex items-center justify-center text-center text-sm">
           <Button
             className="w-full"

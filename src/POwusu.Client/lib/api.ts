@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
 import { cloneDeep, merge } from "lodash";
 import PQueue from "p-queue";
-import { Subject  } from "rxjs";
+import { Subject } from "rxjs";
 
 import { User } from "@/types/user";
 import { apiConfig } from "@/config/api";

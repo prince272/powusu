@@ -19,12 +19,7 @@ export const siteConfig = {
       title: "Neighborhood Market",
       name: "Neimart",
       description: "Neimart is an e-commerce platform that provides an end-to-end business solution allowing you to start, grow, and manage your retail business.",
-      images: [
-        "/assets/profile/works/neimart/1.png",
-        "/assets/profile/works/neimart/2.png",
-        "/assets/profile/works/neimart/3.png",
-        "/assets/profile/works/neimart/4.png"
-      ],
+      images: ["/assets/profile/works/neimart/1.png", "/assets/profile/works/neimart/2.png", "/assets/profile/works/neimart/3.png", "/assets/profile/works/neimart/4.png"],
       defaultImage: "/assets/profile/works/neimart/1.png",
       logo: "/assets/profile/works/neimart/logo.png",
       link: "https://github.com/prince272/neimart"
@@ -33,13 +28,9 @@ export const siteConfig = {
       id: "e56e2db9-7a49-45d4-bd67-fda3997c92a0",
       title: "Academy Of Ours",
       name: "Academy",
-      description: "Academy of Ours is an e-learning platform that helps you to learn a variety of courses and concepts through interactive checkpoints, lessons, and videos with certificates awarded automatically after each course.",
-      images: [
-        "/assets/profile/works/academy/1.png",
-        "/assets/profile/works/academy/2.png",
-        "/assets/profile/works/academy/3.png",
-        "/assets/profile/works/academy/4.png"
-      ],
+      description:
+        "Academy of Ours is an e-learning platform that helps you to learn a variety of courses and concepts through interactive checkpoints, lessons, and videos with certificates awarded automatically after each course.",
+      images: ["/assets/profile/works/academy/1.png", "/assets/profile/works/academy/2.png", "/assets/profile/works/academy/3.png", "/assets/profile/works/academy/4.png"],
       defaultImage: "/assets/profile/works/academy/1.png",
       logo: "/assets/profile/works/academy/logo.png",
       link: "https://github.com/prince272/academy"
@@ -48,12 +39,9 @@ export const siteConfig = {
       id: "40ff2d5a-1f2f-4f5b-80f6-8351a17d7889",
       title: "Precious Assistant",
       name: "Precious",
-      description: "Precious is digital life assistant that allows you to interact with your computer 24 hours a day, 7 days in a week. Just tell it to find content, get answers, play music, and connect with friends and friends. It works seamlessly with many popular desktops applications and has very friendly disposition.",
-      images: [
-        "/assets/profile/works/precious/1.png",
-        "/assets/profile/works/precious/2.png",
-        "/assets/profile/works/precious/3.png"
-      ],
+      description:
+        "Precious is digital life assistant that allows you to interact with your computer 24 hours a day, 7 days in a week. Just tell it to find content, get answers, play music, and connect with friends and friends. It works seamlessly with many popular desktops applications and has very friendly disposition.",
+      images: ["/assets/profile/works/precious/1.png", "/assets/profile/works/precious/2.png", "/assets/profile/works/precious/3.png"],
       defaultImage: "/assets/profile/works/precious/1.png",
       logo: "/assets/profile/works/precious/logo.png",
       link: "https://github.com/prince272/precious-assistant"
@@ -108,7 +96,7 @@ export const siteConfig = {
     twitter: "https://twitter.com/OwusuPrince272",
     whatsapp: "https://api.whatsapp.com/send?phone=233550362337&text=Let%27s%20connect.",
     linkedin: "https://www.linkedin.com/in/prince-owusu-799438108",
-    telegram: "https://t.me/princeowusu272",
+    telegram: "https://t.me/princeowusu272"
   }
 };
 

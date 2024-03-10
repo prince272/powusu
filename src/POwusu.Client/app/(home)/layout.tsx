@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { Link } from "@nextui-org/link";
 
 import { PageLoader } from "@/components/ui/page-loader";
-import { Header } from "@/components/home/header";
+import { Header } from "@/components/profile/header";
 
 const HomeLayout = ({ children }: { children: ReactNode }) => {
   return (

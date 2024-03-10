@@ -3,5 +3,5 @@ interface EditorLayoutProps {
 }
 
 export default function EditorLayout({ children }: EditorLayoutProps) {
-  return <div className="container mx-auto grid items-start gap-10 pt-8">{children}</div>;
+  return <div className="container mx-auto grid h-full items-start gap-10 pt-8">{children}</div>;
 }

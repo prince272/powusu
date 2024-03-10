@@ -3,11 +3,9 @@
 import React, { ReactNode, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCurrentValue } from "@/hooks";
-import { Link as NextLink } from "@/providers/navigation";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getApiResponse } from "@/utils/api";
-import { ExternalWindow } from "@/utils/external-window";
 import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
@@ -18,6 +16,8 @@ import queryString from "query-string";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 
 import { api } from "@/lib/api";
+import { externalWindow } from "@/lib/external-window";
+import { Link as NextLink } from "@/components/ui/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
@@ -88,7 +88,7 @@ export const SignUpModal = ({ isOpen }: SignUpModalProps) => {
         const externalUrl = new URL(`${api.defaults.baseURL}/identity/tokens/${method}/generate`);
         externalUrl.searchParams.set("origin", queryString.stringifyUrl({ url: window.location.origin, query: { ["external-window"]: true } }));
         try {
-          await ExternalWindow.open(externalUrl, { center: true });
+          await externalWindow.open(externalUrl, { center: true });
         } catch (error) {
           setStatus("idle");
           console.error(error);

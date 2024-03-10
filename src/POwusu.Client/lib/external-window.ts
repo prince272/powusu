@@ -109,16 +109,6 @@ export class ExternalWindow {
 
     return false;
   }
-
-  private static instance: ExternalWindow = new ExternalWindow();
-
-  public static open(url: URL, features: ExternalWindowFeatures): Promise<void> {
-    return ExternalWindow.instance.open(url, features);
-  }
-
-  public static close(reason?: any): void {
-    ExternalWindow.instance.close(reason);
-  }
 }
 
 export type ExternalWindowErrorReasons = "WINDOW_REOPENING" | "WINDOW_CLOSE_UNEXPECTEDLY" | "WINDOW_OPEN_FAILED";
@@ -132,3 +122,6 @@ export class ExternalWindowError extends Error {
     this.name = "ExternalWindowError";
   }
 }
+
+const externalWindow = new ExternalWindow();
+export { externalWindow };

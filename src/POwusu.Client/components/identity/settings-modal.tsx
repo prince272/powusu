@@ -3,7 +3,6 @@
 import React, { Key, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useBreakpoint, useCurrentValue, usePreviousValue } from "@/hooks";
-import { Link as NextLink } from "@/providers/navigation";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getApiResponse, getErrorTitle } from "@/utils/api";
@@ -21,6 +20,7 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
+import { Link as NextLink } from "@/components/ui/navigation";
 import { toast } from "@/components/ui/toaster";
 
 import { FileInput } from "../ui/file-input";

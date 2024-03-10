@@ -22,7 +22,9 @@ const PageLoader = ({ timeout }: { timeout?: number }) => {
 
   return (
     <div className={cn("fixed top-0 z-50 h-screen w-full bg-background", !loading && "hidden")}>
-      <div className="h-screen flex items-center justify-center"><Spinner className="mb-16" size="lg" aria-label="Loading..." /></div>
+      <div className="flex h-screen items-center justify-center">
+        <Spinner className="mb-16" size="lg" aria-label="Loading..." />
+      </div>
     </div>
   );
 };

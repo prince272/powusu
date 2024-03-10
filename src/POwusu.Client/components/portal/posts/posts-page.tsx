@@ -3,7 +3,6 @@
 import { ComponentPropsWithoutRef, forwardRef, Key, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useBreakpoint, useDebouncedCallback, useEffectAfterMount } from "@/hooks";
-import { Link as NextLink } from "@/providers/navigation";
 import { cn, stringifyJSON } from "@/utils";
 import { ApiError, ApiResponse, getApiResponse } from "@/utils/api";
 import { Button } from "@nextui-org/button";
@@ -18,6 +17,7 @@ import { PostItem, PostsPerPage } from "@/types/post";
 import { api } from "@/lib/api";
 import { events } from "@/lib/events";
 import { Icon } from "@/components/ui/icon";
+import { Link as NextLink } from "@/components/ui/navigation";
 
 import { PostCard } from "./post-card";
 import { postsSearchParsers } from "./posts-search-params";
@@ -106,7 +106,9 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
           <div className="col-span-full flex h-full items-start justify-center pt-16">
             <div className="flex flex-col items-center justify-center space-y-3">
               <Icon icon="solar:file-corrupted-bold-duotone" width="96" height="96" />
-              <p className="text-muted-foreground">{error.title} {error.status || -1}</p>
+              <p className="text-muted-foreground">
+                {error.title} {error.status || -1}
+              </p>
               {error.status != 404 && (
                 <Button
                   color="default"

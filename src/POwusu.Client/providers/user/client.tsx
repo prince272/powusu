@@ -3,7 +3,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback, usePreviousValue, useStateAsync } from "@/hooks";
-import { matchPath, PathPattern } from "@/utils/matchPath";
+import { matchPath, PathPattern } from "@/utils/match-path";
 import { deleteCookie, setCookie } from "cookies-next";
 import queryString from "query-string";
 
@@ -42,7 +42,6 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
   );
 
   useEffect(() => {
-
     const subscription = api.user.subscribe({
       next: (nextUser) => {
         setUser(nextUser);
@@ -51,7 +50,7 @@ export const UserProvider = ({ children, initialUser }: UserProviderProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
-  
+
   return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 

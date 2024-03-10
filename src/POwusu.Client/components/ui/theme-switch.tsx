@@ -5,6 +5,7 @@ import { useIsSSR } from "@react-aria/ssr";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
+
 import { Icon } from "./icon";
 
 export interface ThemeSwitchProps {

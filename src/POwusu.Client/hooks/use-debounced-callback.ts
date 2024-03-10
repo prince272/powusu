@@ -1,8 +1,10 @@
-// source: https://github.com/react-restart/hooks/blob/master/src/useDebouncedCallback.ts
-
-import { useCallback, type DependencyList } from "react";
+import { useCallback } from "react";
 
 import { useTimeout } from "./use-timeout";
+
+import type { DependencyList } from "react";
+
+// source: https://github.com/react-restart/hooks/blob/master/src/useDebouncedCallback.ts
 
 /**
  * Creates a debounced function that will invoke the input function after the

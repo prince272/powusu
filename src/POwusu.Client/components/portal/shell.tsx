@@ -28,7 +28,7 @@ const ShellHeader = ({ heading, description, actions, children, classNames }: Sh
   return (
     <>
       <div className="grid gap-1">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h1 className={cn("font-heading text-3xl md:text-4xl", classNames?.heading)}>{heading}</h1>
           <div>{actions}</div>
         </div>

@@ -1,10 +1,10 @@
 "use client";
 
 import { Metadata } from "next";
-import { Link as NextLink } from "@/providers/navigation";
 import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
+import { Link as NextLink } from "@/components/ui/navigation";
 import { title } from "@/components/primitives";
 
 const AboutPage = () => {

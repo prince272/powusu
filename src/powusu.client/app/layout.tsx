@@ -2,15 +2,15 @@ import "@/styles/globals.css";
 
 import { ReactNode } from "react";
 import { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { AppProviders } from "@/providers";
-import { RouteChangeProvider } from "@/providers/navigation";
 import { getUser } from "@/providers/user/server";
 import { cn } from "@/utils";
 
 import { siteConfig } from "@/config/site";
-import { fontHeading, fontSans } from "@/components/fonts";
-import { cookies } from "next/headers";
 import { api } from "@/lib/api";
+import { RouteChangeProvider } from "@/components/ui/navigation";
+import { fontHeading, fontSans } from "@/components/fonts";
 
 const APP_NAME = "Prince App";
 const APP_DEFAULT_TITLE = "Prince Owusu";
@@ -98,9 +98,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   api.user.next(currentUser);
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("bg-default-50 font-sans text-default-foreground antialiased", fontSans.variable, fontHeading.variable)}>
       <head />
-      <body className={cn("bg-default-50 text-default-foreground font-sans antialiased", fontSans.variable, fontHeading.variable)}>
+      <body>
         <RouteChangeProvider>
           <AppProviders initialUser={currentUser}>{children}</AppProviders>
         </RouteChangeProvider>

@@ -13,7 +13,7 @@ export const getErrorTitle = (error: any, unknownTitle?: string) => {
     } else if (isIdempotentRequestError(error)) {
       title = "Something went wrong, Please try again.";
     }
-  } 
+  }
 
   title = title || unknownTitle || "Something went wrong.\nPlease try again later.";
   return title;

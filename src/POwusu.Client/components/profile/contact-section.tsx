@@ -64,7 +64,7 @@ export const ContactSection = () => {
                     <Icon icon="mdi:github" className="text-primary" width="32" height="32" />
                   </Button>
                 </Tooltip>
-                <Tooltip  content="Twitter">
+                <Tooltip content="Twitter">
                   <Button as={NextLink} href={siteConfig.links.twitter} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
                     <Icon icon="ri:twitter-x-fill" className="text-primary" width="32" height="32" />
                   </Button>

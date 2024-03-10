@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FluentValidation;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace POwusu.Server.Models.Push
@@ -52,4 +53,12 @@ namespace POwusu.Server.Models.Push
         public string Title { get; set; } = null!;
     }
 
+    public class PushNotificationFormValidator : AbstractValidator<PushNotificationForm>
+    {
+        public PushNotificationFormValidator()
+        {
+            RuleFor(_ => _.Title).NotEmpty();
+            RuleFor(_ => _.Body).NotEmpty();
+        }
+    }
 }

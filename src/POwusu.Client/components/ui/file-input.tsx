@@ -114,8 +114,7 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
             const response = await api.get(source, {
               responseType: "blob", // Set the responseType to 'blob' for binary data
               headers: {
-                "Cache-Control": "no-cache",
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Cache-Control": "no-cache"
               },
               onDownloadProgress: (e) => {
                 // Update the progress as the file is being downloaded

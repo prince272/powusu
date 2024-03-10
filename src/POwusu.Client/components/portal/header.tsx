@@ -7,7 +7,7 @@ import { AppIcon } from "../ui/icon";
 
 const Header = () => {
   return (
-    <Navbar className="absolute" classNames={{ wrapper: "max-w-[1400px] px-3 md:px-6" }}>
+    <Navbar position="sticky" maxWidth="xl">
       <NavbarBrand>
         <AppIcon />
         <p className="font-bold text-inherit">ACME</p>
