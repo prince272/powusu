@@ -40,7 +40,7 @@ export function FixedToolbarButtons() {
           <>
             <ToolbarGroup noSeparator>
               <InsertDropdownMenu />
-              <TurnIntoDropdownMenu />
+              {/* <TurnIntoDropdownMenu /> */}
             </ToolbarGroup>
 
             <ToolbarGroup>
@@ -76,21 +76,21 @@ export function FixedToolbarButtons() {
 
               <LineHeightDropdownMenu />
 
-              <IndentListToolbarButton nodeType={ListStyleType.Disc} />
-              <IndentListToolbarButton nodeType={ListStyleType.Decimal} />
+              {/* <IndentListToolbarButton nodeType={ListStyleType.Disc} />
+              <IndentListToolbarButton nodeType={ListStyleType.Decimal} /> */}
 
               <OutdentToolbarButton />
               <IndentToolbarButton />
             </ToolbarGroup>
 
             <ToolbarGroup>
-              <LinkToolbarButton />
+              {/* <LinkToolbarButton /> */}
 
-              <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
+              {/* <MediaToolbarButton nodeType={ELEMENT_IMAGE} /> */}
 
-              <TableDropdownMenu />
+              {/* <TableDropdownMenu /> */}
 
-              <EmojiDropdownMenu />
+              {/* <EmojiDropdownMenu /> */}
 
               <MoreDropdownMenu />
             </ToolbarGroup>
@@ -100,7 +100,7 @@ export function FixedToolbarButtons() {
         <div className="grow" />
 
         <ToolbarGroup noSeparator>
-          <CommentToolbarButton />
+          {/* <CommentToolbarButton /> */}
           <ModeDropdownMenu />
         </ToolbarGroup>
       </div>

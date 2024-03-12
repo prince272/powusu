@@ -18,6 +18,7 @@ import { FileInput } from "@/components/ui/file-input";
 import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { toast } from "@/components/ui/toaster";
+import { PlateEditor } from "@/components/plate-ui";
 
 interface AddPostPageProps {
   postId?: string;
@@ -75,7 +76,7 @@ const AddPostPage = ({ postId, initialPost, initialError }: AddPostPageProps) =>
           </Button>
         </div>
       </div>
-      <div className="prose prose-xl prose-light mx-auto flex w-full flex-col dark:prose-dark">
+      <div className="mx-auto flex w-full flex-col">
         <div className="mb-5">
           <FormController
             control={form.control}
@@ -117,13 +118,7 @@ const AddPostPage = ({ postId, initialPost, initialError }: AddPostPageProps) =>
           )}
         />
       </div>
-      <p className="mt-auto p-3 text-center text-sm text-default-500">
-        Use{" "}
-        <Chip as="kbd" size="sm">
-          Tab
-        </Chip>{" "}
-        to open the command menu.
-      </p>
+      <PlateEditor />
     </form>
   );
 };

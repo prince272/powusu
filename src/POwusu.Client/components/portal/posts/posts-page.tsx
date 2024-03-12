@@ -125,7 +125,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
         )}
       </div>
 
-      {pageDetails?.totalPages && (
+      {!!pageDetails?.totalPages && (
         <div className="mt-12 flex justify-center">
           <Skeleton isLoaded={status != "mounting"} className="z-20 rounded-xl">
             <Pagination color="primary" showControls total={pageDetails?.totalPages} page={page} onChange={setPage} />

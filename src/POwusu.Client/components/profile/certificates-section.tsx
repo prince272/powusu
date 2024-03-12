@@ -26,8 +26,8 @@ export const CertificatesSection = () => {
 
   return (
     <section id="certificates" className="bg-background pb-24 pt-24">
-      <div className="container relative mx-auto flex max-w-screen-xl flex-col items-center justify-center">
-        <div className="flex max-w-xl flex-col text-center">
+      <div className="relative mx-auto max-w-screen-xl px-6">
+        <div className="flex flex-col text-center">
           <h2 className="mb-1 font-medium text-primary">Certificates</h2>
           <h1 className="mb-3 font-heading text-4xl font-medium uppercase tracking-tight">
             Achieved <span className="text-secondary">Certificates</span>

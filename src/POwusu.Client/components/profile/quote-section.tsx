@@ -11,9 +11,11 @@ export const QuoteSection = () => {
         src="/assets/future.jpg"
         alt="Future"
       />
-      <div className="relative z-10 bg-background/70 p-8 py-24 text-center backdrop-blur-sm backdrop-saturate-150">
-        <blockquote className="font-serif text-4xl italic">&quot;The only way to predict the future is to create it.&quot;</blockquote>
-        <cite className="mt-4 block font-semibold text-default-600">- Abraham Lincoln</cite>
+      <div className="relative z-10 bg-background/70 py-24 text-center backdrop-blur-sm backdrop-saturate-150">
+        <div className="relative mx-auto max-w-screen-xl px-6">
+          <blockquote className="font-serif text-4xl italic">&quot;The only way to predict the future is to create it.&quot;</blockquote>
+          <cite className="mt-4 block font-semibold text-default-600">- Abraham Lincoln</cite>
+        </div>
       </div>
     </div>
   );

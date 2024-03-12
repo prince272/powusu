@@ -12,7 +12,7 @@ import { Icon } from "../ui/icon";
 export const ContactSection = () => {
   return (
     <section id="contact" className="bg-background py-24">
-      <div className="container relative mx-auto max-w-screen-xl">
+      <div className="relative mx-auto max-w-screen-xl px-6">
         <div className="mb-6 flex justify-center">
           <div className="flex max-w-xl flex-col text-center">
             <h2 className="mb-1 font-medium text-primary">Contact</h2>

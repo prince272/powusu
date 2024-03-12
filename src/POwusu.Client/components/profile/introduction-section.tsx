@@ -50,7 +50,7 @@ export const IntroductionSection = () => {
     <section id="intro" ref={vantaRef} className="relative h-full bg-primary-50 text-foreground dark">
       <div className="absolute h-full w-full backdrop-blur-sm md:backdrop-blur-none"></div>
       <div className="h-full">
-        <div className="container relative mx-auto h-full max-w-screen-xl">
+        <div className="relative mx-auto h-full max-w-screen-xl px-6">
           <section className="align-items-center grid h-full grid-cols-12 space-x-10 pb-32 pt-16">
             <div className="col-span-12 flex items-center lg:col-span-8">
               <div className="max-w-[600px]">

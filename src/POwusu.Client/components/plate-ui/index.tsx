@@ -49,7 +49,7 @@ export function PlateEditor() {
                 <FixedToolbarButtons />
               </FixedToolbar>
 
-              <Editor className="p-8" autoFocus focusRing={false} variant="ghost" size="sm" />
+              <Editor className="p-4" autoFocus focusRing={false} variant="ghost" size="sm" />
 
               <FloatingToolbar>
                 <FloatingToolbarButtons />

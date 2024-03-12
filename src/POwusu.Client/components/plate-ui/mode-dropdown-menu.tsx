@@ -19,14 +19,14 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
   const item: any = {
     editing: (
       <>
-        <Icons.editing className="size-5 mr-2" />
-        <span className="hidden lg:inline">Editing</span>
+        <Icons.editing className="size-5" />
+        <span className="hidden">Editing</span>
       </>
     ),
     viewing: (
       <>
-        <Icons.viewing className="size-5 mr-2" />
-        <span className="hidden lg:inline">Viewing</span>
+        <Icons.viewing className="size-5" />
+        <span className="hidden">Viewing</span>
       </>
     )
   };
@@ -34,7 +34,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
   return (
     <DropdownMenu modal={false} {...openState} {...props}>
       <DropdownMenuTrigger asChild>
-        <ToolbarButton pressed={openState.open} tooltip="Editing mode" isDropdown className="min-w-[auto] lg:min-w-[130px]">
+        <ToolbarButton pressed={openState.open} tooltip="Editing mode" isDropdown className="min-w-[auto]">
           {item[value]}
         </ToolbarButton>
       </DropdownMenuTrigger>

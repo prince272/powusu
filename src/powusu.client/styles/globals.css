@@ -2,8 +2,6 @@
 @import "./components.css";
 @import "./utilities.css";
 
-@import "./plate-editor.css";
-
 html,
 body,
 body > div:first-of-type {

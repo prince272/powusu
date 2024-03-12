@@ -98,7 +98,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   api.user.next(currentUser);
 
   return (
-    <html lang="en" suppressHydrationWarning className={cn("bg-default-50 font-sans text-default-foreground antialiased", fontSans.variable, fontHeading.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn("bg-background font-sans text-foreground antialiased", fontSans.variable, fontHeading.variable)}>
       <head />
       <body>
         <RouteChangeProvider>
