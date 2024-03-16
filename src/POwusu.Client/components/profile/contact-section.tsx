@@ -7,7 +7,7 @@ import { Tooltip } from "@nextui-org/tooltip";
 
 import { siteConfig } from "@/config/site";
 
-import { Icon } from "../ui/icon";
+import { Icon } from "@/components/ui/icon";
 
 export const ContactSection = () => {
   return (

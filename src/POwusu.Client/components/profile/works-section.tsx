@@ -19,7 +19,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import { SiteConfig, siteConfig } from "@/config/site";
 
-import { Icon } from "../ui/icon";
+import { Icon } from "@/components/ui/icon";
 
 export const WorksSection = () => {
   const [selectedWork, setSelectedWork] = useState<SiteConfig["works"][0] | null>(null);

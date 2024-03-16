@@ -3,7 +3,7 @@
 import { Card, CardBody } from "@nextui-org/card";
 import CountUp from "react-countup";
 
-import { Icon } from "../ui/icon";
+import { Icon } from "@/components/ui/icon";
 
 export const ScoreSection = () => {
   return (

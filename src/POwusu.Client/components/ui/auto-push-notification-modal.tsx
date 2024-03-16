@@ -10,7 +10,7 @@ import { uniqueId } from "lodash";
 import { pushNotification, PushNotificationError } from "@/lib/push-notification";
 import { useLocalState } from "@/hooks/use-storage-state";
 
-import { Icon } from "./icon";
+import { Icon } from "@/components/ui/icon";
 import { toast } from "./toaster";
 
 export const AutoPushNotificationModal = () => {

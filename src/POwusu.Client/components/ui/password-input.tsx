@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementRef, forwardRef, useState } from "react";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/ui/icon";
 import { Input, InputProps } from "@nextui-org/input";
 
 const PasswordInput = forwardRef<ElementRef<typeof Input>, InputProps>((props, ref) => {

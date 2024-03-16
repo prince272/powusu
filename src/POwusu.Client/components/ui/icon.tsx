@@ -1,9 +1,9 @@
 "use client";
 
 import { SVGProps } from "react";
-import { Icon as BaseIcon, IconProps } from "@iconify/react";
+import { Icon as BaseIcon, IconifyIconProps } from "@iconify-icon/react";
 
-const Icon = (props: IconProps) => <BaseIcon {...props} />;
+const Icon = (props: Omit<IconifyIconProps, "ref">) => <BaseIcon {...props} />;
 export { Icon };
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {

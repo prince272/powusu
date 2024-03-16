@@ -109,6 +109,7 @@
     "cmdk": "^1.0.0",
     "cookies-next": "^4.1.0",
     "copy-to-clipboard": "^3.3.3",
+    "cross-fetch": "^4.0.0",
     "date-fns": "^3.3.1",
     "dayjs": "^1.11.10",
     "eslint": "8.48.0",
@@ -161,7 +162,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
-    "@iconify/react": "^4.1.1",
+    "@iconify-icon/react": "^2.0.1",
     "@tailwindcss/typography": "^0.5.10",
     "@types/moment-duration-format": "^2.2.6",
     "@types/three": "^0.161.2",

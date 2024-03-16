@@ -11,7 +11,7 @@ import "vanta/dist/vanta.globe.min";
 import { VantaGlobeInstance } from "@/vanta";
 import { useTheme } from "next-themes";
 
-import { Icon } from "../ui/icon";
+import { Icon } from "@/components/ui/icon";
 
 export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/ui/icon";
 import { Button } from "@nextui-org/button";
 
 import { Link as NextLink } from "@/components/ui/navigation";

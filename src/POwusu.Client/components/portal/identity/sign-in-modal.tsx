@@ -6,7 +6,7 @@ import { useCurrentValue } from "@/hooks";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getApiResponse, getErrorTitle } from "@/utils/api";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/ui/icon";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
