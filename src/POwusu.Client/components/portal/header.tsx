@@ -1,15 +1,12 @@
 "use client";
 
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
-
-import { AccountButton } from "../identity/account-button";
-import { AppIcon } from "../ui/icon";
+import { AccountButton } from "./identity/account-button";
 
 const Header = () => {
   return (
-    <Navbar position="sticky" maxWidth="xl">
+    <Navbar position="static" classNames={{ wrapper: "container relative max-w-[1400px] flex flex-1 px-6 md:grid-cols-[256px_1fr]" }}>
       <NavbarBrand>
-        <AppIcon />
         <p className="font-bold text-inherit">ACME</p>
       </NavbarBrand>
       <NavbarContent justify="end">

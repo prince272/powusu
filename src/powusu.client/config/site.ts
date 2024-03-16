@@ -96,8 +96,51 @@ export const siteConfig = {
     twitter: "https://twitter.com/OwusuPrince272",
     whatsapp: "https://api.whatsapp.com/send?phone=233550362337&text=Let%27s%20connect.",
     linkedin: "https://www.linkedin.com/in/prince-owusu-799438108",
-    telegram: "https://t.me/princeowusu272"
-  }
+    telegram: "https://t.me/princeowusu272",
+    stackoverflow: "https://stackoverflow.com/users/5265873/prince-owusu",
+  },
+  faqs: [
+    {
+      id: "1",
+      question: "What drives you as a software engineer?",
+      answer: "As a software engineer, I am driven by a passion for innovation and problem solving, constantly pushing the boundaries of technology. With a diverse set of skills and a commitment to generating amazing results, I am dedicated to creating solutions that create meaningful change. My journey in software engineering has been driven by a relentless pursuit of knowledge and a desire to make a positive impact on the world."
+    },
+    {
+      id: "2",
+      question: "What programming languages and frameworks are you proficient in?",
+      answer: "I am skilled in a variety of languages and frameworks including:\n- C#, .NET, ASP.NET\n- React.js, Next.js\n- JavaScript, TypeScript\n- HTML, CSS\nand more."
+    },
+    {
+      id: "3",
+      question: "Can you describe your experience in software development?",
+      answer: "Certainly, I have worked extensively as a software engineer focusing on full-stack web application development, emphasizing scalability and maintainability.\n\nI have a strong background in software engineering principles and continually stay updated with new technological advancements."
+    },
+    {
+      id: "4",
+      question: "What are some of your core capabilities?",
+      answer: "I possess strong critical thinking skills and creativity.\nI have excellent communication and interpersonal abilities.\nI can multitask and meet deadlines efficiently.\nI am highly adaptable to new challenges and environments."
+    },
+    {
+      id: "5",
+      question: "What has been your work experience?",
+      answer: "I worked as a Software Engineer, where I:\n\n- Coordinated end-to-end unit testing and post-production testing with QA testers.\n- Created new features and integrated them into the legacy system application.\n- Showed great expertise in designing and implementing an ERP solution, enhancing operational efficiency and data management capabilities.\n\nAdditionally, I worked as a Freelance Full-Stack Developer, building websites and web applications for various clients."
+    },
+    {
+      id: "6",
+      question: "What are your hobbies?",
+      answer: "Playing video games, whether casually or competitively, is a way for me to enjoy.\n\nListening to music emotive lyrics and experimental sounds creating a tapestry of musical depth and resonance."
+    },
+    {
+      id: "7",
+      question: "What is your relationship status?",
+      answer: "As of now, I am single. I am open to meeting new people and making new friends."
+    },
+    {
+      id: "8",
+      question: "What is your favorite food?",
+      answer: "My favorite food is Fufu and Light Soup. Fufu, made from boiled and pounded cassava and plantains, is often served with a flavorful soup, typically light soup, which contains ingredients such as tomatoes, onions, chili peppers, and various meats or fish."
+    }
+  ]
 };
 
 export const SiteConfig = typeof siteConfig;

@@ -26,7 +26,7 @@ export const SkillsSection = () => {
         <div className="grid grid-cols-12 gap-6">
           <div className="relative col-span-12 md:col-span-5">
             <div className="flex aspect-[4/3] justify-center">
-              <ProgrammingIllustration className="max-h-[384px] animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
+              <ProgrammingIllustration className="max-h-[384px] animate-updown text-default-50 w-auto" width="100%" height="100%" preserveAspectRatio="none" />
             </div>
           </div>
           <div className="md:order-0 order-1 col-span-12 md:col-span-7">
@@ -99,6 +99,13 @@ export const SkillsSection = () => {
                 <Card className="bg-background">
                   <CardBody className="p-2">
                     <Icon className="rounded-md" icon="logos:tailwindcss-icon" width="32" height="32" />
+                  </CardBody>
+                </Card>
+              </Tooltip>
+              <Tooltip content="Next UI">
+                <Card className="bg-background">
+                  <CardBody className="p-2">
+                    <Icon className="rounded-md" icon="simple-icons:nextui" width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>

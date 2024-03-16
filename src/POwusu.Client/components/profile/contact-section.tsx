@@ -25,7 +25,7 @@ export const ContactSection = () => {
         <div className="grid grid-cols-12 gap-6">
           <div className="relative col-span-12 md:col-span-5">
             <div className="flex aspect-[4/3] justify-center">
-              <ConversationIllustration className="max-h-[384px] max-w-[384px] animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
+              <ConversationIllustration className="max-h-[384px] w-auto max-w-[384px] animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
             </div>
           </div>
           <div className="md:order-0 order-1 col-span-12 md:col-span-7">
@@ -38,7 +38,7 @@ export const ContactSection = () => {
               Let&apos;s start a conversation today!
             </p>
             <div className="space-y-4">
-              <div className="relative flex items-center">
+              <div className="relative inline-flex items-center">
                 <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-50">
                   <Icon icon="solar:phone-bold" width="24" height="24" className="text-secondary" />
                 </div>
@@ -48,7 +48,8 @@ export const ContactSection = () => {
                   </a>
                 </div>
               </div>
-              <div className="relative flex items-center">
+              <br />
+              <div className="relative inline-flex items-center">
                 <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary-50">
                   <Icon icon="solar:mailbox-bold" width="24" height="24" className="text-primary" />
                 </div>
@@ -60,8 +61,8 @@ export const ContactSection = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <Tooltip content="Github">
-                  <Button as={NextLink} href={siteConfig.links.github} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="mdi:github" className="text-primary" width="32" height="32" />
+                  <Button as={NextLink} href={siteConfig.links.github} target="_blank" variant="light" color="secondary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="mdi:github" className="text-secondary" width="32" height="32" />
                   </Button>
                 </Tooltip>
                 <Tooltip content="Twitter">
@@ -70,7 +71,7 @@ export const ContactSection = () => {
                   </Button>
                 </Tooltip>
                 <Tooltip content="WhatsApp">
-                  <Button as={NextLink} href={siteConfig.links.whatsapp} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                  <Button as={NextLink} href={siteConfig.links.whatsapp} target="_blank" variant="light" color="secondary" isIconOnly className="h-9 w-9 min-w-fit">
                     <Icon icon="ri:whatsapp-fill" width="32" height="32" />
                   </Button>
                 </Tooltip>
@@ -80,8 +81,13 @@ export const ContactSection = () => {
                   </Button>
                 </Tooltip>
                 <Tooltip content="Telegram">
-                  <Button as={NextLink} href={siteConfig.links.telegram} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                  <Button as={NextLink} href={siteConfig.links.telegram} target="_blank" variant="light" color="secondary" isIconOnly className="h-9 w-9 min-w-fit">
                     <Icon icon="ic:baseline-telegram" width="32" height="32" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Stackoverflow">
+                  <Button as={NextLink} href={siteConfig.links.stackoverflow} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
+                    <Icon icon="mdi:stackoverflow" width="32" height="32" />
                   </Button>
                 </Tooltip>
               </div>

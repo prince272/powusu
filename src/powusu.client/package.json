@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@nextui-org/accordion": "^2.0.28",
     "@nextui-org/avatar": "^2.0.24",
     "@nextui-org/button": "2.0.26",
     "@nextui-org/card": "^2.0.24",
@@ -115,6 +116,8 @@
     "filepond": "^4.30.6",
     "filepond-plugin-image-preview": "^4.6.12",
     "framer-motion": "^10.16.4",
+    "html-entities": "^2.5.2",
+    "html-react-parser": "^5.1.8",
     "intl-messageformat": "^10.5.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.354.0",

@@ -86,7 +86,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
           </Skeleton>
         </div>
         <Skeleton isLoaded={status != "mounting"} className="z-20 rounded-xl">
-          <div className="text-muted-foreground text-lg">Create and manage posts.</div>
+          <div className="text-lg text-default-500">Create and manage posts.</div>
         </Skeleton>
       </div>
 
@@ -98,7 +98,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
           <div className="col-span-full flex h-full items-start justify-center pt-16">
             <div className="flex flex-col items-center justify-center space-y-3">
               <Icon icon="solar:document-bold-duotone" width="96" height="96" className="text-primary" />
-              <p className="text-muted-foreground">No posts found.</p>
+              <p className="text-default-500">No posts found.</p>
             </div>
           </div>
         )}
@@ -106,7 +106,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
           <div className="col-span-full flex h-full items-start justify-center pt-16">
             <div className="flex flex-col items-center justify-center space-y-3">
               <Icon icon="solar:file-corrupted-bold-duotone" width="96" height="96" />
-              <p className="text-muted-foreground">
+              <p className="text-default-500">
                 {error.title} {error.status || -1}
               </p>
               {error.status != 404 && (

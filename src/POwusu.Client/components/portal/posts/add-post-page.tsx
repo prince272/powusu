@@ -18,7 +18,7 @@ import { FileInput } from "@/components/ui/file-input";
 import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { toast } from "@/components/ui/toaster";
-import { PlateEditor } from "@/components/plate-ui";
+import { PlateEditor } from "@/components/ui/editor/plate-editor";
 
 interface AddPostPageProps {
   postId?: string;

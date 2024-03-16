@@ -1,6 +1,7 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { ClassValue, clsx } from "clsx";
-import queryString, { StringifiableRecord } from "query-string";
+import { encode as encodeHtml } from "html-entities";
+import parseHtml from 'html-react-parser';
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -110,4 +111,15 @@ export function convertUrlB64ToUint8Array(base64String: string): Uint8Array {
   }
 
   return outputArray;
+}
+
+export function wrapHtml(text: string): ReactNode {
+  text = encodeHtml(text);
+  text = text.replace(/\r\n/g, "\r");
+  text = text.replace(/\n/g, "\r");
+  text = text.replace(/\r/g, "<br>\r\n");
+  text = text.replace(/  /g, " &nbsp;");
+  const html = `<p>${text.trim()}</p>`;
+  const parsedHtml = parseHtml(html);
+  return parsedHtml;
 }

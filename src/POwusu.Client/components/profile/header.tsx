@@ -11,12 +11,11 @@ import clsx from "clsx";
 import queryString from "query-string";
 
 import { siteConfig } from "@/config/site";
+import { AppIcon, Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
+import { Switch } from "@/components/ui/render";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
-
-import { AccountButton } from "../identity/account-button";
-import { AppIcon, Icon } from "../ui/icon";
-import { Switch } from "../ui/render";
+import { AccountButton } from "@/components/portal/identity/account-button";
 
 export const Header = () => {
   const modalRouter = useModalRouter();

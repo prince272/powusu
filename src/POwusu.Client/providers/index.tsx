@@ -12,11 +12,11 @@ import TopLoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 import { api } from "@/lib/api";
 import { AutoPushNotificationModal } from "@/components/ui/auto-push-notification-modal";
 import { PageLoader } from "@/components/ui/page-loader";
-import { ConfirmAccountModal } from "@/components/identity/confirm-account-modal";
-import { ResetPasswordModal } from "@/components/identity/reset-password-modal";
-import { SettingsModal } from "@/components/identity/settings-modal";
-import { SignInModal } from "@/components/identity/sign-in-modal";
-import { SignUpModal } from "@/components/identity/sign-up-modal";
+import { ConfirmAccountModal } from "@/components/portal/identity/confirm-account-modal";
+import { ResetPasswordModal } from "@/components/portal/identity/reset-password-modal";
+import { SettingsModal } from "@/components/portal/identity/settings-modal";
+import { SignInModal } from "@/components/portal/identity/sign-in-modal";
+import { SignUpModal } from "@/components/portal/identity/sign-up-modal";
 
 import { useRouteChange } from "../components/ui/navigation";
 import { Toaster } from "../components/ui/toaster";
