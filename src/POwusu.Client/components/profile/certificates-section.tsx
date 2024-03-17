@@ -48,7 +48,7 @@ export const CertificatesSection = () => {
               return `<span class="${cn(className, "!w-3 !h-3 [&.swiper-pagination-bullet-active]:!bg-primary [&.swiper-pagination-bullet]:bg-default-300 !opacity-100")}"></span>`;
             }
           }}
-          virtual={true}
+          virtual={false}
           modules={[SwiperPagination, SwiperAutoplay, SwiperVirtual]}
           breakpoints={{
             640: {
