@@ -75,7 +75,7 @@ export const MediaEmbedElement = withHOC(
                     )}
                   >
                     <iframe
-                      className={cn("absolute left-0 top-0 size-full rounded-sm", isVideo && "border-0", focused && selected && "ring-2 ring-ring ring-offset-2")}
+                      className={cn("absolute left-0 top-0 size-full rounded-sm", isVideo && "border-0", focused && selected && "ring-ring ring-2 ring-offset-2")}
                       src={embed!.url}
                       title="embed"
                       allowFullScreen
@@ -88,7 +88,7 @@ export const MediaEmbedElement = withHOC(
                 <div
                   className={cn(
                     "[&_.react-tweet-theme]:my-0",
-                    !readOnly && selected && "[&_.react-tweet-theme]:ring-2 [&_.react-tweet-theme]:ring-ring [&_.react-tweet-theme]:ring-offset-2"
+                    !readOnly && selected && "[&_.react-tweet-theme]:ring-ring [&_.react-tweet-theme]:ring-2 [&_.react-tweet-theme]:ring-offset-2"
                   )}
                 >
                   <Tweet id={embed!.id!} />

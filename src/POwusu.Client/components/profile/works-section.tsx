@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Image } from "@nextui-org/image";
-import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination } from "swiper/modules";
+import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination, Virtual as SwiperVirtual, Virtual } from "swiper/modules";
 import Lightbox, { Slide as LightboxSlide } from "yet-another-react-lightbox";
 
 import { Link as NextLink } from "@/components/ui/navigation";
@@ -12,20 +12,19 @@ import { Link as NextLink } from "@/components/ui/navigation";
 import "yet-another-react-lightbox/styles.css";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/virtual";
 
 import { cn } from "@/utils";
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
+import SolarCloseCircleOutline from "@iconify/icons-solar/close-circle-outline";
+import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
+import SolarLinkBold from "@iconify/icons-solar/link-bold";
 import { Chip } from "@nextui-org/chip";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { SiteConfig, siteConfig } from "@/config/site";
-
 import { Icon } from "@/components/ui/icon";
-
-import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
-import SolarLinkBold from "@iconify/icons-solar/link-bold";
-import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
-import SolarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
-import SolarCloseCircleOutline from "@iconify/icons-solar/close-circle-outline";
 
 export const WorksSection = () => {
   const [selectedWork, setSelectedWork] = useState<SiteConfig["works"][0] | null>(null);
@@ -48,7 +47,8 @@ export const WorksSection = () => {
               return `<span class="${cn(className, "!w-3 !h-3 [&.swiper-pagination-bullet-active]:!bg-primary [&.swiper-pagination-bullet]:bg-default-300 !opacity-100")}"></span>`;
             }
           }}
-          modules={[SwiperPagination, SwiperAutoplay]}
+          virtual={true}
+          modules={[SwiperPagination, SwiperAutoplay, SwiperVirtual]}
           breakpoints={{
             640: {
               slidesPerView: 2,

@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import SolarBoxBold from "@iconify/icons-solar/box-bold";
 import SolarDocumentTextBold from "@iconify/icons-solar/document-text-bold";
 import SolarNotebookBookmarkBold from "@iconify/icons-solar/notebook-bookmark-bold";
-import SolarBoxBold from "@iconify/icons-solar/box-bold";
 import { Button } from "@nextui-org/button";
 
 import { Icon } from "@/components/ui/icon";

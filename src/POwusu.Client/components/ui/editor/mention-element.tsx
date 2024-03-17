@@ -21,7 +21,7 @@ export const MentionElement = withRef<
       ref={ref}
       className={cn(
         "inline-block cursor-pointer rounded-md bg-default-200 px-1.5 py-0.5 align-baseline text-sm font-medium",
-        selected && focused && "ring-2 ring-ring",
+        selected && focused && "ring-ring ring-2",
         element.children[0].bold === true && "font-bold",
         element.children[0].italic === true && "italic",
         element.children[0].underline === true && "underline",

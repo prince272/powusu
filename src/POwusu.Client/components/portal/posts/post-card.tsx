@@ -1,14 +1,21 @@
 "use client";
 
-import { Icon } from "@/components/ui/icon";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Image } from "@nextui-org/image";
 import * as moment from "moment";
+
+import { Icon } from "@/components/ui/icon";
 
 import "moment-duration-format";
 
 import { useModalRouter } from "@/providers/modal-router";
 import { cn, forwardPropsToChildren } from "@/utils";
+import SolarCalendarMinimalisticBold from "@iconify/icons-solar/calendar-minimalistic-bold";
+import SolarClockCircleBold from "@iconify/icons-solar/clock-circle-bold";
+import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
+import SolarMenuDotsBold from "@iconify/icons-solar/menu-dots-bold";
+import SolarPenBold from "@iconify/icons-solar/pen-bold";
+import SolarTrashBinTrashBold from "@iconify/icons-solar/trash-bin-trash-bold";
 import { Avatar } from "@nextui-org/avatar";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
@@ -20,13 +27,6 @@ import { Link as NextLink } from "@/components/ui/navigation";
 import { Mount, Switch } from "@/components/ui/render";
 
 import { DeletePostModal } from "./delete-post-modal";
-
-import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
-import SolarCalendarMinimalisticBold from "@iconify/icons-solar/calendar-minimalistic-bold";
-import SolarClockCircleBold from "@iconify/icons-solar/clock-circle-bold";
-import SolarMenuDotsBold from "@iconify/icons-solar/menu-dots-bold";
-import SolarPenBold from "@iconify/icons-solar/pen-bold";
-import SolarTrashBinTrashBold from "@iconify/icons-solar/trash-bin-trash-bold";
 
 export interface PostCardProps extends React.HTMLAttributes<HTMLDivElement> {
   post?: PostItem | null | undefined;

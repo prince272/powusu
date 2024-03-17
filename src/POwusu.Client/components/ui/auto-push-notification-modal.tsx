@@ -3,15 +3,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTimeout } from "@/hooks";
 import { useUser } from "@/providers/user/client";
+import SolarBellBoldDuotone from "@iconify/icons-solar/bell-bold-duotone";
 import { Button } from "@nextui-org/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import { uniqueId } from "lodash";
 
 import { pushNotification, PushNotificationError } from "@/lib/push-notification";
 import { useLocalState } from "@/hooks/use-storage-state";
-
 import { Icon } from "@/components/ui/icon";
-import SolarBellBoldDuotone from "@iconify/icons-solar/bell-bold-duotone";
 
 import { toast } from "./toaster";
 

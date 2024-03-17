@@ -2,16 +2,16 @@
 
 import NextLink from "next/link";
 import ConversationIllustration from "@/assets/illustrations/conversation.svg";
+import LogosWhatsappMonochromeIcon from "@iconify-icons/logos/whatsapp-monochrome-icon";
+import DeviconGithub from "@iconify/icons-devicon/github";
+import DeviconTwitter from "@iconify/icons-devicon/twitter";
+import SolarMailboxBold from "@iconify/icons-solar/mailbox-bold";
+import SolarPhoneBold from "@iconify/icons-solar/phone-bold";
 import { Button } from "@nextui-org/button";
 import { Tooltip } from "@nextui-org/tooltip";
 
 import { siteConfig } from "@/config/site";
-
 import { Icon } from "@/components/ui/icon";
-
-import SolarPhoneBold from "@iconify/icons-solar/phone-bold";
-import SolarMailboxBold from "@iconify/icons-solar/mailbox-bold";
-
 
 export const ContactSection = () => {
   return (
@@ -66,22 +66,22 @@ export const ContactSection = () => {
               <div className="flex items-center space-x-4">
                 <Tooltip content="Github">
                   <Button as={NextLink} href={siteConfig.links.github} target="_blank" variant="light" color="secondary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="mdi:github" className="text-secondary" width="32" height="32" />
+                    <Icon icon={DeviconGithub} className="text-secondary" width="32" height="32" />
                   </Button>
                 </Tooltip>
                 <Tooltip content="Twitter">
                   <Button as={NextLink} href={siteConfig.links.twitter} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="ri:twitter-x-fill" className="text-primary" width="32" height="32" />
+                    <Icon icon={DeviconTwitter} className="text-primary" width="32" height="32" />
                   </Button>
                 </Tooltip>
                 <Tooltip content="WhatsApp">
                   <Button as={NextLink} href={siteConfig.links.whatsapp} target="_blank" variant="light" color="secondary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="ri:whatsapp-fill" width="32" height="32" />
+                    <Icon icon={LogosWhatsappMonochromeIcon} width="32" height="32" />
                   </Button>
                 </Tooltip>
                 <Tooltip content="LinkedIn">
                   <Button as={NextLink} href={siteConfig.links.linkedin} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="mdi:linkedin" width="32" height="32" />
+                    <Icon icon="devicon-plain:linkedin" width="32" height="32" />
                   </Button>
                 </Tooltip>
                 <Tooltip content="Telegram">
@@ -91,7 +91,7 @@ export const ContactSection = () => {
                 </Tooltip>
                 <Tooltip content="Stackoverflow">
                   <Button as={NextLink} href={siteConfig.links.stackoverflow} target="_blank" variant="light" color="primary" isIconOnly className="h-9 w-9 min-w-fit">
-                    <Icon icon="mdi:stackoverflow" width="32" height="32" />
+                    <Icon icon="simple-icons:stackoverflow" width="32" height="32" />
                   </Button>
                 </Tooltip>
               </div>

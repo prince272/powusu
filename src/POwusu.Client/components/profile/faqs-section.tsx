@@ -23,7 +23,7 @@ export const FaqsSection = () => {
         <div className="grid grid-cols-12 gap-6">
           <div className="relative col-span-12 md:col-span-5">
             <div className="flex aspect-[4/3] justify-center">
-              <QuestionsIllustration className="max-h-[384px] w-full h-full max-w-[384px] text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
+              <QuestionsIllustration className="h-full max-h-[384px] w-full max-w-[384px] text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
             </div>
           </div>
           <div className="md:order-0 order-1 col-span-12 md:col-span-7">

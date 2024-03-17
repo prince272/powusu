@@ -6,7 +6,9 @@ import { useCurrentValue } from "@/hooks";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getApiResponse, getErrorTitle } from "@/utils/api";
-import { Icon } from "@/components/ui/icon";
+import FlatColorIconsGoogle from "@iconify/icons-flat-color-icons/google";
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarUserBold from "@iconify/icons-solar/user-bold";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -18,15 +20,11 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 
 import { api } from "@/lib/api";
 import { externalWindow } from "@/lib/external-window";
+import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
-
-import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
-import SolarUserBold from "@iconify/icons-solar/user-bold";
-import FlatColorIconsGoogle from "@iconify/icons-flat-color-icons/google";
-
 
 export interface SignInModalProps {
   children: ReactNode;

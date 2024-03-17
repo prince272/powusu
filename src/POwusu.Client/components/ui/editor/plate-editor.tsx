@@ -19,6 +19,7 @@ import { MentionCombobox } from "@/components/ui/editor/mention-combobox";
 import { commentsUsers, myUserId } from "@/components/ui/editor/utils/comments";
 import { MENTIONABLES } from "@/components/ui/editor/utils/mentionables";
 import { plugins } from "@/components/ui/editor/utils/plate-plugins";
+
 import { TooltipProvider } from "./tooltip";
 
 export function PlateEditor() {

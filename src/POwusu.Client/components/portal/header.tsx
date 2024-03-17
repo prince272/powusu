@@ -1,6 +1,7 @@
 "use client";
 
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
+
 import { AccountButton } from "./identity/account-button";
 
 const Header = () => {

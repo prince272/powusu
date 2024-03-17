@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCurrentValue } from "@/hooks";
 import { parseJSON } from "@/utils";
 import { ApiError, getApiResponse, getErrorTitle } from "@/utils/api";
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
 import { Textarea } from "@nextui-org/input";
@@ -14,13 +15,11 @@ import { Controller as FormController, SubmitHandler, useForm } from "react-hook
 import { Post } from "@/types/post";
 import { api } from "@/lib/api";
 import { events } from "@/lib/events";
+import { PlateEditor } from "@/components/ui/editor/plate-editor";
 import { FileInput } from "@/components/ui/file-input";
 import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { toast } from "@/components/ui/toaster";
-import { PlateEditor } from "@/components/ui/editor/plate-editor";
-
-import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
 
 interface AddPostPageProps {
   postId?: string;

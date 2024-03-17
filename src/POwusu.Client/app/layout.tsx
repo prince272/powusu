@@ -12,9 +12,6 @@ import { api } from "@/lib/api";
 import { RouteChangeProvider } from "@/components/ui/navigation";
 import { fontHeading, fontSans } from "@/components/fonts";
 
-import { _api } from '@iconify-icon/react';
-import fetch from 'cross-fetch'; 
-
 const APP_NAME = "Prince App";
 const APP_DEFAULT_TITLE = "Prince Owusu";
 const APP_TITLE_TEMPLATE = "%s - Prince Owusu";
@@ -101,7 +98,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   api.user.next(currentUser);
 
   _api.setFetch(fetch);
-  
+
   return (
     <html lang="en" suppressHydrationWarning className={cn("bg-background font-sans text-foreground antialiased", fontSans.variable, fontHeading.variable)}>
       <head />

@@ -1,10 +1,11 @@
 "use client";
 
 import { ElementRef, forwardRef, useState } from "react";
-import { Icon } from "@/components/ui/icon";
-import SolarEyeClosedBold from "@iconify/icons-solar/eye-closed-bold";
 import SolarEyeBold from "@iconify/icons-solar/eye-bold";
+import SolarEyeClosedBold from "@iconify/icons-solar/eye-closed-bold";
 import { Input, InputProps } from "@nextui-org/input";
+
+import { Icon } from "@/components/ui/icon";
 
 const PasswordInput = forwardRef<ElementRef<typeof Input>, InputProps>((props, ref) => {
   const [isVisible, setIsVisible] = useState(false);

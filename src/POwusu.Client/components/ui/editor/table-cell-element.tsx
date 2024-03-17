@@ -42,10 +42,10 @@ export const TableCellElement = withRef<
             "before:absolute before:box-border before:select-none before:content-['']",
             borders &&
               cn(
-                borders.bottom?.size && `before:border-b-default-200 before:border-b`,
-                borders.right?.size && `before:border-r-default-200 before:border-r`,
-                borders.left?.size && `before:border-l-default-200 before:border-l`,
-                borders.top?.size && `before:border-t-default-200 before:border-t`
+                borders.bottom?.size && `before:border-b before:border-b-default-200`,
+                borders.right?.size && `before:border-r before:border-r-default-200`,
+                borders.left?.size && `before:border-l before:border-l-default-200`,
+                borders.top?.size && `before:border-t before:border-t-default-200`
               )
           ),
         className
@@ -77,8 +77,8 @@ export const TableCellElement = withRef<
                 <ResizeHandle {...bottomProps} className="bottom-[-5px] h-[10px]" />
                 {!hiddenLeft && <ResizeHandle {...leftProps} className="-top-3 left-[-5px] w-[10px]" />}
 
-                {hovered && <div className={cn("absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1 bg-ring", "right-[-1.5px]")} />}
-                {hoveredLeft && <div className={cn("absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1 bg-ring", "left-[-1.5px]")} />}
+                {hovered && <div className={cn("bg-ring absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1", "right-[-1.5px]")} />}
+                {hoveredLeft && <div className={cn("bg-ring absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1", "left-[-1.5px]")} />}
               </>
             )}
           </div>

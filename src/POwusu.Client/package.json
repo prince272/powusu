@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 7394 --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -113,7 +113,6 @@
     "cmdk": "^1.0.0",
     "cookies-next": "^4.1.0",
     "copy-to-clipboard": "^3.3.3",
-    "cross-fetch": "^4.0.0",
     "date-fns": "^3.3.1",
     "dayjs": "^1.11.10",
     "eslint": "8.48.0",

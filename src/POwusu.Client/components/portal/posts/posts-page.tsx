@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useBreakpoint, useDebouncedCallback, useEffectAfterMount } from "@/hooks";
 import { cn, stringifyJSON } from "@/utils";
 import { ApiError, ApiResponse, getApiResponse } from "@/utils/api";
+import SolarDocumentBoldDuotone from "@iconify/icons-solar/document-bold-duotone";
+import SolarFileCorruptedBoldDuotone from "@iconify/icons-solar/file-corrupted-bold-duotone";
+import SolarRestartLinear from "@iconify/icons-solar/restart-linear";
 import { Button } from "@nextui-org/button";
 import { Pagination } from "@nextui-org/pagination";
 import { Skeleton } from "@nextui-org/skeleton";
@@ -21,10 +24,6 @@ import { Link as NextLink } from "@/components/ui/navigation";
 
 import { PostCard } from "./post-card";
 import { postsSearchParsers } from "./posts-search-params";
-
-import SolarDocumentBoldDuotone from "@iconify/icons-solar/document-bold-duotone";
-import SolarFileCorruptedBoldDuotone from "@iconify/icons-solar/file-corrupted-bold-duotone";
-import SolarRestartLinear from "@iconify/icons-solar/restart-linear";
 
 export interface PostsPageProps {
   initialStatus: "idle" | "loading" | "mounting";

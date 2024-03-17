@@ -1,5 +1,7 @@
 "use client";
 
+import SolarMoonBold from "@iconify/icons-solar/moon-bold";
+import SolarSunBold from "@iconify/icons-solar/sun-bold";
 import { SwitchProps, useSwitch } from "@nextui-org/switch";
 import { useIsSSR } from "@react-aria/ssr";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
@@ -7,8 +9,6 @@ import clsx from "clsx";
 import { useTheme } from "next-themes";
 
 import { Icon } from "@/components/ui/icon";
-import SolarSunBold from "@iconify/icons-solar/sun-bold";
-import SolarMoonBold from "@iconify/icons-solar/moon-bold";
 
 export interface ThemeSwitchProps {
   className?: string;

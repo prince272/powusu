@@ -2,43 +2,40 @@
 
 import NextLink from "next/link";
 import ProgrammingIllustration from "@/assets/illustrations/programming.svg";
+import LogosBootstrap from "@iconify-icons/logos/bootstrap";
+import LogosCss3 from "@iconify-icons/logos/css-3";
+import LogosDotnet from "@iconify-icons/logos/dotnet";
+import LogosHtml5 from "@iconify-icons/logos/html-5";
+import LogosJavascript from "@iconify-icons/logos/javascript";
+import LogosJquery from "@iconify-icons/logos/jquery";
+import LogosJwtIcon from "@iconify-icons/logos/jwt-icon";
+import LogosMaterialUi from "@iconify-icons/logos/material-ui";
+import LogosMicrosoftAzure from "@iconify-icons/logos/microsoft-azure";
+import LogosMysql from "@iconify-icons/logos/mysql";
+import LogosNextjsIcon from "@iconify-icons/logos/nextjs-icon";
+import LogosPostgresql from "@iconify-icons/logos/postgresql";
+import LogosPostmanIcon from "@iconify-icons/logos/postman-icon";
+import LogosReact from "@iconify-icons/logos/react";
+import LogosRider from "@iconify-icons/logos/rider";
+import LogosTailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
+import LogosTypescriptIcon from "@iconify-icons/logos/typescript-icon";
+import LogosVisualStudio from "@iconify-icons/logos/visual-studio";
+import LogosVisualStudioCode from "@iconify-icons/logos/visual-studio-code";
+import SimpleIconsNextui from "@iconify-icons/simple-icons/nextui";
+import DeviconApachekafka from "@iconify/icons-devicon/apachekafka";
+import DeviconCsharp from "@iconify/icons-devicon/csharp";
+import DeviconElasticsearch from "@iconify/icons-devicon/elasticsearch";
+import DeviconGit from "@iconify/icons-devicon/git";
+import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
+import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
+import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
+import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { Tooltip } from "@nextui-org/tooltip";
 
 import { siteConfig } from "@/config/site";
-
 import { Icon } from "@/components/ui/icon";
-
-import LogosReact from "@iconify-icons/logos/react";
-import LogosNextjsIcon from "@iconify-icons/logos/nextjs-icon";
-import LogosBootstrap from "@iconify-icons/logos/bootstrap";
-import LogosMaterialUi from "@iconify-icons/logos/material-ui";
-import LogosHtml5 from "@iconify-icons/logos/html-5";
-import LogosCss3 from "@iconify-icons/logos/css-3";
-import LogosJavascript from "@iconify-icons/logos/javascript";
-import LogosTypescriptIcon from "@iconify-icons/logos/typescript-icon";
-import LogosJquery from "@iconify-icons/logos/jquery";
-import LogosTailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
-import SimpleIconsNextui from "@iconify-icons/simple-icons/nextui";
-import LogosDotnet from "@iconify-icons/logos/dotnet";
-import DeviconCsharp from "@iconify/icons-devicon/csharp";
-import LogosMysql from "@iconify-icons/logos/mysql";
-import LogosPostgresql from "@iconify-icons/logos/postgresql";
-import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
-import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
-import DeviconElasticsearch from "@iconify/icons-devicon/elasticsearch";
-import DeviconApachekafka from "@iconify/icons-devicon/apachekafka";
-import LogosJwtIcon from "@iconify-icons/logos/jwt-icon";
-import LogosVisualStudio from "@iconify-icons/logos/visual-studio";
-import LogosVisualStudioCode from "@iconify-icons/logos/visual-studio-code";
-import LogosRider from "@iconify-icons/logos/rider";
-import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
-import LogosPostmanIcon from "@iconify-icons/logos/postman-icon";
-import DeviconGit from "@iconify/icons-devicon/git";
-import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
-import LogosMicrosoftAzure from "@iconify-icons/logos/microsoft-azure";
-
 
 export const SkillsSection = () => {
   return (
@@ -56,7 +53,7 @@ export const SkillsSection = () => {
         <div className="grid grid-cols-12 gap-6">
           <div className="relative col-span-12 md:col-span-5">
             <div className="flex aspect-[4/3] justify-center">
-              <ProgrammingIllustration className="max-h-[384px] animate-updown text-default-50 w-auto" width="100%" height="100%" preserveAspectRatio="none" />
+              <ProgrammingIllustration className="max-h-[384px] w-auto animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
             </div>
           </div>
           <div className="md:order-0 order-1 col-span-12 md:col-span-7">

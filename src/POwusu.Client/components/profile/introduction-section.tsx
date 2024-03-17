@@ -9,10 +9,10 @@ import * as THREE from "three";
 import "vanta/dist/vanta.globe.min";
 
 import { VantaGlobeInstance } from "@/vanta";
+import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
 import { useTheme } from "next-themes";
 
 import { Icon } from "@/components/ui/icon";
-import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
 
 export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);

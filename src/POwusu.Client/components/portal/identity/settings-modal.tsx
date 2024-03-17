@@ -6,7 +6,11 @@ import { useBreakpoint, useCurrentValue, usePreviousValue } from "@/hooks";
 import { useUser } from "@/providers/user/client";
 import { cn } from "@/utils";
 import { getApiResponse, getErrorTitle } from "@/utils/api";
-import { Icon } from "@/components/ui/icon";
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarLockKeyholeBold from "@iconify/icons-solar/lock-keyhole-bold";
+import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
+import SolarUserBold from "@iconify/icons-solar/user-bold";
+import SolarUsersGroupRoundedBold from "@iconify/icons-solar/users-group-rounded-bold";
 import { Button } from "@nextui-org/button";
 import { Input, Textarea } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -21,18 +25,12 @@ import { useTimer } from "react-timer-hook";
 
 import { api } from "@/lib/api";
 import { FileInput } from "@/components/ui/file-input";
+import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Portal } from "@/components/ui/portal";
 import { Switch } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
-
-import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
-import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
-import SolarUserBold from "@iconify/icons-solar/user-bold";
-import SolarUsersGroupRoundedBold from "@iconify/icons-solar/users-group-rounded-bold";
-import SolarLockKeyholeBold from "@iconify/icons-solar/lock-keyhole-bold";
-
 
 export interface SettingsModalProps {
   children: ReactNode;

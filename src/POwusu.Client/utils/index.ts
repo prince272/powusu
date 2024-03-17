@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { ClassValue, clsx } from "clsx";
 import { encode as encodeHtml } from "html-entities";
-import parseHtml from 'html-react-parser';
+import parseHtml from "html-react-parser";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {

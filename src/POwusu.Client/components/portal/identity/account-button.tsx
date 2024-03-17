@@ -4,15 +4,14 @@ import NextLink from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useModalRouter } from "@/providers/modal-router";
 import { useUser } from "@/providers/user/client";
+import SolarLogout2Bold from "@iconify/icons-solar/logout-2-bold";
+import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
 import { Button } from "@nextui-org/button";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { User } from "@nextui-org/user";
 import queryString from "query-string";
 
 import { Icon } from "@/components/ui/icon";
-
-import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
-import SolarLogout2Bold from "@iconify/icons-solar/logout-2-bold";
 
 import { SignOutModal } from "./sign-out-modal";
 

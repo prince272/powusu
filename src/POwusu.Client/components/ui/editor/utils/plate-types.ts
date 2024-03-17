@@ -261,8 +261,8 @@ export type MyRootBlock =
   | MyTodoListElement
   | MyImageElement
   | MyMediaEmbedElement
-  | MyHrElement
-  // | MyExcalidrawElement;
+  | MyHrElement;
+// | MyExcalidrawElement;
 
 export type MyValue = MyRootBlock[];
 
