@@ -11,7 +11,7 @@ import clsx from "clsx";
 import queryString from "query-string";
 
 import { siteConfig } from "@/config/site";
-import { AppIcon, Icon } from "@/components/ui/icon";
+import { Icon } from "@/components/ui/icon";
 import { Link as NextLink } from "@/components/ui/navigation";
 import { Switch } from "@/components/ui/render";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
@@ -29,7 +29,6 @@ export const Header = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <NextLink className="flex items-center justify-start gap-1" href="/">
-            <AppIcon />
             <p className="font-heading text-inherit">PRINCE</p>
           </NextLink>
         </NavbarBrand>
