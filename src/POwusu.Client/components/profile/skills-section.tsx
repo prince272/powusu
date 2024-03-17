@@ -29,7 +29,6 @@ import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
 import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
 import DeviconElasticsearch from "@iconify/icons-devicon/elasticsearch";
 import DeviconApachekafka from "@iconify/icons-devicon/apachekafka";
-import DeviconPlainMicrosoftsqlserverWordmark from "@iconify-icons/devicon-plain/microsoftsqlserver-wordmark";
 import LogosJwtIcon from "@iconify-icons/logos/jwt-icon";
 import LogosVisualStudio from "@iconify-icons/logos/visual-studio";
 import LogosVisualStudioCode from "@iconify-icons/logos/visual-studio-code";
@@ -203,7 +202,7 @@ export const SkillsSection = () => {
               <Tooltip content="Sql Server">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconPlainMicrosoftsqlserverWordmark} width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconSqliteWordmark} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
