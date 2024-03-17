@@ -1,13 +1,36 @@
 "use client";
 
-import { Icon as BaseIcon, IconifyIcon, IconifyIconProps } from "@iconify-icon/react";
-import { useMemo } from "react";
+import { Icon as BaseIcon, IconifyIconProps } from "@iconify-icon/react";
 
-const Icon = (props: Omit<IconifyIconProps, "ref">) => {
-  const memoizedIcon = useMemo(() => {
-    return props.icon;
-  }, []);
+function convertToCssSize(width: number | string | undefined | null, height: number | string | undefined | null): { width?: string; height?: string } {
+  const parseValue = (value: number | string | undefined | null): string | undefined => {
+    if (typeof value === "number") {
+      return `${value}px`;
+    }
 
-  return <BaseIcon {...props} icon={memoizedIcon} observe={false} mode="svg" />;
+    if (typeof value === "string") {
+      const numericValue = parseFloat(value);
+      if (!isNaN(numericValue)) {
+        return `${numericValue}px`;
+      }
+    }
+
+    return undefined;
+  };
+
+  const result: { width?: string; height?: string } = {};
+
+  const parsedWidth = parseValue(width);
+  const parsedHeight = parseValue(height);
+
+  if (parsedWidth !== undefined) result.width = parsedWidth;
+
+  if (parsedHeight !== undefined) result.height = parsedHeight;
+
+  return result;
+}
+
+export const Icon = (props: Omit<IconifyIconProps, "ref">) => {
+  const { width, height } = convertToCssSize(props.width, props.height);
+  return <BaseIcon style={{ width, height }} observe={false} mode="svg" {...props} />;
 };
-export { Icon };
