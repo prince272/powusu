@@ -13,14 +13,16 @@ import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-out
 import { useTheme } from "next-themes";
 
 import { Icon } from "@/components/ui/icon";
+import { useBreakpoint } from "@/hooks";
 
 export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
   const vantaRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
+  const sm = useBreakpoint("sm", "up");
 
   useEffect(() => {
-    if (!vantaEffect) {
+    if (!vantaEffect && sm) {
       setVantaEffect(
         VANTA.GLOBE({
           THREE,
@@ -45,7 +47,7 @@ export const IntroductionSection = () => {
         setVantaEffect(null);
       }
     };
-  }, [vantaEffect, theme]);
+  }, [vantaEffect, theme, sm]);
 
   return (
     <section id="intro" ref={vantaRef} className="relative h-full bg-primary-50 text-foreground dark">
