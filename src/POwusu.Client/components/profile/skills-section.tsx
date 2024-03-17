@@ -37,7 +37,6 @@ import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
 import LogosPostmanIcon from "@iconify-icons/logos/postman-icon";
 import DeviconGit from "@iconify/icons-devicon/git";
 import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
-import FileIconsTfs from "@iconify-icons/file-icons/tfs";
 import LogosMicrosoftAzure from "@iconify-icons/logos/microsoft-azure";
 
 
