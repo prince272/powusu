@@ -16,7 +16,7 @@ export const TooltipContent = withCn(
   "z-50 overflow-hidden rounded-md border border-default-200 bg-content1 px-3 py-1.5 text-sm text-foreground shadow-md"
 );
 
-export function withTooltip<T extends React.ComponentType<any> | keyof HTMLElementTagNameMap>(Component: T) {
+export function withTooltip<T extends React.ComponentType<any> | keyof Omit<HTMLElementTagNameMap, "iconify-icon">>(Component: T) {
   return React.forwardRef<
     React.ElementRef<T>,
     React.ComponentPropsWithoutRef<T> & {

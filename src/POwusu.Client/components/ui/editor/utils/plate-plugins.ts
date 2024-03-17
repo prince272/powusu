@@ -34,7 +34,7 @@ import { createCommentsPlugin, MARK_COMMENT } from "@udecode/plate-comments";
 import { createPlugins, isBlockAboveEmpty, isSelectionAtBlockStart, PlateElement, PlateLeaf, RenderAfterEditable, someNode } from "@udecode/plate-common";
 import { createDndPlugin } from "@udecode/plate-dnd";
 import { createEmojiPlugin } from "@udecode/plate-emoji";
-import { createExcalidrawPlugin, ELEMENT_EXCALIDRAW } from "@udecode/plate-excalidraw";
+// import { createExcalidrawPlugin, ELEMENT_EXCALIDRAW } from "@udecode/plate-excalidraw";
 import { createFontBackgroundColorPlugin, createFontColorPlugin, createFontSizePlugin } from "@udecode/plate-font";
 import { createHeadingPlugin, ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, ELEMENT_H4, ELEMENT_H5, ELEMENT_H6, KEYS_HEADING } from "@udecode/plate-heading";
 import { createHighlightPlugin, MARK_HIGHLIGHT } from "@udecode/plate-highlight";
