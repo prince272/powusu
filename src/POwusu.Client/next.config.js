@@ -14,7 +14,7 @@ module.exports = withSerwist({
   env: {
     SERVER_URL: process.env.SERVER_URL
   },
-  reactStrictMode: false,
+  reactStrictMode: !isDev,
   images: {
     remotePatterns: [
       {
