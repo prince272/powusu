@@ -19,10 +19,10 @@ export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
   const vantaRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
-  const sm = useBreakpoint("sm", "up");
+  const md = useBreakpoint("md", "up");
 
   useEffect(() => {
-    if (!vantaEffect && sm) {
+    if (!vantaEffect && md) {
       setVantaEffect(
         VANTA.GLOBE({
           THREE,
@@ -47,7 +47,7 @@ export const IntroductionSection = () => {
         setVantaEffect(null);
       }
     };
-  }, [vantaEffect, theme, sm]);
+  }, [vantaEffect, theme, md]);
 
   return (
     <section id="intro" ref={vantaRef} className="relative h-full bg-primary-50 text-foreground dark">

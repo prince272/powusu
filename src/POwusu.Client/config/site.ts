@@ -145,6 +145,49 @@ export const siteConfig = {
       question: "What is your favorite food?",
       answer:
         "My favorite food is Fufu and Light Soup. Fufu, made from boiled and pounded cassava and plantains, is often served with a flavorful soup, typically light soup, which contains ingredients such as tomatoes, onions, chili peppers, and various meats or fish."
+    },
+    {
+      id: "14",
+      question: "What certificates have you achieved?",
+      get answer(): string {
+        return "I have achieved several certificates. Here are some of them:\n\n" + siteConfig.certificates.map((cert) => `- ${cert.title}`).join("\n");
+      }
+    },
+    {
+      id: "15",
+      question: "What are your social media links?",
+      get answer(): string {
+        return (
+          "You can connect with me on the following social media platforms:\n\n" +
+          Object.entries(siteConfig.links)
+            .map(([key, value]) => `- ${key}`)
+            .join("\n")
+        );
+      }
+    },
+    {
+      id: "16",
+      question: "What are your works?",
+      get answer(): string {
+        return "I have worked on several projects. Here are some of them:\n\n" + siteConfig.works.map((work) => `- ${work.title}`).join("\n");
+      }
+    },
+    {
+      id: "9",
+      question: "What is your age?",
+      get answer(): string {
+        const currentDate = new Date();
+        const birthDate = new Date(1999, 6, 15);
+        const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25;
+        const ageInMilliseconds = currentDate.getTime() - birthDate.getTime();
+        const ageInYears = Math.floor(ageInMilliseconds / millisecondsInYear);
+        const ageInMonths = Math.floor((ageInMilliseconds % millisecondsInYear) / (millisecondsInYear / 12));
+        const ageInDays = Math.floor((ageInMilliseconds % (millisecondsInYear / 12)) / (1000 * 60 * 60 * 24));
+        
+        const currentDateString = `${currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+        
+        return `As of ${currentDateString}, I am ${ageInYears} years, ${ageInMonths} months, and ${ageInDays} days old.`;
+    }
     }
   ]
 };
