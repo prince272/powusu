@@ -1,11 +1,13 @@
 "use client";
 
-import { SVGProps } from "react";
-import { Icon as BaseIcon, IconifyIconProps } from "@iconify-icon/react";
+import { Icon as BaseIcon, IconifyIcon, IconifyIconProps } from "@iconify-icon/react";
+import { useMemo } from "react";
 
-const Icon = (props: Omit<IconifyIconProps, "ref">) => <BaseIcon {...props} observe={false} />;
-export { Icon };
+const Icon = (props: Omit<IconifyIconProps, "ref">) => {
+  const memoizedIcon = useMemo(() => {
+    return props.icon;
+  }, []);
 
-export type IconSvgProps = SVGProps<SVGSVGElement> & {
-  size?: number;
+  return <BaseIcon {...props} icon={memoizedIcon} observe={false} mode="svg" />;
 };
+export { Icon };

@@ -17,7 +17,7 @@ const HomeLayout = ({ children }: { children: ReactNode }) => {
           <p className="text-primary">NextUI</p>
         </Link>
       </footer>
-      <PageLoader timeout={500} />
+      <PageLoader timeout={100} />
     </div>
   );
 };
