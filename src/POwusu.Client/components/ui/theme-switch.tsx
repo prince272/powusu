@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { useTheme } from "next-themes";
 
 import { Icon } from "@/components/ui/icon";
+import SolarSunBold from "@iconify/icons-solar/sun-bold";
+import SolarMoonBold from "@iconify/icons-solar/moon-bold";
 
 export interface ThemeSwitchProps {
   className?: string;
@@ -55,7 +57,7 @@ export const ThemeSwitch = ({ className, classNames }: ThemeSwitchProps) => {
           )
         })}
       >
-        {!isSelected || isSSR ? <Icon icon="solar:sun-bold" width="24" height="24" /> : <Icon icon="solar:moon-bold" width="24" height="24" />}
+        {!isSelected || isSSR ? <Icon icon={SolarSunBold} width="24" height="24" /> : <Icon icon={SolarMoonBold} width="24" height="24" />}
       </div>
     </Component>
   );

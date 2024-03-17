@@ -21,6 +21,13 @@ import { Mount, Switch } from "@/components/ui/render";
 
 import { DeletePostModal } from "./delete-post-modal";
 
+import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
+import SolarCalendarMinimalisticBold from "@iconify/icons-solar/calendar-minimalistic-bold";
+import SolarClockCircleBold from "@iconify/icons-solar/clock-circle-bold";
+import SolarMenuDotsBold from "@iconify/icons-solar/menu-dots-bold";
+import SolarPenBold from "@iconify/icons-solar/pen-bold";
+import SolarTrashBinTrashBold from "@iconify/icons-solar/trash-bin-trash-bold";
+
 export interface PostCardProps extends React.HTMLAttributes<HTMLDivElement> {
   post?: PostItem | null | undefined;
   isEditable?: boolean;
@@ -38,7 +45,7 @@ const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardP
             <Skeleton className="z-20 rounded-xl" isLoaded={isLoaded}>
               <Switch as="div" className="flex aspect-[4/3] items-center justify-center rounded-xl border border-default-200" switch={post?.imageUrl ? "image" : "blank"}>
                 <Image key="image" alt={post?.title} className="aspect-[4/3] rounded-xl object-cover object-center" src={post?.imageUrl} />
-                <Icon key="blank" className="text-default-200" icon="solar:gallery-bold" width="96" height="96" />
+                <Icon key="blank" className="text-default-200" icon={SolarGalleryBold} width="96" height="96" />
               </Switch>
             </Skeleton>
             <Chip
@@ -62,7 +69,7 @@ const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardP
             <div className="flex items-center justify-between space-x-2">
               <div className="flex items-center justify-center space-x-1 text-xs">
                 <div>
-                  <Icon className="text-default-500" icon="solar:calendar-minimalistic-bold" width="24" height="24" />
+                  <Icon className="text-default-500" icon={SolarCalendarMinimalisticBold} width="24" height="24" />
                 </div>
                 <Mount interval={1000} clientOnly>
                   {() => <div>{moment.default(post?.createdAt).fromNow()}</div>}
@@ -70,7 +77,7 @@ const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardP
               </div>
               <div className="flex items-center justify-center space-x-1 text-xs">
                 <div>
-                  <Icon className="text-default-500" icon="solar:clock-circle-bold" width="20" height="20" />
+                  <Icon className="text-default-500" icon={SolarClockCircleBold} width="20" height="20" />
                 </div>
                 <div>{moment.duration(Math.floor((post?.readingDuration || 0) / 10000)).format("w[w] d[d] h[h] m[m]", { trim: "both", largest: 1 })} read</div>
               </div>
@@ -80,16 +87,16 @@ const PostCard = ({ post, isEditable, isLoaded, className, ...props }: PostCardP
             <Dropdown>
               <DropdownTrigger>
                 <Button className="absolute bottom-0 end-0 z-30 !mb-16 mr-1" isIconOnly variant="light" size="sm">
-                  <Icon icon="solar:menu-dots-bold" width="20" height="20" className="rotate-90" />
+                  <Icon icon={SolarMenuDotsBold} width="20" height="20" className="rotate-90" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Post actions">
-                <DropdownItem key="settings" startContent={<Icon icon="solar:pen-bold" width="20" height="20" />} as={NextLink} href={`/portal/posts/${post?.id}`}>
+                <DropdownItem key="settings" startContent={<Icon icon={SolarPenBold} width="20" height="20" />} as={NextLink} href={`/portal/posts/${post?.id}`}>
                   Edit
                 </DropdownItem>
                 <DropdownItem
                   key="sign-out"
-                  startContent={<Icon icon="solar:trash-bin-trash-bold" width="20" height="20" />}
+                  startContent={<Icon icon={SolarTrashBinTrashBold} width="20" height="20" />}
                   color="danger"
                   onPress={() => {
                     modalRouter.open({ key: "delete-post", Component: DeletePostModal, props: { post } });

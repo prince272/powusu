@@ -27,6 +27,13 @@ import { Portal } from "@/components/ui/portal";
 import { Switch } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
 
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
+import SolarUserBold from "@iconify/icons-solar/user-bold";
+import SolarUsersGroupRoundedBold from "@iconify/icons-solar/users-group-rounded-bold";
+import SolarLockKeyholeBold from "@iconify/icons-solar/lock-keyhole-bold";
+
+
 export interface SettingsModalProps {
   children: ReactNode;
   isOpen: boolean;
@@ -69,10 +76,10 @@ export const SettingsModal = ({ isOpen }: SettingsModalProps) => {
               }}
             >
               <span className={cn(selectedKey ? "sm:hidden" : "hidden")}>
-                <Icon icon="solar:alt-arrow-left-outline" width="24" height="24" />
+                <Icon icon={SolarAltArrowLeftOutline} width="24" height="24" />
               </span>
               <span className={cn(selectedKey ? "hidden sm:block" : "")}>
-                <Icon icon="solar:settings-bold" width="24" height="24" />
+                <Icon icon={SolarSettingsBold} width="24" height="24" />
               </span>
             </Button>
             <div>Settings</div>
@@ -82,9 +89,9 @@ export const SettingsModal = ({ isOpen }: SettingsModalProps) => {
           <div className={cn("sticky top-0 w-full pl-3 pr-3 sm:w-auto", selectedKey ? "hidden sm:block" : "")}>
             <div className="grid items-start gap-x-2 gap-y-3 sm:w-56">
               {[
-                { key: "edit-profile", label: <>Edit profile</>, icon: <Icon icon="solar:user-bold" width="24" height="24" /> },
-                { key: "change-account", label: <>Change account</>, icon: <Icon icon="solar:users-group-rounded-bold" width="24" height="24" /> },
-                { key: "change-password", label: <>{hasPassword ? "Change password" : "Create password"}</>, icon: <Icon icon="solar:lock-keyhole-bold" width="24" height="24" /> }
+                { key: "edit-profile", label: <>Edit profile</>, icon: <Icon icon={SolarUserBold} width="24" height="24" /> },
+                { key: "change-account", label: <>Change account</>, icon: <Icon icon={SolarUsersGroupRoundedBold} width="24" height="24" /> },
+                { key: "change-password", label: <>{hasPassword ? "Change password" : "Create password"}</>, icon: <Icon icon={SolarLockKeyholeBold} width="24" height="24" /> }
               ].map((item) => (
                 <Button
                   key={item.key}

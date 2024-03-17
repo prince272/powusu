@@ -10,6 +10,38 @@ import { siteConfig } from "@/config/site";
 
 import { Icon } from "@/components/ui/icon";
 
+import LogosReact from "@iconify-icons/logos/react";
+import LogosNextjsIcon from "@iconify-icons/logos/nextjs-icon";
+import LogosBootstrap from "@iconify-icons/logos/bootstrap";
+import LogosMaterialUi from "@iconify-icons/logos/material-ui";
+import LogosHtml5 from "@iconify-icons/logos/html-5";
+import LogosCss3 from "@iconify-icons/logos/css-3";
+import LogosJavascript from "@iconify-icons/logos/javascript";
+import LogosTypescriptIcon from "@iconify-icons/logos/typescript-icon";
+import LogosJquery from "@iconify-icons/logos/jquery";
+import LogosTailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
+import SimpleIconsNextui from "@iconify-icons/simple-icons/nextui";
+import LogosDotnet from "@iconify-icons/logos/dotnet";
+import DeviconCsharp from "@iconify/icons-devicon/csharp";
+import LogosMysql from "@iconify-icons/logos/mysql";
+import LogosPostgresql from "@iconify-icons/logos/postgresql";
+import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
+import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
+import DeviconElasticsearch from "@iconify/icons-devicon/elasticsearch";
+import DeviconApachekafka from "@iconify/icons-devicon/apachekafka";
+import DeviconPlainMicrosoftsqlserverWordmark from "@iconify-icons/devicon-plain/microsoftsqlserver-wordmark";
+import LogosJwtIcon from "@iconify-icons/logos/jwt-icon";
+import LogosVisualStudio from "@iconify-icons/logos/visual-studio";
+import LogosVisualStudioCode from "@iconify-icons/logos/visual-studio-code";
+import LogosRider from "@iconify-icons/logos/rider";
+import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
+import LogosPostmanIcon from "@iconify-icons/logos/postman-icon";
+import DeviconGit from "@iconify/icons-devicon/git";
+import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
+import FileIconsTfs from "@iconify-icons/file-icons/tfs";
+import LogosMicrosoftAzure from "@iconify-icons/logos/microsoft-azure";
+
+
 export const SkillsSection = () => {
   return (
     <section id="contact" className="bg-default-50 py-24">
@@ -35,77 +67,77 @@ export const SkillsSection = () => {
               <Tooltip content="React.js">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:react" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosReact} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Next.js">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:nextjs-icon" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosNextjsIcon} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Bootstrap">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:bootstrap" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosBootstrap} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Material UI">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:material-ui" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosMaterialUi} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Html">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:html-5" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosHtml5} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="CSS">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:css-3" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosCss3} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Javascript">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:javascript" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosJavascript} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Typescript">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:typescript-icon" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosTypescriptIcon} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="JQuery">
-                <Card className="bg-background">
+                <Card className="bg-white text-black">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:jquery-wordmark" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosJquery} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Tailwind CSS">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:tailwindcss-icon" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosTailwindcssIcon} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Next UI">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="simple-icons:nextui" width="32" height="32" />
+                    <Icon className="rounded-md" icon={SimpleIconsNextui} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
@@ -115,70 +147,70 @@ export const SkillsSection = () => {
               <Tooltip content=".NET">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:dotnet" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosDotnet} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="C#">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:csharp" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconCsharp} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="MySQL">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:mysql" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosMysql} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Postgres SQL">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:postgresql" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosPostgresql} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Sqllite">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:sqlite-wordmark" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconSqliteWordmark} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Mongo DB">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:mongodb-wordmark" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconMongodbWordmark} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Elastic Search">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="skill-icons:elasticsearch-dark" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconElasticsearch} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Kafka">
-                <Card className="bg-background">
+                <Card className="bg-white text-black">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="skill-icons:kafka" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconApachekafka} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Sql Server">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon-plain:microsoftsqlserver-wordmark" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconPlainMicrosoftsqlserverWordmark} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="JWT authentication">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:jwt-icon" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosJwtIcon} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
@@ -188,63 +220,56 @@ export const SkillsSection = () => {
               <Tooltip content="Visual Studio">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:visual-studio" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosVisualStudio} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Visual Studio Code">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:visual-studio-code" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosVisualStudioCode} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Rider">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:rider" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosRider} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="JetBrains">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:jetbrains" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconJetbrains} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Postman">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="logos:postman-icon" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosPostmanIcon} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Git">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:git" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconGit} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Github">
-                <Card className="bg-background">
+                <Card className="bg-white text-black">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="skill-icons:github-dark" width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="TFS">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="file-icons:tfs" width="32" height="32" />
+                    <Icon className="rounded-md" icon={DeviconGithubWordmark} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>
               <Tooltip content="Azure">
                 <Card className="bg-background">
                   <CardBody className="p-2">
-                    <Icon className="rounded-md" icon="devicon:azure" width="32" height="32" />
+                    <Icon className="rounded-md" icon={LogosMicrosoftAzure} width="32" height="32" />
                   </CardBody>
                 </Card>
               </Tooltip>

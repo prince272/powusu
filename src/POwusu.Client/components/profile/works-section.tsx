@@ -21,6 +21,12 @@ import { SiteConfig, siteConfig } from "@/config/site";
 
 import { Icon } from "@/components/ui/icon";
 
+import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
+import SolarLinkBold from "@iconify/icons-solar/link-bold";
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
+import SolarCloseCircleOutline from "@iconify/icons-solar/close-circle-outline";
+
 export const WorksSection = () => {
   const [selectedWork, setSelectedWork] = useState<SiteConfig["works"][0] | null>(null);
 
@@ -73,7 +79,7 @@ export const WorksSection = () => {
                     <Image removeWrapper alt={work.title} className="aspect-[4/3] w-full rounded-xl object-cover object-center" src={work.defaultImage} />
                     <div className="absolute top-0 z-20 flex h-full w-full items-center justify-center bg-black/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <Button
-                        startContent={<Icon icon="solar:gallery-bold" width="24" height="24" />}
+                        startContent={<Icon icon={SolarGalleryBold} width="24" height="24" />}
                         size="lg"
                         color={index % 2 == 0 ? "primary" : "secondary"}
                         onPress={() => setSelectedWork(work)}
@@ -101,7 +107,7 @@ export const WorksSection = () => {
                     variant="flat"
                     color="default"
                     fullWidth
-                    startContent={<Icon icon="solar:link-bold" width="24" height="24" />}
+                    startContent={<Icon icon={SolarLinkBold} width="24" height="24" />}
                     className="after:absolute after:inset-0"
                   >
                     Read more
@@ -116,9 +122,9 @@ export const WorksSection = () => {
           close={() => setSelectedWork(null)}
           slides={selectedWork?.images.map((image) => ({ src: image }) as LightboxSlide) || []}
           render={{
-            iconPrev: () => <Icon icon="solar:alt-arrow-left-outline" width="28" height="28" className="drop-shadow" />,
-            iconNext: () => <Icon icon="solar:alt-arrow-right-outline" width="28" height="28" className="drop-shadow" />,
-            iconClose: () => <Icon icon="solar:close-circle-outline" width="24" height="24" className="drop-shadow" />
+            iconPrev: () => <Icon icon={SolarAltArrowLeftOutline} width="28" height="28" className="drop-shadow" />,
+            iconNext: () => <Icon icon={SolarAltArrowRightOutline} width="28" height="28" className="drop-shadow" />,
+            iconClose: () => <Icon icon={SolarCloseCircleOutline} width="24" height="24" className="drop-shadow" />
           }}
         />
       </div>

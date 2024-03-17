@@ -22,6 +22,11 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/render";
 import { toast } from "@/components/ui/toaster";
 
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+import SolarUserBold from "@iconify/icons-solar/user-bold";
+import FlatColorIconsGoogle from "@iconify/icons-flat-color-icons/google";
+
+
 export interface SignUpModalProps {
   children: ReactNode;
   isOpen: boolean;
@@ -137,7 +142,7 @@ export const SignUpModal = ({ isOpen }: SignUpModalProps) => {
                 form.setValue("method", undefined);
               }}
             >
-              <Icon icon="solar:alt-arrow-left-outline" width="24" height="24" />
+              <Icon icon={SolarAltArrowLeftOutline} width="24" height="24" />
             </Button>
             <div>Sign up for a new account</div>
           </div>
@@ -190,7 +195,7 @@ export const SignUpModal = ({ isOpen }: SignUpModalProps) => {
                 color="primary"
                 variant="solid"
                 isDisabled={status != "idle"}
-                startContent={<Icon icon="solar:user-bold" width="24" height="24" />}
+                startContent={<Icon icon={SolarUserBold} width="24" height="24" />}
                 onPress={() => form.setValue("method", "credentials")}
               >
                 Sign up with email or phone
@@ -200,7 +205,7 @@ export const SignUpModal = ({ isOpen }: SignUpModalProps) => {
                 type="button"
                 color="default"
                 variant="solid"
-                startContent={status == "idle" && <Icon icon="flat-color-icons:google" width="24" height="24" />}
+                startContent={status == "idle" && <Icon icon={FlatColorIconsGoogle} width="24" height="24" />}
                 isDisabled={status != "idle"}
                 isLoading={status == "submitting"}
                 onPress={() => {

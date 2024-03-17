@@ -9,6 +9,10 @@ import { siteConfig } from "@/config/site";
 
 import { Icon } from "@/components/ui/icon";
 
+import SolarPhoneBold from "@iconify/icons-solar/phone-bold";
+import SolarMailboxBold from "@iconify/icons-solar/mailbox-bold";
+
+
 export const ContactSection = () => {
   return (
     <section id="contact" className="bg-background py-24">
@@ -40,7 +44,7 @@ export const ContactSection = () => {
             <div className="space-y-4">
               <div className="relative inline-flex items-center">
                 <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-50">
-                  <Icon icon="solar:phone-bold" width="24" height="24" className="text-secondary" />
+                  <Icon icon={SolarPhoneBold} width="24" height="24" className="text-secondary" />
                 </div>
                 <div>
                   <a href="tel:+233550362337" className="after:absolute after:inset-0">
@@ -51,7 +55,7 @@ export const ContactSection = () => {
               <br />
               <div className="relative inline-flex items-center">
                 <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary-50">
-                  <Icon icon="solar:mailbox-bold" width="24" height="24" className="text-primary" />
+                  <Icon icon={SolarMailboxBold} width="24" height="24" className="text-primary" />
                 </div>
                 <div>
                   <a href="mail:princeowusu.272@gmail.com" className="after:absolute after:inset-0">

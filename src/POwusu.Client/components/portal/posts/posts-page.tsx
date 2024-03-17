@@ -22,6 +22,10 @@ import { Link as NextLink } from "@/components/ui/navigation";
 import { PostCard } from "./post-card";
 import { postsSearchParsers } from "./posts-search-params";
 
+import SolarDocumentBoldDuotone from "@iconify/icons-solar/document-bold-duotone";
+import SolarFileCorruptedBoldDuotone from "@iconify/icons-solar/file-corrupted-bold-duotone";
+import SolarRestartLinear from "@iconify/icons-solar/restart-linear";
+
 export interface PostsPageProps {
   initialStatus: "idle" | "loading" | "mounting";
   initialPageDetails?: PostsPerPage | null;
@@ -97,7 +101,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
         {pageDetails?.items?.length == 0 && (
           <div className="col-span-full flex h-full items-start justify-center pt-16">
             <div className="flex flex-col items-center justify-center space-y-3">
-              <Icon icon="solar:document-bold-duotone" width="96" height="96" className="text-primary" />
+              <Icon icon={SolarDocumentBoldDuotone} width="96" height="96" className="text-primary" />
               <p className="text-default-500">No posts found.</p>
             </div>
           </div>
@@ -105,7 +109,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
         {error && (
           <div className="col-span-full flex h-full items-start justify-center pt-16">
             <div className="flex flex-col items-center justify-center space-y-3">
-              <Icon icon="solar:file-corrupted-bold-duotone" width="96" height="96" />
+              <Icon icon={SolarFileCorruptedBoldDuotone} width="96" height="96" />
               <p className="text-default-500">
                 {error.title} {error.status || -1}
               </p>
@@ -114,7 +118,7 @@ const PostsPage = ({ initialStatus, initialPageDetails, initialError }: PostsPag
                   color="default"
                   variant="solid"
                   isLoading={status == "loading"}
-                  startContent={status != "loading" && <Icon icon="solar:restart-linear" width="24" height="24" />}
+                  startContent={status != "loading" && <Icon icon={SolarRestartLinear} width="24" height="24" />}
                   onClick={() => loadPage(searchParams)}
                 >
                   Reload

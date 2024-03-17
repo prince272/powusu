@@ -11,6 +11,8 @@ import { pushNotification, PushNotificationError } from "@/lib/push-notification
 import { useLocalState } from "@/hooks/use-storage-state";
 
 import { Icon } from "@/components/ui/icon";
+import SolarBellBoldDuotone from "@iconify/icons-solar/bell-bold-duotone";
+
 import { toast } from "./toaster";
 
 export const AutoPushNotificationModal = () => {
@@ -93,7 +95,7 @@ export const AutoPushNotificationModal = () => {
               </div>
 
               <div>
-                <Icon icon="solar:bell-bold-duotone" width="94" height="94" className="text-primary" />
+                <Icon icon={SolarBellBoldDuotone} width="94" height="94" className="text-primary" />
               </div>
             </div>
             <div>I&apos;d like to send you notifications when I publish something new.</div>

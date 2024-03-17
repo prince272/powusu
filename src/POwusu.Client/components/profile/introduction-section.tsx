@@ -12,6 +12,7 @@ import { VantaGlobeInstance } from "@/vanta";
 import { useTheme } from "next-themes";
 
 import { Icon } from "@/components/ui/icon";
+import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
 
 export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
@@ -68,7 +69,7 @@ export const IntroductionSection = () => {
                   I am a highly skilled Software Engineer with a passion for crafting seamless user experiences. I specialize in developing end-to-end applications that not only
                   meet requirements, but exceed user expectations.
                 </p>
-                <Button endContent={<Icon icon="solar:alt-arrow-right-outline" width="24" height="24" />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
+                <Button endContent={<Icon icon={SoloarAltArrowRightOutline} width="24" height="24" />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
                   More about Me
                 </Button>
               </div>

@@ -20,6 +20,8 @@ import { Link as NextLink } from "@/components/ui/navigation";
 import { toast } from "@/components/ui/toaster";
 import { PlateEditor } from "@/components/ui/editor/plate-editor";
 
+import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
+
 interface AddPostPageProps {
   postId?: string;
   initialPost?: Post | null | undefined;
@@ -66,7 +68,7 @@ const AddPostPage = ({ postId, initialPost, initialError }: AddPostPageProps) =>
     <form className="flex h-full w-full flex-col gap-5" onSubmit={form.handleSubmit(submit)}>
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center space-x-5">
-          <Button as={NextLink} href="/portal/posts" variant="light" startContent={<Icon icon="solar:alt-arrow-left-outline" width="24" height="24" />}>
+          <Button as={NextLink} href="/portal/posts" variant="light" startContent={<Icon icon={SolarAltArrowLeftOutline} width="24" height="24" />}>
             Back
           </Button>
         </div>

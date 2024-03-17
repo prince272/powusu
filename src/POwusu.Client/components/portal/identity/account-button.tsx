@@ -11,6 +11,9 @@ import queryString from "query-string";
 
 import { Icon } from "@/components/ui/icon";
 
+import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
+import SolarLogout2Bold from "@iconify/icons-solar/logout-2-bold";
+
 import { SignOutModal } from "./sign-out-modal";
 
 export const AccountButton = () => {
@@ -37,7 +40,7 @@ export const AccountButton = () => {
       <DropdownMenu aria-label="User actions">
         <DropdownItem
           key="settings"
-          startContent={<Icon icon="solar:settings-bold" width="24" height="24" />}
+          startContent={<Icon icon={SolarSettingsBold} width="24" height="24" />}
           as={NextLink}
           href={queryString.stringifyUrl({ url: currentUrl, query: { modal: "settings", callback: currentUrl } })}
         >
@@ -45,7 +48,7 @@ export const AccountButton = () => {
         </DropdownItem>
         <DropdownItem
           key="sign-out"
-          startContent={<Icon icon="solar:logout-2-bold" width="24" height="24" />}
+          startContent={<Icon icon={SolarLogout2Bold} width="24" height="24" />}
           className="text-danger"
           color="danger"
           onPress={() => {

@@ -11,6 +11,11 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@iconify-icons/logos": "^1.2.36",
+    "@iconify-icons/simple-icons": "^1.2.74",
+    "@iconify/icons-devicon": "^1.2.17",
+    "@iconify/icons-flat-color-icons": "^1.2.5",
+    "@iconify/icons-solar": "^1.2.3",
     "@nextui-org/accordion": "^2.0.28",
     "@nextui-org/avatar": "^2.0.24",
     "@nextui-org/button": "2.0.26",

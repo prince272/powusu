@@ -4,6 +4,10 @@ import { Card, CardBody } from "@nextui-org/card";
 import CountUp from "react-countup";
 
 import { Icon } from "@/components/ui/icon";
+import SolarCheckCircleBold from "@iconify/icons-solar/check-circle-bold";
+import SolarChatSquareCodeBold from "@iconify/icons-solar/chat-square-code-bold";
+import SolarClockCircleBold from "@iconify/icons-solar/clock-circle-bold";
+import SolarStarShineBold from "@iconify/icons-solar/star-shine-bold";
 
 export const ScoreSection = () => {
   return (
@@ -12,7 +16,7 @@ export const ScoreSection = () => {
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
           <Card className="bg-background/70 p-4 backdrop-blur-lg backdrop-saturate-150">
             <CardBody className="flex flex-col items-center justify-center">
-              <Icon icon="solar:check-circle-bold" width={72} height={72} className="mb-3 text-primary" />
+              <Icon icon={SolarCheckCircleBold} width={72} height={72} className="mb-3 text-primary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
                   <CountUp duration={10} end={350} />
@@ -24,7 +28,7 @@ export const ScoreSection = () => {
           </Card>
           <Card className="bg-background/70 p-4 backdrop-blur-lg backdrop-saturate-150">
             <CardBody className="flex flex-col items-center justify-center">
-              <Icon icon="solar:chat-square-code-bold" width={72} height={72} className="mb-3 text-secondary" />
+              <Icon icon={SolarChatSquareCodeBold} width={72} height={72} className="mb-3 text-secondary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
                   <CountUp duration={10} end={1859.9} />
@@ -36,7 +40,7 @@ export const ScoreSection = () => {
           </Card>
           <Card className="bg-background/70 p-4 backdrop-blur-lg backdrop-saturate-150">
             <CardBody className="flex flex-col items-center justify-center">
-              <Icon icon="solar:clock-circle-bold" width={72} height={72} className="mb-3 text-primary" />
+              <Icon icon={SolarClockCircleBold} width={72} height={72} className="mb-3 text-primary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
                   <CountUp duration={10} end={9} />
@@ -48,7 +52,7 @@ export const ScoreSection = () => {
           </Card>
           <Card className="bg-background/70 p-4 backdrop-blur-lg backdrop-saturate-150">
             <CardBody className="flex flex-col items-center justify-center">
-              <Icon icon="solar:star-shine-bold" width={72} height={72} className="mb-3 text-secondary" />
+              <Icon icon={SolarStarShineBold} width={72} height={72} className="mb-3 text-secondary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
                   <CountUp duration={10} end={100} />
