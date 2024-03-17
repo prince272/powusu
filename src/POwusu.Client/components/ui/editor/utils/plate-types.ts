@@ -235,10 +235,10 @@ export interface MyHrElement extends MyBlockElement {
   children: [EmptyText];
 }
 
-export interface MyExcalidrawElement extends TExcalidrawElement, MyBlockElement {
-  type: typeof ELEMENT_EXCALIDRAW;
-  children: [EmptyText];
-}
+// export interface MyExcalidrawElement extends TExcalidrawElement, MyBlockElement {
+//   type: typeof ELEMENT_EXCALIDRAW;
+//   children: [EmptyText];
+// }
 
 export type MyNestableBlock = MyParagraphElement;
 
@@ -262,7 +262,7 @@ export type MyRootBlock =
   | MyImageElement
   | MyMediaEmbedElement
   | MyHrElement
-  | MyExcalidrawElement;
+  // | MyExcalidrawElement;
 
 export type MyValue = MyRootBlock[];
 
