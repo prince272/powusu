@@ -97,8 +97,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   const currentUser = getUser(cookies);
   api.user.next(currentUser);
 
-  _api.setFetch(fetch);
-
   return (
     <html lang="en" suppressHydrationWarning className={cn("bg-background font-sans text-foreground antialiased", fontSans.variable, fontHeading.variable)}>
       <head />
