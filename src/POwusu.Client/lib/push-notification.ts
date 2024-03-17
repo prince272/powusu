@@ -95,7 +95,7 @@ export class PushNotification {
   public async unsubscribe(): Promise<void> {
     clearInterval(this.permissionIntervalId!);
 
-    if (!this.isSupported()) {
+    if (!this.isSupported) {
       throw new PushNotificationError("Service Worker is not supported.", "NOTIFICATION_UNSUPPORTED");
     }
 
