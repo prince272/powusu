@@ -19,7 +19,7 @@ export const ScoreSection = () => {
               <Icon icon={SolarCheckCircleBold} width={72} height={72} className="mb-3 text-primary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
-                  <CountUp duration={10} end={350} />
+                  <CountUp duration={10} end={20} />
                   <span className="align-top text-xl">+</span>
                 </h3>
                 <p className="text-sm text-default-500">Works Completed</p>
@@ -43,7 +43,7 @@ export const ScoreSection = () => {
               <Icon icon={SolarClockCircleBold} width={72} height={72} className="mb-3 text-primary" />
               <div className="text-center">
                 <h3 className="mb-3 text-3xl font-bold">
-                  <CountUp duration={10} end={9} />
+                  <CountUp duration={10} end={4} />
                   <span className="align-top text-xl">yrs+</span>
                 </h3>
                 <p className="text-sm text-default-500">Coding Experience</p>

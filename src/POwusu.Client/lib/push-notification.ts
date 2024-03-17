@@ -6,16 +6,16 @@ import { api } from "./api";
 export class PushNotification {
   private vapidPublicKeyCache: string | null = null;
 
-  private isServiceWorkerSupported(): boolean {
-    return "serviceWorker" in navigator;
+  private get isSupported() {
+    return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
   }
 
   private async requestPermission(): Promise<"granted" | "denied" | "default"> {
-    return Notification.requestPermission();
+    return this.isSupported ? Notification.requestPermission() : "denied";
   }
 
   public get permission(): string {
-    return Notification.permission;
+    return this.isSupported ? Notification.permission : "denied";
   }
 
   private async fetchVapidPublicKey(): Promise<ApiResponse<string>> {
@@ -59,8 +59,8 @@ export class PushNotification {
   public async subscribe(requestPermissionIfRequired: boolean = false): Promise<void> {
     clearInterval(this.permissionIntervalId!);
 
-    if (!this.isServiceWorkerSupported()) {
-      throw new PushNotificationError("Service Worker is not supported.", "SERVICE_WORKER_UNSUPPORTED");
+    if (!this.isSupported) {
+      throw new PushNotificationError("Push notifications are not supported.", "NOTIFICATION_UNSUPPORTED");
     }
 
     if (requestPermissionIfRequired) {
@@ -95,8 +95,8 @@ export class PushNotification {
   public async unsubscribe(): Promise<void> {
     clearInterval(this.permissionIntervalId!);
 
-    if (!this.isServiceWorkerSupported()) {
-      throw new PushNotificationError("Service Worker is not supported.", "SERVICE_WORKER_UNSUPPORTED");
+    if (!this.isSupported()) {
+      throw new PushNotificationError("Service Worker is not supported.", "NOTIFICATION_UNSUPPORTED");
     }
 
     const registration = await navigator.serviceWorker.ready;
@@ -136,7 +136,7 @@ export class PushNotification {
   }
 }
 
-export type PushNotificationErrorReasons = "SERVICE_WORKER_UNSUPPORTED" | "PERMISSION_DENIED" | "PERMISSION_CANCELLED" | "VAPID_KEY_FETCH_FAILED" | "SUBSCRIPTION_FAILED";
+export type PushNotificationErrorReasons = "NOTIFICATION_UNSUPPORTED" | "PERMISSION_DENIED" | "PERMISSION_CANCELLED" | "VAPID_KEY_FETCH_FAILED" | "SUBSCRIPTION_FAILED";
 
 export class PushNotificationError extends Error {
   constructor(
