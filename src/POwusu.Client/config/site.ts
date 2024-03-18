@@ -36,6 +36,17 @@ export const siteConfig = {
       link: "https://github.com/prince272/academy"
     },
     {
+      id: "28bc8642-3c75-4f29-b312-9b5183e605ab",
+      title: "NextSolution.Template",
+      name: "NextSolution",
+      description:
+        "NextSolution is a template that brings together an ASP.NET API backend and a Next.js frontend. This combination offers the benefits of a robust backend with ASP.NET and a responsive, interactive frontend using Next.js.",
+      images: ["/assets/profile/works/nextsolution/1.png", "/assets/profile/works/nextsolution/2.png", "/assets/profile/works/nextsolution/3.png"],
+      defaultImage: "/assets/profile/works/nextsolution/1.png",
+      logo: "/assets/profile/works/nextsolution/logo.png",
+      link: "https://www.nuget.org/packages/NextSolution.Template"
+    },
+    {
       id: "40ff2d5a-1f2f-4f5b-80f6-8351a17d7889",
       title: "Precious Assistant",
       name: "Precious",

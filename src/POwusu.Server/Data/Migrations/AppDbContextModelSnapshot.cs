@@ -113,6 +113,9 @@ namespace POwusu.Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ContentId")
                         .IsRequired()
                         .HasColumnType("TEXT");

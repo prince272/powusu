@@ -11,8 +11,8 @@ using POwusu.Server.Data;
 namespace POwusu.Server.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240124212246_Migration_8")]
-    partial class Migration_8
+    [Migration("20240317221645_Add_Migration")]
+    partial class Add_Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,24 +116,30 @@ namespace POwusu.Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ContentId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("DeletedAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("PublishedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("Published")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("PublishedAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("ReadingDuration")
                         .HasColumnType("INTEGER");
@@ -143,15 +149,14 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Summary")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("UpdatedAt")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -172,7 +177,6 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -214,12 +218,15 @@ namespace POwusu.Server.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Bio")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -229,21 +236,25 @@ namespace POwusu.Server.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastActiveAt")
+                    b.Property<bool>("HasPassword")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageId")
                         .HasColumnType("TEXT");
+
+                    b.Property<long?>("LastActiveAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("LockoutEnd")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -268,8 +279,8 @@ namespace POwusu.Server.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("UpdatedAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -302,20 +313,49 @@ namespace POwusu.Server.Data.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
+            modelBuilder.Entity("POwusu.Server.Entities.Push.PushSubscription", b =>
+                {
+                    b.Property<string>("P256Dh")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Auth")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("ExpirationTime")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("P256Dh");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PushSubscription", (string)null);
+                });
+
             modelBuilder.Entity("POwusu.Server.Extensions.Identity.JwtToken", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("AccessTokenExpiresAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("AccessTokenExpiresAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("AccessTokenHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("RefreshTokenExpiresAt")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("RefreshTokenExpiresAt")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("RefreshTokenHash")
                         .IsRequired()
@@ -402,6 +442,15 @@ namespace POwusu.Server.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("POwusu.Server.Entities.Push.PushSubscription", b =>
+                {
+                    b.HasOne("POwusu.Server.Entities.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

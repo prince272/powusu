@@ -13,6 +13,10 @@ namespace POwusu.Server.Models.Blog
 
         public string Content { get; set; } = null!;
 
+        public string ContentType { get; set; } = null!;
+
+        public PostCategory Category { get; set; }
+
         public bool Published { get; set; }
 
         public string? ImageId { get; set; } = null!;
@@ -27,6 +31,8 @@ namespace POwusu.Server.Models.Blog
         public PostFormValidator()
         {
             RuleFor(_ => _.Title).NotEmpty().MaximumLength(128);
+            RuleFor(_ => _.Content).NotEmpty();
+            RuleFor(_ => _.ContentType).NotEmpty().MaximumLength(128);
             RuleFor(_ => _.ReadingDuration).GreaterThanOrEqualTo(0);
         }
     }
@@ -39,8 +45,19 @@ namespace POwusu.Server.Models.Blog
                 .ForMember(dest => dest.Content, opt => opt.Ignore())
                 .AfterMap((src, dest) =>
                 {
-                    if (dest.Content is null) dest.Content = new PostContent() { Value = src.Content, Type = MediaTypeNames.Application.Json };
-                    else dest.Content.Value = src.Content;
+                    if (dest.Content is null)
+                    {
+                        dest.Content = new PostContent()
+                        {
+                            Value = src.Content,
+                            Type = src.ContentType
+                        };
+                    }
+                    else
+                    {
+                        dest.Content.Value = src.Content;
+                        dest.Content.Type = src.ContentType;
+                    }
                 });
 
         }
