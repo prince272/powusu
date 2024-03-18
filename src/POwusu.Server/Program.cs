@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using POwusu.Server.Data;
 using POwusu.Server.Entities.Identity;
 using POwusu.Server.Extensions.Anonymous;
@@ -158,6 +159,7 @@ try
             .AllowCredentials()
             .WithExposedHeaders("Content-Disposition")
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
             .WithOrigins(allowedOrigins);
         });
     });

@@ -219,8 +219,6 @@ namespace POwusu.Server.Services
             if (string.IsNullOrEmpty(origin))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"No origin was specified.");
 
-            provider = provider.Pascalize();
-
             if (!allowedOrigins.Any(origin => Uri.Compare(new Uri(origin, UriKind.Absolute), new Uri(origin), UriComponents.SchemeAndServer, UriFormat.UriEscaped, StringComparison.OrdinalIgnoreCase) == 0))
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]>(), title: $"The origin specified is not allowed.");
 

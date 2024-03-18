@@ -1,6 +1,7 @@
 ﻿
 using AngleSharp.Css.Values;
 using Flurl;
+using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,7 @@ namespace POwusu.Server.Endpoints
                 => identityService.GenerateTokenFromExternalAuthenticationAsync(provider));
 
             builder.MapGet("tokens/{provider}/generate", ([FromServices] IIdentityService identityService, [FromRoute] string provider, [FromQuery] string origin, IConfiguration configuration)
-                => identityService.ConfigureExternalAuthenticationAsync(provider, origin, configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>()));
+                => identityService.ConfigureExternalAuthenticationAsync(provider?.Pascalize()!, origin, configuration.GetSection("AllowedOrigins")?.Get<string[]>() ?? Array.Empty<string>()));
 
             builder.MapPost("tokens/refresh", ([FromServices] IIdentityService identityService, [FromBody] RefreshTokenForm form)
                 => identityService.RefreshTokenAsync(form));
