@@ -15,6 +15,9 @@ import { fontHeading, fontSans } from "@/components/fonts";
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
+  metadataBase: process.env.VERCEL_URL
+    ? new URL(`https://${process.env.VERCEL_URL}`)
+    : undefined,
   applicationName: siteConfig.name,
   title: {
     default: siteConfig.title,
