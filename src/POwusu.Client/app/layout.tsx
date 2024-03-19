@@ -6,25 +6,21 @@ import { cookies } from "next/headers";
 import { AppProviders } from "@/providers";
 import { getUser } from "@/providers/user/server";
 import { cn } from "@/utils";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import { siteConfig } from "@/config/site";
 import { api } from "@/lib/api";
 import { RouteChangeProvider } from "@/components/ui/navigation";
 import { fontHeading, fontSans } from "@/components/fonts";
 
-const APP_NAME = "Prince App";
-const APP_DEFAULT_TITLE = "Prince Owusu";
-const APP_TITLE_TEMPLATE = "%s - Prince Owusu";
-const APP_DESCRIPTION = "Best PWA app in the world!";
-
 export const metadata: Metadata = {
   manifest: "/manifest.json",
-  applicationName: APP_NAME,
+  applicationName: siteConfig.name,
   title: {
-    default: APP_DEFAULT_TITLE,
-    template: APP_TITLE_TEMPLATE
+    default: siteConfig.title,
+    template: siteConfig.titleTemplate
   },
-  description: APP_DESCRIPTION,
+  description: siteConfig.description,
   other: {
     "apple-mobile-web-app-title": "Prince",
     "application-name": "Prince",
@@ -61,7 +57,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: APP_DEFAULT_TITLE
+    title: siteConfig.title
     // startUpImage: [],
   },
   formatDetection: {
@@ -69,20 +65,20 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: APP_NAME,
+    siteName: siteConfig.name,
     title: {
-      default: APP_DEFAULT_TITLE,
-      template: APP_TITLE_TEMPLATE
+      default: siteConfig.title,
+      template: siteConfig.titleTemplate
     },
-    description: APP_DESCRIPTION
+    description: siteConfig.description
   },
   twitter: {
     card: "summary",
     title: {
-      default: APP_DEFAULT_TITLE,
-      template: APP_TITLE_TEMPLATE
+      default: siteConfig.title,
+      template: siteConfig.titleTemplate
     },
-    description: APP_DESCRIPTION
+    description: siteConfig.description
   }
 };
 
@@ -105,6 +101,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <AppProviders initialUser={currentUser}>{children}</AppProviders>
         </RouteChangeProvider>
       </body>
+      <GoogleAnalytics gaId="G-TM5XSPVR00" />
     </html>
   );
 };

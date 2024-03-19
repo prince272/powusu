@@ -29,10 +29,13 @@ namespace POwusu.Server.Options
             if (httpContext == null) throw new InvalidOperationException("Unable to determine the current HttpContext.");
 
             var allowedHosts = new string[] { string.Concat(httpContext.Request.Scheme, "://", httpContext.Request.Host.ToUriComponent()) }.ToList();
-            allowedHosts.AddRange((options.Issuer ?? string.Empty).Split(JwtTokenOptions.Seperator).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
+            allowedHosts.AddRange((options.Issuer ?? string.Empty).Split(JwtTokenOptions.Seperator).SkipWhile(string.IsNullOrEmpty).ToArray());
+            allowedHosts = allowedHosts.Distinct().ToList();
 
             var allowedOrigins = _configuration.GetSection("AllowedOrigins")?.Get<string[]>()?.ToList() ?? new List<string>();
-            allowedOrigins.AddRange((options.Audience ?? string.Empty).Split(JwtTokenOptions.Seperator).Distinct().SkipWhile(string.IsNullOrEmpty).ToArray());
+            allowedOrigins.AddRange(allowedHosts);
+            allowedOrigins.AddRange((options.Audience ?? string.Empty).Split(JwtTokenOptions.Seperator).SkipWhile(string.IsNullOrEmpty).ToArray());
+            allowedOrigins = allowedOrigins.Distinct().ToList();
 
             options.Issuer = string.Join(JwtTokenOptions.Seperator, allowedHosts);
             options.Audience = string.Join(JwtTokenOptions.Seperator, allowedOrigins);

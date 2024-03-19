@@ -233,8 +233,6 @@ try
         ExceptionHandlingPath = "/errors/500"
     });
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
         app.UseSwaggerUI();

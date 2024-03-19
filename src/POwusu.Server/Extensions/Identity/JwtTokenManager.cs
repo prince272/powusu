@@ -80,7 +80,7 @@ namespace POwusu.Server.Extensions.Identity
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtTokenOptions.Value.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(issuer, audience, claims, currentTime.DateTime, expiresAt.DateTime, creds);
+            var token = new JwtSecurityToken(issuer, audience, claims, currentTime.UtcDateTime, expiresAt.UtcDateTime, creds);
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
             return (tokenValue, expiresAt);
         }
@@ -103,7 +103,7 @@ namespace POwusu.Server.Extensions.Identity
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtTokenOptions.Value.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(issuer, audience, claims, currentTime.DateTime, expiresAt.DateTime, creds);
+            var token = new JwtSecurityToken(issuer, audience, claims, currentTime.UtcDateTime, expiresAt.UtcDateTime, creds);
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
             return (tokenValue, expiresAt);
         }

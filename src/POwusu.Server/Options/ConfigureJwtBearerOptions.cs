@@ -24,9 +24,9 @@ namespace POwusu.Server.Options
             options.SaveToken = true;
             options.TokenValidationParameters ??= new TokenValidationParameters();
             options.TokenValidationParameters.ValidateIssuer = true;
-            options.TokenValidationParameters.ValidIssuers = _jwtTokenOptions.Value.Issuer.Split(";", StringSplitOptions.RemoveEmptyEntries).ToArray();
+            options.TokenValidationParameters.ValidIssuers = _jwtTokenOptions.Value.Issuer.Split(JwtTokenOptions.Seperator, StringSplitOptions.RemoveEmptyEntries).ToArray();
             options.TokenValidationParameters.ValidateAudience = true;
-            options.TokenValidationParameters.ValidAudiences = _jwtTokenOptions.Value.Audience.Split(";", StringSplitOptions.RemoveEmptyEntries).ToArray();
+            options.TokenValidationParameters.ValidAudiences = _jwtTokenOptions.Value.Audience.Split(JwtTokenOptions.Seperator, StringSplitOptions.RemoveEmptyEntries).ToArray();
             options.TokenValidationParameters.ValidateLifetime = true;
             options.TokenValidationParameters.ValidateIssuerSigningKey = true;
             options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtTokenOptions.Value.Secret));
@@ -45,11 +45,13 @@ namespace POwusu.Server.Options
                 {
                     var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<User>>();
                     var jwtTokenManager = context.HttpContext.RequestServices.GetRequiredService<IJwtTokenManager>();
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
 
                     var claimsPrincipal = context.Principal;
 
                     if (claimsPrincipal?.Claims == null || !claimsPrincipal.Claims.Any())
                     {
+                        logger.LogWarning("No claims found in the token.");
                         context.Fail("This is not our issued token. It has no claims.");
                         return;
                     }
@@ -62,6 +64,7 @@ namespace POwusu.Server.Options
                     if (user == null || !string.Equals(user.SecurityStamp, securityStamp, StringComparison.Ordinal))
                     {
                         // user has changed his/her password/roles/active
+                        logger.LogWarning("User has changed his/her password/roles/active.");
                         context.Fail("This token is expired. Please login again.");
                         return;
                     }
@@ -72,6 +75,7 @@ namespace POwusu.Server.Options
 
                     if (accessToken == null || string.IsNullOrWhiteSpace(accessToken.EncodedToken) || !await jwtTokenManager.ValidateAsync(accessToken.EncodedToken))
                     {
+                        logger.LogWarning("Invalid or missing token in the request.");
                         context.Fail("Invalid or missing token in the request.");
                         return;
                     }
