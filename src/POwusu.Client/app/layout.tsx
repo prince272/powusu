@@ -66,19 +66,20 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
-    title: {
-      default: siteConfig.title,
-      template: siteConfig.titleTemplate
-    },
-    description: siteConfig.description
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [
+      {
+        url: "/favicon-256x256.png",
+        alt: siteConfig.name
+      }
+    ]
   },
   twitter: {
     card: "summary",
-    title: {
-      default: siteConfig.title,
-      template: siteConfig.titleTemplate
-    },
-    description: siteConfig.description
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: "/favicon-256x256.png",
   }
 };
 
