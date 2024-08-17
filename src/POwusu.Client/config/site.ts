@@ -1,20 +1,12 @@
-export type SiteConfig = typeof siteConfig;
+export type  SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Prince Owusu",
   title: "Prince Owusu",
   titleTemplate: "%s - Prince Owusu",
-  description: "I am a highly skilled Software Engineer with a passion for crafting seamless user experiences. I specialize in developing end-to-end applications that not only meet requirements, but exceed user expectations.",
-  navItems: [
-    {
-      label: "Home",
-      href: "/"
-    },
-    {
-      label: "Blog",
-      href: "/blog"
-    }
-  ],
+  description:
+    "I am a highly skilled Software Engineer with a passion for crafting seamless user experiences. I specialize in developing end-to-end applications that not only meet requirements, but exceed user expectations.",
+  navItems: [],
   works: [
     {
       id: "b13273c2-2af7-4f8e-961f-8d4871f2730e",
@@ -196,11 +188,11 @@ export const siteConfig = {
         const ageInYears = Math.floor(ageInMilliseconds / millisecondsInYear);
         const ageInMonths = Math.floor((ageInMilliseconds % millisecondsInYear) / (millisecondsInYear / 12));
         const ageInDays = Math.floor((ageInMilliseconds % (millisecondsInYear / 12)) / (1000 * 60 * 60 * 24));
-        
-        const currentDateString = `${currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-        
+
+        const currentDateString = `${currentDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`;
+
         return `As of ${currentDateString}, I am ${ageInYears} years, ${ageInMonths} months, and ${ageInDays} days old.`;
-    }
+      }
     }
   ]
 };

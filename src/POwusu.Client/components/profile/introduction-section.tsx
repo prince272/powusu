@@ -8,12 +8,14 @@ import * as THREE from "three";
 
 import "vanta/dist/vanta.globe.min";
 
+import { useBreakpoint } from "@/hooks";
 import { VantaGlobeInstance } from "@/vanta";
 import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
 import { useTheme } from "next-themes";
+import Snowfall from "react-snowfall";
 
 import { Icon } from "@/components/ui/icon";
-import { useBreakpoint } from "@/hooks";
+import { SongPlayerButton } from "./song-player-button";
 
 export const IntroductionSection = () => {
   const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
@@ -79,6 +81,8 @@ export const IntroductionSection = () => {
           </section>
         </div>
       </div>
+      <Snowfall snowflakeCount={md ? 150 : 50} />
+      <SongPlayerButton />
     </section>
   );
 };
