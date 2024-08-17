@@ -5,6 +5,7 @@ import { api } from "./api";
 
 export class PushNotification {
   private vapidPublicKeyCache: string | null = null;
+  private permissionIntervalId: NodeJS.Timeout | null = null;
 
   private get isSupported() {
     return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
@@ -112,8 +113,6 @@ export class PushNotification {
       clearInterval(this.permissionIntervalId);
     }
   }
-
-  private permissionIntervalId: NodeJS.Timer | null = null;
 
   public watch(interval: number = 1000): () => void {
     const checkPermission = async () => {

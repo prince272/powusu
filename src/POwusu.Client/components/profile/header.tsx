@@ -68,13 +68,13 @@ export const Header = () => {
       </NavbarContent>
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navItems.map((item, index) => (
+          {/* {siteConfig.navItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link color={index === 2 ? "primary" : index === siteConfig.navItems.length - 1 ? "danger" : "foreground"} href="#" size="lg">
                 {item.label}
               </Link>
             </NavbarMenuItem>
-          ))}
+          ))} */}
         </div>
       </NavbarMenu>
     </Navbar>
