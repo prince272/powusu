@@ -4,8 +4,8 @@ import React, { ReactNode, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/user/client";
 import { getApiResponse } from "@/utils/api";
-import { Button } from "@nextui-org/button";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { Button } from "@heroui/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { uniqueId } from "lodash";
 
 import { PostItem } from "@/types/post";

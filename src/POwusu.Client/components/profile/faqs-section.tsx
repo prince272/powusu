@@ -3,7 +3,7 @@
 import NextLink from "next/link";
 import QuestionsIllustration from "@/assets/illustrations/questions.svg";
 import { wrapHtml } from "@/utils";
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 
 import { siteConfig } from "@/config/site";
 

@@ -8,11 +8,11 @@ import { ApiError, ApiResponse, getApiResponse } from "@/utils/api";
 import SolarDocumentBoldDuotone from "@iconify/icons-solar/document-bold-duotone";
 import SolarFileCorruptedBoldDuotone from "@iconify/icons-solar/file-corrupted-bold-duotone";
 import SolarRestartLinear from "@iconify/icons-solar/restart-linear";
-import { Button } from "@nextui-org/button";
-import { Pagination } from "@nextui-org/pagination";
-import { Skeleton } from "@nextui-org/skeleton";
-import { Spinner } from "@nextui-org/spinner";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
+import { Button } from "@heroui/button";
+import { Pagination } from "@heroui/pagination";
+import { Skeleton } from "@heroui/skeleton";
+import { Spinner } from "@heroui/spinner";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
 import { isEqual } from "lodash";
 import { useQueryState, useQueryStates } from "nuqs";
 

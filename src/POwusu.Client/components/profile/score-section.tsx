@@ -4,7 +4,7 @@ import SolarChatSquareCodeBold from "@iconify/icons-solar/chat-square-code-bold"
 import SolarCheckCircleBold from "@iconify/icons-solar/check-circle-bold";
 import SolarClockCircleBold from "@iconify/icons-solar/clock-circle-bold";
 import SolarStarShineBold from "@iconify/icons-solar/star-shine-bold";
-import { Card, CardBody } from "@nextui-org/card";
+import { Card, CardBody } from "@heroui/card";
 import CountUp from "react-countup";
 
 import { Icon } from "@/components/ui/icon";

@@ -1,8 +1,8 @@
 "use client";
 
 import { Metadata } from "next";
-import { Link } from "@nextui-org/link";
-import { button as buttonStyles } from "@nextui-org/theme";
+import { Link } from "@heroui/link";
+import { button as buttonStyles } from "@heroui/theme";
 
 import { Link as NextLink } from "@/components/ui/navigation";
 import { title } from "@/components/primitives";

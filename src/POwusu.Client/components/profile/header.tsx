@@ -3,10 +3,10 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useModalRouter } from "@/providers/modal-router";
 import { useUser } from "@/providers/user/client";
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/navbar";
-import { link as linkStyles } from "@nextui-org/theme";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@heroui/navbar";
+import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
 import queryString from "query-string";
 

@@ -2,7 +2,7 @@
 
 import React, { ComponentProps, useEffect, useState } from "react";
 import SolarPlayBold from "@iconify/icons-solar/play-bold";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { Bars } from "react-loader-spinner";
 import useSound from "use-sound";
 import { Icon } from "../ui/icon";

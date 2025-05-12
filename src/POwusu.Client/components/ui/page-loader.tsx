@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/utils";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@heroui/spinner";
 
 const PageLoader = ({ timeout }: { timeout?: number }) => {
   const [loading, setLoading] = useState(true);

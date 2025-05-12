@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Image } from "@heroui/image";
 import * as moment from "moment";
 
 import { Icon } from "@/components/ui/icon";
@@ -16,11 +16,11 @@ import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
 import SolarMenuDotsBold from "@iconify/icons-solar/menu-dots-bold";
 import SolarPenBold from "@iconify/icons-solar/pen-bold";
 import SolarTrashBinTrashBold from "@iconify/icons-solar/trash-bin-trash-bold";
-import { Avatar } from "@nextui-org/avatar";
-import { Button } from "@nextui-org/button";
-import { Chip } from "@nextui-org/chip";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
-import { Skeleton } from "@nextui-org/skeleton";
+import { Avatar } from "@heroui/avatar";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import { Skeleton } from "@heroui/skeleton";
 
 import { PostItem } from "@/types/post";
 import { Link as NextLink } from "@/components/ui/navigation";

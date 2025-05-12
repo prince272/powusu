@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { ReactNode } from "react";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 import { PageLoader } from "@/components/ui/page-loader";
 import { Header } from "@/components/profile/header";

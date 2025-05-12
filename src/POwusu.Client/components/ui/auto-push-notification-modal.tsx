@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTimeout } from "@/hooks";
 import { useUser } from "@/providers/user/client";
 import SolarBellBoldDuotone from "@iconify/icons-solar/bell-bold-duotone";
-import { Button } from "@nextui-org/button";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
+import { Button } from "@heroui/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
 import { uniqueId } from "lodash";
 
 import { pushNotification, PushNotificationError } from "@/lib/push-notification";

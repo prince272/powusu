@@ -195,14 +195,14 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
 
           /* the text color of the drop label*/
           .filepond--drop-label {
-            color: hsl(var(--nextui-foreground-600) / var(--nextui-foreground-600-opacity, var(--tw-text-opacity)));
-            font-size: var(--nextui-font-size-small) !important;
+            color: hsl(var(--heroui-foreground-600) / var(--heroui-foreground-600-opacity, var(--tw-text-opacity)));
+            font-size: var(--heroui-font-size-small) !important;
           }
 
           /* underline color for "Browse" button */
           .filepond--label-action {
-            text-decoration-color: hsl(var(--nextui-foreground-600) / var(--nextui-foreground-600-opacity, var(--tw-text-opacity)));
-            font-size: var(--nextui-font-size-small) !important;
+            text-decoration-color: hsl(var(--heroui-foreground-600) / var(--heroui-foreground-600-opacity, var(--tw-text-opacity)));
+            font-size: var(--heroui-font-size-small) !important;
           }
 
           /* the background color of the filepond drop area */
@@ -254,25 +254,25 @@ const FileInput = forwardRef<ElementRef<typeof FilePond>, FileInputProps>(
           /* error state color */
           [data-filepond-item-state*="error"] .filepond--item-panel,
           [data-filepond-item-state*="invalid"] .filepond--item-panel {
-            background-color: hsl(var(--nextui-danger) / var(--nextui-danger-opacity, var(--tw-bg-opacity)));
+            background-color: hsl(var(--heroui-danger) / var(--heroui-danger-opacity, var(--tw-bg-opacity)));
           }
 
           [data-filepond-item-state="processing-complete"] .filepond--item-panel {
-            background-color: hsl(var(--nextui-success) / var(--nextui-success-opacity, var(--tw-bg-opacity)));
+            background-color: hsl(var(--heroui-success) / var(--heroui-success-opacity, var(--tw-bg-opacity)));
           }
 
           /* bordered drop area */
           .filepond--panel-root {
-            background-color: hsl(var(--nextui-default-100) / var(--nextui-default-100-opacity, var(--tw-bg-opacity)));
+            background-color: hsl(var(--heroui-default-100) / var(--heroui-default-100-opacity, var(--tw-bg-opacity)));
           }
 
           /* image preview error overlay */
           .filepond--image-preview-overlay-failure {
-            color: hsl(var(--nextui-danger) / var(--nextui-danger-opacity, var(--tw-bg-opacity)));
+            color: hsl(var(--heroui-danger) / var(--heroui-danger-opacity, var(--tw-bg-opacity)));
           }
 
           .filepond--image-preview-overlay-success {
-            color: hsl(var(--nextui-success) / var(--nextui-success-opacity, var(--tw-bg-opacity)));
+            color: hsl(var(--heroui-success) / var(--heroui-success-opacity, var(--tw-bg-opacity)));
           }
 
           .filepond--root {

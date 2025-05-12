@@ -6,9 +6,9 @@ import { useCurrentValue } from "@/hooks";
 import { parseJSON } from "@/utils";
 import { ApiError, getApiResponse, getErrorTitle } from "@/utils/api";
 import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
-import { Button } from "@nextui-org/button";
-import { Chip } from "@nextui-org/chip";
-import { Textarea } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { Textarea } from "@heroui/input";
 import { cloneDeep, uniqueId } from "lodash";
 import { Controller as FormController, SubmitHandler, useForm } from "react-hook-form";
 

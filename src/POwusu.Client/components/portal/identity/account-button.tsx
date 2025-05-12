@@ -6,9 +6,9 @@ import { useModalRouter } from "@/providers/modal-router";
 import { useUser } from "@/providers/user/client";
 import SolarLogout2Bold from "@iconify/icons-solar/logout-2-bold";
 import SolarSettingsBold from "@iconify/icons-solar/settings-bold";
-import { Button } from "@nextui-org/button";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
-import { User } from "@nextui-org/user";
+import { Button } from "@heroui/button";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import { User } from "@heroui/user";
 import queryString from "query-string";
 
 import { Icon } from "@/components/ui/icon";

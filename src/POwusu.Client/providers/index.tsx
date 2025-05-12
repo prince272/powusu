@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useHashState } from "@/hooks";
-import { NextUIProvider } from "@nextui-org/system";
+import { HeroUIProvider } from "@heroui/system";
 import { setCookie } from "cookies-next";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import TopLoadingBar, { LoadingBarRef } from "react-top-loading-bar";
@@ -58,16 +58,16 @@ export function AppProviders({ children, initialUser }: ProvidersProps) {
     <>
       <UserProvider initialUser={initialUser}>
         <ModalRouterProvider modals={modals}>
-          <NextUIProvider navigate={router.push}>
+          <HeroUIProvider navigate={router.push}>
             <NextThemesProvider {...{ attribute: "class", defaultTheme: "dark" }}>
               <Authorize patterns={["/portal/*"]} modals={["settings", "sign-out"]}>
                 {children}
               </Authorize>
               <Toaster />
-              <TopLoadingBar ref={topLoadingBarRef} color="hsl(var(--nextui-primary) / var(--nextui-primary-opacity, var(--tw-bg-opacity)))" height={4} />
+              <TopLoadingBar ref={topLoadingBarRef} color="hsl(var(--heroui-primary) / var(--heroui-primary-opacity, var(--tw-bg-opacity)))" height={4} />
               <AutoPushNotificationModal />
             </NextThemesProvider>
-          </NextUIProvider>
+          </HeroUIProvider>
         </ModalRouterProvider>
       </UserProvider>
       <Script id="external-window" strategy="beforeInteractive">{`

@@ -4,7 +4,7 @@ import { ComponentType, createContext, ReactNode, use, useCallback, useContext, 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useHashState, usePreviousValue, useStateAsync } from "@/hooks";
 import { compareSearchParams, sleep } from "@/utils";
-import { useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@heroui/modal";
 import PQueue from "p-queue";
 import queryString, { StringifiableRecord } from "query-string";
 

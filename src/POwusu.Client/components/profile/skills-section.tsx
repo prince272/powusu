@@ -30,9 +30,9 @@ import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
 import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
 import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
 import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/card";
-import { Tooltip } from "@nextui-org/tooltip";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
+import { Tooltip } from "@heroui/tooltip";
 
 import { siteConfig } from "@/config/site";
 import { Icon } from "@/components/ui/icon";

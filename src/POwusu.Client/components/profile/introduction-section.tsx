@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
-import { commonColors, semanticColors } from "@nextui-org/theme";
+import { Button } from "@heroui/button";
+import { Image } from "@heroui/image";
+import { commonColors, semanticColors } from "@heroui/theme";
 import * as THREE from "three";
 
 import "vanta/dist/vanta.globe.min";

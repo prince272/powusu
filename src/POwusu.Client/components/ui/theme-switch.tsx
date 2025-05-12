@@ -2,7 +2,7 @@
 
 import SolarMoonBold from "@iconify/icons-solar/moon-bold";
 import SolarSunBold from "@iconify/icons-solar/sun-bold";
-import { SwitchProps, useSwitch } from "@nextui-org/switch";
+import { SwitchProps, useSwitch } from "@heroui/switch";
 import { useIsSSR } from "@react-aria/ssr";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import clsx from "clsx";

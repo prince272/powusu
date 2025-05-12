@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Image } from "@heroui/image";
 import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination, Virtual as SwiperVirtual } from "swiper/modules";
 import Lightbox, { Slide as LightboxSlide } from "yet-another-react-lightbox";
 
@@ -20,7 +20,7 @@ import SolarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outl
 import SolarCloseCircleOutline from "@iconify/icons-solar/close-circle-outline";
 import SolarDownloadLinear from "@iconify/icons-solar/download-linear";
 import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
-import { Chip } from "@nextui-org/chip";
+import { Chip } from "@heroui/chip";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -118,7 +118,9 @@ export const CertificatesSection = () => {
         <Lightbox
           open={!!selectedCertificate}
           close={() => setSelectedCertificate(null)}
-          slides={[selectedCertificate?.image].map((_) => ({ src: _ }) as LightboxSlide) || []}
+          slides={[selectedCertificate?.image].map((_) => (({
+            src: _
+          }) as LightboxSlide)) || []}
           render={{
             iconPrev: () => <Icon icon={SolarAltArrowLeftOutline} width="28" height="28" className="drop-shadow" />,
             iconNext: () => <Icon icon={SolarAltArrowRightOutline} width="28" height="28" className="drop-shadow" />,

@@ -7,8 +7,8 @@ import DeviconGithub from "@iconify/icons-devicon/github";
 import DeviconTwitter from "@iconify/icons-devicon/twitter";
 import SolarMailboxBold from "@iconify/icons-solar/mailbox-bold";
 import SolarPhoneBold from "@iconify/icons-solar/phone-bold";
-import { Button } from "@nextui-org/button";
-import { Tooltip } from "@nextui-org/tooltip";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 
 import { siteConfig } from "@/config/site";
 import { Icon } from "@/components/ui/icon";

@@ -3,7 +3,7 @@
 import { ElementRef, forwardRef, useState } from "react";
 import SolarEyeBold from "@iconify/icons-solar/eye-bold";
 import SolarEyeClosedBold from "@iconify/icons-solar/eye-closed-bold";
-import { Input, InputProps } from "@nextui-org/input";
+import { Input, InputProps } from "@heroui/input";
 
 import { Icon } from "@/components/ui/icon";
 
