@@ -1,7 +1,3 @@
-import { PageLoader } from "@/components/ui/page-loader";
-
-const Loading = () => {
-  return <PageLoader />;
-};
-
-export default Loading;
+export default function Loading() {
+  return <div className="grid min-h-[40vh] place-items-center text-sm text-[var(--muted)]">Loading profile…</div>;
+}

@@ -1,113 +1,46 @@
 import "@/styles/globals.css";
 
-import { ReactNode } from "react";
-import { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
-import { AppProviders } from "@/providers";
-import { getUser } from "@/providers/user/server";
-import { cn } from "@/utils";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 
+import { ThemeProvider } from "@/components/theme-provider";
+import { fontHeading, fontMono, fontSans } from "@/components/fonts";
 import { siteConfig } from "@/config/site";
-import { api } from "@/lib/api";
-import { RouteChangeProvider } from "@/components/ui/navigation";
-import { fontHeading, fontSans } from "@/components/fonts";
 
 export const metadata: Metadata = {
-  manifest: "/manifest.json",
-  metadataBase: process.env.VERCEL_URL
-    ? new URL(`https://${process.env.VERCEL_URL}`)
-    : undefined,
+  metadataBase: new URL("https://princeowusu.dev"),
   applicationName: siteConfig.name,
-  title: {
-    default: siteConfig.title,
-    template: siteConfig.titleTemplate
-  },
+  title: { default: siteConfig.title, template: siteConfig.titleTemplate },
   description: siteConfig.description,
-  other: {
-    "apple-mobile-web-app-title": "Prince",
-    "application-name": "Prince",
-    "msapplication-TileColor": "#ffffff",
-    "msapplication-config": "/browserconfig.xml"
-  },
+  keywords: ["Prince Owusu", "Software Engineer", ".NET", "Next.js", "Ghana"],
   icons: {
-    apple: {
-      url: "/apple-touch-icon.png",
-      sizes: "180x180"
-    },
-    icon: [
-      {
-        url: "/favicon-32x32.png",
-        type: "image/png",
-        sizes: "32x32"
-      },
-      {
-        url: "/favicon-16x16.png",
-        type: "image/png",
-        sizes: "16x16"
-      }
-    ],
-    shortcut: {
-      url: "/favicon.ico"
-    },
-    other: [
-      {
-        url: "/safari-pinned-tab.svg",
-        color: "#5bbad5"
-      }
-    ]
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: siteConfig.title
-    // startUpImage: [],
-  },
-  formatDetection: {
-    telephone: false
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png"
   },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [
-      {
-        url: "/favicon-256x256.png",
-        alt: siteConfig.name
-      }
-    ]
-  },
-  twitter: {
-    card: "summary",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: "/favicon-256x256.png",
+    images: [{ url: "/assets/profile/1.png", alt: "Prince Owusu" }]
   }
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" }
-  ]
+  themeColor: "#f8f6f2",
+  colorScheme: "light dark"
 };
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
-  const currentUser = getUser(cookies);
-  api.user.next(currentUser);
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const fontVariables = [fontSans.variable, fontHeading.variable, fontMono.variable].join(" ");
 
   return (
-    <html lang="en" suppressHydrationWarning className={cn("bg-background font-sans text-foreground antialiased", fontSans.variable, fontHeading.variable)}>
-      <head />
+    <html lang="en" suppressHydrationWarning className={fontVariables}>
       <body>
-        <RouteChangeProvider>
-          <AppProviders initialUser={currentUser}>{children}</AppProviders>
-        </RouteChangeProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </body>
-      <GoogleAnalytics gaId="G-TM5XSPVR00" />
     </html>
   );
-};
-
-export default RootLayout;
+}

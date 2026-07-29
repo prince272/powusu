@@ -1,7 +1,98 @@
-@import "tailwindcss/base";
+@import "tailwindcss";
+@import "@heroui/styles";
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display-face);
+  --font-mono: var(--font-code);
+  --color-ink: #17151f;
+  --color-muted-ink: #746f82;
+  --color-lilac: #a58cff;
+  --color-coral: #ff806f;
+  --color-mint: #8de4c4;
+}
+
+:root {
+  color-scheme: light;
+  --page: #f8f6f2;
+  --surface: #ffffff;
+  --surface-soft: #eeebf6;
+  --ink: #17151f;
+  --muted: #746f82;
+  --line: rgba(23, 21, 31, 0.12);
+}
+
+.dark {
+  color-scheme: dark;
+  --page: #121018;
+  --surface: #1b1823;
+  --surface-soft: #25202f;
+  --ink: #faf8ff;
+  --muted: #b9b1c5;
+  --line: rgba(250, 248, 255, 0.14);
+}
 
 @layer base {
   * {
-    @apply border-default-200;
+    border-color: var(--line);
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--font-body), sans-serif;
+  }
+
+  ::selection {
+    background: var(--color-lilac);
+    color: #17151f;
+  }
+}
+
+@layer components {
+  .section-shell {
+    width: min(1180px, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .eyebrow {
+    color: var(--color-coral);
+    font-family: var(--font-code), monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .display-title {
+    font-family: var(--font-display-face), sans-serif;
+    letter-spacing: -0.05em;
+    line-height: 0.98;
+  }
+
+  .text-gradient {
+    background: linear-gradient(110deg, var(--color-lilac), var(--color-coral));
+    background-clip: text;
+    color: transparent;
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(rgba(165, 140, 255, 0.23) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+}
+
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  animation: float-in 700ms ease both;
 }

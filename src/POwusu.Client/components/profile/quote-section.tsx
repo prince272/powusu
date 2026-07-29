@@ -1,22 +1,3 @@
-"use client";
-
-import { Image } from "@heroui/image";
-
-export const QuoteSection = () => {
-  return (
-    <div id="quote" className="relative">
-      <Image
-        shadow="none"
-        classNames={{ wrapper: "absolute flex justify-center items-center w-full h-full !max-w-none !rounded-none", img: "w-full h-full object-cover object-center !rounded-none" }}
-        src="/assets/future.jpg"
-        alt="Future"
-      />
-      <div className="relative z-10 bg-background/70 py-24 text-center backdrop-blur-sm backdrop-saturate-150">
-        <div className="relative mx-auto max-w-screen-xl px-6">
-          <blockquote className="font-serif text-4xl italic">&quot;The only way to predict the future is to create it.&quot;</blockquote>
-          <cite className="mt-4 block font-semibold text-default-600">- Abraham Lincoln</cite>
-        </div>
-      </div>
-    </div>
-  );
-};
+export function QuoteSection() {
+  return <section className="section-shell py-6"><div className="relative overflow-hidden rounded-[2rem] bg-[#17151f] px-6 py-16 text-white sm:px-14 sm:py-24"><div className="pointer-events-none absolute -right-10 -top-20 size-72 rounded-full bg-[var(--color-lilac)]/35 blur-3xl" /><p className="relative max-w-4xl font-display text-4xl leading-tight tracking-[-0.04em] sm:text-6xl">“Make it work. Make it clear. Then make it feel like you.”</p><p className="relative mt-6 font-mono text-xs uppercase tracking-[0.16em] text-white/55">A small working philosophy</p></div></section>;
+}

@@ -1,46 +1,14 @@
-"use client";
-
-import NextLink from "next/link";
-import QuestionsIllustration from "@/assets/illustrations/questions.svg";
-import { wrapHtml } from "@/utils";
-import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Accordion } from "@heroui/react";
 
 import { siteConfig } from "@/config/site";
 
-export const FaqsSection = () => {
+export function FaqsSection() {
   return (
-    <section id="faqs" className="bg-background py-24">
-      <div className="relative mx-auto max-w-screen-xl px-6">
-        <div className="mb-6 flex justify-center">
-          <div className="flex max-w-xl flex-col text-center">
-            <h2 className="mb-1 font-medium text-primary">FAQs</h2>
-            <h1 className="mb-3 font-heading text-4xl font-medium uppercase tracking-tight">
-              Frequently Asked <span className="text-secondary">Questions</span>
-            </h1>
-            <h2 className="mb-3 text-default-500">Get to know me better through these frequently asked questions.</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-6">
-          <div className="relative col-span-12 md:col-span-5">
-            <div className="flex aspect-[4/3] justify-center">
-              <QuestionsIllustration className="h-full max-h-[384px] w-full max-w-[384px] text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
-            </div>
-          </div>
-          <div className="md:order-0 order-1 col-span-12 md:col-span-7">
-            <Accordion variant="light" className="gap-6" itemClasses={{ title: "font-semibold data-[open=true]:text-primary", content: "leading-loose pb-4" }}>
-              {siteConfig.faqs
-                .map((faq) => ({ ...faq, answer: wrapHtml(faq.answer) }))
-                .map((faq) => {
-                  return (
-                    <AccordionItem key={faq.id} aria-label="Accordion 1" title={faq.question}>
-                      {faq.answer}
-                    </AccordionItem>
-                  );
-                })}
-            </Accordion>
-          </div>
-        </div>
-      </div>
+    <section id="faqs" className="section-shell grid gap-10 py-24 sm:py-32 lg:grid-cols-[0.7fr_1.3fr]">
+      <div><p className="eyebrow mb-4">A few answers</p><h2 className="display-title text-5xl sm:text-6xl">The short version.</h2><p className="mt-6 max-w-sm leading-7 text-[var(--muted)]">The things teams usually want to know before we start building together.</p></div>
+      <Accordion variant="surface" allowsMultipleExpanded className="w-full rounded-3xl bg-[var(--surface)] p-3">
+        {siteConfig.faqs.map((faq) => <Accordion.Item key={faq.id} id={faq.id}><Accordion.Heading><Accordion.Trigger className="px-4 py-5 text-left font-bold">{faq.question}<Accordion.Indicator /></Accordion.Trigger></Accordion.Heading><Accordion.Panel><Accordion.Body className="px-4 pb-5 leading-7 text-[var(--muted)]">{faq.answer}</Accordion.Body></Accordion.Panel></Accordion.Item>)}
+      </Accordion>
     </section>
   );
-};
+}

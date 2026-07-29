@@ -1,135 +1,39 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Image } from "@heroui/image";
-import { Autoplay as SwiperAutoplay, Pagination as SwiperPagination, Virtual as SwiperVirtual, Virtual } from "swiper/modules";
-import Lightbox, { Slide as LightboxSlide } from "yet-another-react-lightbox";
+import { Button, Card } from "@heroui/react";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
+import Image from "next/image";
 
-import { Link as NextLink } from "@/components/ui/navigation";
+import { siteConfig } from "@/config/site";
 
-import "yet-another-react-lightbox/styles.css";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/virtual";
-
-import { cn } from "@/utils";
-import SolarAltArrowLeftOutline from "@iconify/icons-solar/alt-arrow-left-outline";
-import SolarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
-import SolarCloseCircleOutline from "@iconify/icons-solar/close-circle-outline";
-import SolarGalleryBold from "@iconify/icons-solar/gallery-bold";
-import SolarLinkBold from "@iconify/icons-solar/link-bold";
-import { Chip } from "@heroui/chip";
-import { Swiper, SwiperSlide } from "swiper/react";
-
-import { SiteConfig, siteConfig } from "@/config/site";
-import { Icon } from "@/components/ui/icon";
-
-export const WorksSection = () => {
-  const [selectedWork, setSelectedWork] = useState<SiteConfig["works"][0] | null>(null);
-
+export function WorksSection() {
   return (
-    <section id="works" className="bg-default-50 py-24">
-      <div className="relative mx-auto max-w-screen-xl px-6">
-        <div className="flex flex-col text-center">
-          <h2 className="mb-1 font-medium text-primary">Works</h2>
-          <h1 className="mb-3 font-heading text-4xl font-medium uppercase tracking-tight">
-            Featured <span className="text-secondary">Works</span>
-          </h1>
-          <h2 className="mb-6 text-default-500">Discover my inspiring creations, crafted with passion and purpose.</h2>
+    <section id="work" className="bg-[var(--surface-soft)] py-24 sm:py-32">
+      <div className="section-shell">
+        <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+          <div><p className="eyebrow mb-4">Selected work</p><h2 className="display-title text-5xl sm:text-7xl">Projects with a <span className="text-gradient">purpose.</span></h2></div>
+          <a href={siteConfig.links.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--muted)] hover:text-[var(--ink)]">More on GitHub <ArrowUpRight size={15} /></a>
         </div>
-        <Swiper
-          wrapperClass="mb-14"
-          pagination={{
-            clickable: true,
-            renderBullet: function (index, className) {
-              return `<span class="${cn(className, "!w-3 !h-3 [&.swiper-pagination-bullet-active]:!bg-primary [&.swiper-pagination-bullet]:bg-default-300 !opacity-100")}"></span>`;
-            }
-          }}
-          virtual={false}
-          modules={[SwiperPagination, SwiperAutoplay, SwiperVirtual]}
-          breakpoints={{
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 30
-            },
-            768: {
-              slidesPerView: 3,
-              spaceBetween: 30
-            },
-            1024: {
-              slidesPerView: 3,
-              spaceBetween: 30
-            }
-          }}
-          slidesPerView={1}
-          spaceBetween={30}
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false
-          }}
-          className="flex w-full"
-        >
+        <div className="grid gap-6 lg:grid-cols-2">
           {siteConfig.works.map((work, index) => (
-            <SwiperSlide key={work.id} virtualIndex={index}>
-              <Card className="flex flex-col gap-4 bg-background">
-                <CardHeader className="relative pb-0" onClick={() => setSelectedWork(work)}>
-                  <div className="group relative">
-                    <Image removeWrapper alt={work.title} className="aspect-[4/3] w-full rounded-xl object-cover object-center" src={work.defaultImage} />
-                    <div className="absolute top-0 z-20 flex h-full w-full items-center justify-center bg-black/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <Button
-                        startContent={<Icon icon={SolarGalleryBold} width="24" height="24" />}
-                        size="lg"
-                        color={index % 2 == 0 ? "primary" : "secondary"}
-                        onPress={() => setSelectedWork(work)}
-                      >
-                        Preview
-                      </Button>
-                    </div>
-                  </div>
-                  <Image
-                    classNames={{ wrapper: "absolute bottom-0 right-0 z-10 mb-2 mr-6 bg-white p-2 rounded-full shadow" }}
-                    width={64}
-                    height={64}
-                    src={work.logo}
-                    alt={`${work.title} Logo`}
-                  />
-                </CardHeader>
-                <CardBody className="relative pt-0">
-                  <Chip className="mb-2">{work.name.toLowerCase()}</Chip>
-                  <h3 className={cn("mb-1 line-clamp-1 text-large font-bold", index % 2 == 0 ? "text-primary" : "text-secondary")}>{work.title}</h3>
-                  <p className="mb-3 line-clamp-3 h-[72px] text-default-500">{work.description}</p>
-                  <Button
-                    as={NextLink}
-                    href={work.link}
-                    target="_blank"
-                    variant="flat"
-                    color="default"
-                    fullWidth
-                    startContent={<Icon icon={SolarLinkBold} width="24" height="24" />}
-                    className="after:absolute after:inset-0"
-                  >
-                    Read more
-                  </Button>
-                </CardBody>
-              </Card>
-            </SwiperSlide>
+            <Card key={work.id} variant="default" className="group overflow-hidden border-0 bg-[var(--surface)] shadow-none transition-transform duration-300 hover:-translate-y-1">
+              <Card.Content className="p-0">
+                <div className="relative overflow-hidden bg-[#15121d]">
+                  <Image src={work.defaultImage} alt={`${work.title} project preview`} width={960} height={540} className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" />
+                  <div className="absolute left-5 top-5 rounded-full bg-[#17151f]/80 px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-white backdrop-blur">0{index + 1} / {work.category}</div>
+                  <Image src={work.logo} alt="" width={56} height={56} className="absolute bottom-4 right-5 size-14 rounded-2xl border-4 border-white object-contain shadow-xl" />
+                </div>
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-start justify-between gap-5"><div><p className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--color-coral)]">{work.name}</p><h3 className="mt-2 font-display text-3xl tracking-[-0.04em]">{work.title}</h3></div><ExternalLink size={18} className="mt-1 text-[var(--muted)]" /></div>
+                  <p className="mt-4 max-w-xl leading-7 text-[var(--muted)]">{work.description}</p>
+                  <div className="mt-6 flex flex-wrap gap-2">{work.stack.map((item) => <span key={item} className="rounded-full border border-[var(--line)] px-3 py-1 text-xs font-bold text-[var(--muted)]">{item}</span>)}</div>
+                  <Button variant="outline" className="mt-7" onPress={() => window.open(work.link, "_blank")}><ExternalLink size={16} /> View project</Button>
+                </div>
+              </Card.Content>
+            </Card>
           ))}
-        </Swiper>
-        <Lightbox
-          open={!!selectedWork}
-          close={() => setSelectedWork(null)}
-          slides={selectedWork?.images.map((image) => (({
-            src: image
-          }) as LightboxSlide)) || []}
-          render={{
-            iconPrev: () => <Icon icon={SolarAltArrowLeftOutline} width="28" height="28" className="drop-shadow" />,
-            iconNext: () => <Icon icon={SolarAltArrowRightOutline} width="28" height="28" className="drop-shadow" />,
-            iconClose: () => <Icon icon={SolarCloseCircleOutline} width="24" height="24" className="drop-shadow" />
-          }}
-        />
+        </div>
       </div>
     </section>
   );
-};
+}

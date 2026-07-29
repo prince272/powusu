@@ -1,4 +1,3 @@
-import { PlateEditor } from "@/components/ui/editor/plate-editor";
 import { AboutSection } from "@/components/profile/about-section";
 import { CertificatesSection } from "@/components/profile/certificates-section";
 import { ContactSection } from "@/components/profile/contact-section";
@@ -9,19 +8,18 @@ import { ScoreSection } from "@/components/profile/score-section";
 import { SkillsSection } from "@/components/profile/skills-section";
 import { WorksSection } from "@/components/profile/works-section";
 
-const Home = () => {
+export default function HomePage() {
   return (
-    <>
+    <main>
       <IntroductionSection />
       <ScoreSection />
+      <AboutSection />
       <WorksSection />
-      <CertificatesSection />
       <SkillsSection />
+      <CertificatesSection />
       <FaqsSection />
       <QuoteSection />
       <ContactSection />
-    </>
+    </main>
   );
-};
-
-export default Home;
+}
