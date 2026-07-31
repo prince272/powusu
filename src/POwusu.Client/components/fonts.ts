@@ -1,18 +1,18 @@
-import { Fira_Sans as FontHeading, Fira_Code as FontMono, Open_Sans as FontSans } from "next/font/google";
 import localFont from "next/font/local";
 
-export const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans"
+export const fontSans = localFont({
+  src: [
+    { path: "../assets/fonts/Inter-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../assets/fonts/Inter-Bold.ttf", weight: "700", style: "normal" }
+  ],
+  variable: "--font-body",
+  display: "swap"
 });
 
-export const fontMono = FontMono({
-  subsets: ["latin"],
-  variable: "--font-mono"
+export const fontHeading = localFont({
+  src: "../assets/fonts/CalSans-SemiBold.woff2",
+  variable: "--font-display-face",
+  display: "swap"
 });
 
-export const fontHeading = FontHeading({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  weight: "700"
-});
+export const fontMono = { variable: "--font-code" };

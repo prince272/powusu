@@ -1,88 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
-import { commonColors, semanticColors } from "@heroui/theme";
-import * as THREE from "three";
+import { Button } from "@heroui/react";
+import { ArrowDown, ArrowUpRight, Download, MapPin } from "lucide-react";
+import Image from "next/image";
 
-import "vanta/dist/vanta.globe.min";
+import { siteConfig } from "@/config/site";
 
-import { useBreakpoint } from "@/hooks";
-import { VantaGlobeInstance } from "@/vanta";
-import SoloarAltArrowRightOutline from "@iconify/icons-solar/alt-arrow-right-outline";
-import { useTheme } from "next-themes";
-import Snowfall from "react-snowfall";
-
-import { Icon } from "@/components/ui/icon";
-import { SongPlayerButton } from "./song-player-button";
-
-export const IntroductionSection = () => {
-  const [vantaEffect, setVantaEffect] = useState<VantaGlobeInstance | null>(null);
-  const vantaRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
-  const md = useBreakpoint("md", "up");
-
-  useEffect(() => {
-    if (!vantaEffect && md) {
-      setVantaEffect(
-        VANTA.GLOBE({
-          THREE,
-          el: vantaRef.current!,
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200.0,
-          minWidth: 200.0,
-          scale: 1.0,
-          scaleMobile: 1.0,
-          size: 0.9,
-          color: semanticColors.dark.secondary[500],
-          color2: semanticColors.light.default[50],
-          backgroundColor: semanticColors.dark.primary[50]
-        })
-      );
-    }
-    return () => {
-      if (vantaEffect) {
-        vantaEffect.destroy();
-        setVantaEffect(null);
-      }
-    };
-  }, [vantaEffect, theme, md]);
+export function IntroductionSection() {
+  const scrollToWork = () => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section id="intro" ref={vantaRef} className="relative h-full bg-primary-50 text-foreground dark">
-      <div className="absolute h-full w-full backdrop-blur-sm md:backdrop-blur-none"></div>
-      <div className="h-full">
-        <div className="relative mx-auto h-full max-w-screen-xl px-6">
-          <section className="align-items-center grid h-full grid-cols-12 space-x-10 pb-32 pt-16">
-            <div className="col-span-12 flex items-center lg:col-span-8">
-              <div className="max-w-[600px]">
-                <div className="mb-6 flex justify-center sm:justify-start">
-                  <div className="relative animate-updown">
-                    <Image className="h-48 w-48 rounded-full border-5 border-white bg-white object-contain object-center" src="/assets/profile/1.png" alt="Prince Owusu" />
-                    <Image classNames={{ wrapper: "absolute bottom-0 right-0 z-10 mb-2 mr-6" }} width={32} height={32} src="/favicon-32x32.png" alt="Prince Owusu Logo" />
-                  </div>
-                </div>
-                <h1 className="mb-3 scroll-m-20 font-heading text-4xl uppercase tracking-wider drop-shadow-md before:absolute before:left-0 before:top-7 before:h-1 before:content-none lg:text-5xl">
-                  <span>I&apos;m</span> <span className="text-primary">Prince Owusu</span>
-                  <span className="block text-xl lg:text-2xl">👨‍💻 Software Engineer</span>
-                </h1>
-                <p className="mb-3 leading-9 tracking-wider drop-shadow-md">
-                  I am a highly skilled Software Engineer with a passion for crafting seamless user experiences. I specialize in developing end-to-end applications that not only
-                  meet requirements, but exceed user expectations.
-                </p>
-                <Button endContent={<Icon icon={SoloarAltArrowRightOutline} width="24" height="24" />} variant="flat" size="lg" color="primary" className="font-bold uppercase">
-                  More about Me
-                </Button>
-              </div>
+    <section id="intro" className="relative overflow-hidden border-b border-[var(--line)] pb-20 pt-16 sm:pb-28 sm:pt-24">
+      <div className="pointer-events-none absolute -right-28 -top-36 size-[32rem] rounded-full bg-[var(--color-lilac)]/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-48 left-1/3 size-[28rem] rounded-full bg-[var(--color-coral)]/15 blur-3xl" />
+      <div className="section-shell relative grid gap-12 lg:items-start lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="reveal max-w-4xl">
+          <div className="mb-7 flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-2"><MapPin size={15} className="text-[var(--color-coral)]" /> {siteConfig.location}</span>
+            <span className="rounded-full bg-[var(--color-mint)]/30 px-3 py-2 text-[var(--ink)]">{siteConfig.availability}</span>
+          </div>
+          <p className="eyebrow mb-5">Software engineer · product-minded builder</p>
+          <h1 className="display-title max-w-4xl text-6xl sm:text-8xl lg:text-[9rem]">Building the <span className="text-gradient text-gradient-animated">useful</span> parts of the future.</h1>
+          <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--muted)] sm:text-xl">I design and ship full-stack products that turn complicated systems into simple, human experiences, from reliable APIs to interfaces people enjoy using.</p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Button className="download-action" variant="primary" size="lg" onPress={() => window.open(siteConfig.cv, "_blank")}><Download size={21} strokeWidth={2.4} /> Download CV</Button>
+            <Button variant="outline" size="lg" onPress={scrollToWork}>See selected work <ArrowDown size={17} /></Button>
+            <Button variant="ghost" size="lg" onPress={() => window.open(siteConfig.links.linkedin, "_blank")}>LinkedIn <ArrowUpRight size={16} /></Button>
+          </div>
+        </div>
+        <div className="reveal group relative mx-auto w-full max-w-sm" style={{ animationDelay: "160ms" }}>
+          <div className="dot-grid absolute -right-5 -top-5 size-28 rounded-2xl" />
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-[var(--surface)] p-3 shadow-2xl shadow-[var(--color-lilac)]/10">
+            <Image src={siteConfig.profileImage} alt="Prince Owusu" width={640} height={800} priority className="aspect-[4/5] w-full rounded-[2rem] object-cover object-top grayscale transition duration-700 ease-out group-hover:grayscale-0" />
+            <div className="absolute bottom-7 left-7 right-7 rounded-2xl border border-white/20 bg-[#17151f]/80 p-4 text-white backdrop-blur-md">
+              <div className="flex items-end justify-between gap-4"><span className="font-display text-2xl">PO / 01</span><span className="font-mono text-xs text-white/60">curious by default</span></div>
             </div>
-          </section>
+          </div>
         </div>
       </div>
-      <Snowfall snowflakeCount={md ? 150 : 50} />
-      <SongPlayerButton />
     </section>
   );
-};
+}

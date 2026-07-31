@@ -1,277 +1,34 @@
-"use client";
-
-import NextLink from "next/link";
-import ProgrammingIllustration from "@/assets/illustrations/programming.svg";
-import LogosBootstrap from "@iconify-icons/logos/bootstrap";
-import LogosCss3 from "@iconify-icons/logos/css-3";
-import LogosDotnet from "@iconify-icons/logos/dotnet";
-import LogosHtml5 from "@iconify-icons/logos/html-5";
-import LogosJavascript from "@iconify-icons/logos/javascript";
-import LogosJquery from "@iconify-icons/logos/jquery";
-import LogosJwtIcon from "@iconify-icons/logos/jwt-icon";
-import LogosMaterialUi from "@iconify-icons/logos/material-ui";
-import LogosMicrosoftAzure from "@iconify-icons/logos/microsoft-azure";
-import LogosMysql from "@iconify-icons/logos/mysql";
-import LogosNextjsIcon from "@iconify-icons/logos/nextjs-icon";
-import LogosPostgresql from "@iconify-icons/logos/postgresql";
-import LogosPostmanIcon from "@iconify-icons/logos/postman-icon";
-import LogosReact from "@iconify-icons/logos/react";
-import LogosRider from "@iconify-icons/logos/rider";
-import LogosTailwindcssIcon from "@iconify-icons/logos/tailwindcss-icon";
-import LogosTypescriptIcon from "@iconify-icons/logos/typescript-icon";
-import LogosVisualStudio from "@iconify-icons/logos/visual-studio";
-import LogosVisualStudioCode from "@iconify-icons/logos/visual-studio-code";
-import SimpleIconsNextui from "@iconify-icons/simple-icons/nextui";
-import DeviconApachekafka from "@iconify/icons-devicon/apachekafka";
-import DeviconCsharp from "@iconify/icons-devicon/csharp";
-import DeviconElasticsearch from "@iconify/icons-devicon/elasticsearch";
-import DeviconGit from "@iconify/icons-devicon/git";
-import DeviconGithubWordmark from "@iconify/icons-devicon/github-wordmark";
-import DeviconJetbrains from "@iconify/icons-devicon/jetbrains";
-import DeviconMongodbWordmark from "@iconify/icons-devicon/mongodb-wordmark";
-import DeviconSqliteWordmark from "@iconify/icons-devicon/sqlite-wordmark";
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { Tooltip } from "@heroui/tooltip";
+import { Card, Tooltip } from "@heroui/react";
+import { ArrowUpRight, Braces, Database, GitBranch, Layers3, Sparkles } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
-import { Icon } from "@/components/ui/icon";
 
-export const SkillsSection = () => {
+const accentClass = { lilac: "bg-[var(--color-lilac)]", coral: "bg-[var(--color-coral)]", mint: "bg-[var(--color-mint)]" };
+
+export function SkillsSection() {
   return (
-    <section id="contact" className="bg-default-50 py-24">
-      <div className="relative mx-auto max-w-screen-xl px-6">
-        <div className="mb-6 flex justify-center">
-          <div className="flex max-w-xl flex-col text-center">
-            <h2 className="mb-1 font-medium text-primary">Skills</h2>
-            <h1 className="mb-3 font-heading text-4xl font-medium uppercase tracking-tight">
-              Specialized <span className="text-secondary">Skills</span>
-            </h1>
-            <h2 className="mb-3 text-default-500">Tap into my specialized skills - let&apos;s create something remarkable.</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-6">
-          <div className="relative col-span-12 md:col-span-5">
-            <div className="flex aspect-[4/3] justify-center">
-              <ProgrammingIllustration className="max-h-[384px] w-auto animate-updown text-default-50" width="100%" height="100%" preserveAspectRatio="none" />
-            </div>
-          </div>
-          <div className="md:order-0 order-1 col-span-12 md:col-span-7">
-            <h2 className="mb-3 font-heading text-2xl font-medium uppercase tracking-tight">Frontend</h2>
-            <div className="mb-6 flex flex-wrap gap-3">
-              <Tooltip content="React.js">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosReact} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Next.js">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosNextjsIcon} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Bootstrap">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosBootstrap} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Material UI">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosMaterialUi} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Html">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosHtml5} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="CSS">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosCss3} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Javascript">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosJavascript} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Typescript">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosTypescriptIcon} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="JQuery">
-                <Card className="bg-white text-black">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosJquery} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Tailwind CSS">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosTailwindcssIcon} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Next UI">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={SimpleIconsNextui} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-            </div>
-            <h2 className="mb-3 font-heading text-2xl font-medium uppercase tracking-tight">Backend</h2>
-            <div className="mb-6 flex flex-wrap gap-3">
-              <Tooltip content=".NET">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosDotnet} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="C#">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconCsharp} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="MySQL">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosMysql} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Postgres SQL">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosPostgresql} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Sqllite">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconSqliteWordmark} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Mongo DB">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconMongodbWordmark} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Elastic Search">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconElasticsearch} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Kafka">
-                <Card className="bg-white text-black">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconApachekafka} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Sql Server">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconSqliteWordmark} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="JWT authentication">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosJwtIcon} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-            </div>
-            <h2 className="mb-3 font-heading text-2xl font-medium uppercase tracking-tight">Tools</h2>
-            <div className="mb-6 flex flex-wrap gap-3">
-              <Tooltip content="Visual Studio">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosVisualStudio} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Visual Studio Code">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosVisualStudioCode} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Rider">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosRider} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="JetBrains">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconJetbrains} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Postman">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosPostmanIcon} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Git">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconGit} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Github">
-                <Card className="bg-white text-black">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={DeviconGithubWordmark} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-              <Tooltip content="Azure">
-                <Card className="bg-background">
-                  <CardBody className="p-2">
-                    <Icon className="rounded-md" icon={LogosMicrosoftAzure} width="32" height="32" />
-                  </CardBody>
-                </Card>
-              </Tooltip>
-            </div>
-          </div>
+    <section id="skills" className="section-shell py-24 sm:py-32">
+      <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+        <div className="lg:sticky lg:top-32 lg:self-start"><p className="eyebrow mb-4">The toolkit</p><h2 className="display-title text-5xl sm:text-7xl">Skills, with <span className="text-gradient text-gradient-animated">range.</span></h2><p className="mt-6 max-w-sm leading-7 text-[var(--muted)]">A balance of product thinking and engineering depth. It is the combination I bring to every build.</p><a href={siteConfig.cv} target="_blank" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--ink)] underline decoration-[var(--color-coral)] decoration-2 underline-offset-4">See the full toolkit <ArrowUpRight size={15} /></a></div>
+        <div className="grid gap-5">
+          {siteConfig.skillGroups.map((group, index) => (
+            <Card key={group.name} variant="secondary" className="border-0 bg-[var(--surface-soft)] shadow-none">
+              <Card.Content className="p-6 sm:p-8">
+                <div className="mb-8 flex items-start gap-4"><div className="grid size-11 place-items-center rounded-2xl bg-[var(--surface)] text-[var(--color-lilac)]">{index === 0 ? <Layers3 size={20} /> : index === 1 ? <Database size={20} /> : <GitBranch size={20} />}</div><div><h3 className="font-display text-2xl tracking-[-0.04em]">{group.name}</h3><p className="mt-1 text-sm text-[var(--muted)]">{group.note}</p></div></div>
+                <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+                  {group.skills.map((skill) => (
+                    <Tooltip key={skill.name} delay={0}>
+                      <Tooltip.Trigger className="block w-full cursor-help"><div className="flex items-center justify-between gap-3 text-sm font-bold"><span>{skill.name}</span><span className="font-mono text-xs text-[var(--muted)]">{skill.level}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--surface)]"><div className={`skill-progress relative h-full overflow-hidden rounded-full ${accentClass[skill.accent]}`} style={{ width: `${skill.level}%` }} /></div></Tooltip.Trigger>
+                      <Tooltip.Content><Tooltip.Arrow /><p>{skill.name}: working proficiency</p></Tooltip.Content>
+                    </Tooltip>
+                  ))}
+                </div>
+              </Card.Content>
+            </Card>
+          ))}
         </div>
       </div>
+      <div className="mt-12 grid gap-4 sm:grid-cols-3"><Card variant="transparent" className="border border-[var(--line)] bg-transparent shadow-none"><Card.Content className="flex items-center gap-3 p-5"><Braces className="text-[var(--color-coral)]" /><span className="text-sm text-[var(--muted)]">API-first thinking</span></Card.Content></Card><Card variant="transparent" className="border border-[var(--line)] bg-transparent shadow-none"><Card.Content className="flex items-center gap-3 p-5"><Sparkles className="text-[var(--color-lilac)]" /><span className="text-sm text-[var(--muted)]">Accessible by default</span></Card.Content></Card><Card variant="transparent" className="border border-[var(--line)] bg-transparent shadow-none"><Card.Content className="flex items-center gap-3 p-5"><GitBranch className="text-[var(--color-mint)]" /><span className="text-sm text-[var(--muted)]">Iterate in the open</span></Card.Content></Card></div>
     </section>
   );
-};
+}
