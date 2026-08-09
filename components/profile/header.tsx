@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Link as HeroLink } from "@heroui/react";
 import { ArrowUpRight, Download, Menu, Moon, Sun, X } from "lucide-react";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
@@ -27,7 +28,9 @@ export function Header() {
     <nav className={`sticky top-0 z-50 w-full border-b transition-[background-color,border-color,box-shadow] duration-300 ${isScrolled ? "border-[var(--line)] bg-[var(--page)]/90 shadow-sm shadow-black/5 backdrop-blur-xl" : "border-transparent bg-transparent"}`}>
       <div className={`section-shell flex items-center justify-between gap-3 transition-[height] duration-300 sm:gap-6 ${isScrolled ? "h-16" : "h-20"}`}>
         <Link href="/" className="group flex items-center gap-2 sm:gap-3" onClick={() => setIsOpen(false)}>
-          <span className="grid size-9 place-items-center rounded-full bg-[var(--ink)] font-display text-sm text-[var(--page)]">PO</span>
+          <span className="relative size-9 overflow-hidden rounded-full border border-[var(--line)] bg-[var(--surface)] shadow-sm">
+            <Image src={siteConfig.profileImage} alt="Prince Owusu" fill sizes="36px" className="object-cover object-top" />
+          </span>
           <span className="font-display text-lg tracking-[-0.04em] max-[420px]:hidden">Prince Owusu</span>
         </Link>
         <div className="hidden items-center gap-7 lg:flex">

@@ -20,6 +20,7 @@ export type VideoWork = {
   title: string;
   tiktokId: string;
   href: string;
+  thumbnail: string;
 };
 
 export const siteConfig = {
@@ -61,10 +62,11 @@ export const siteConfig = {
       role: "Software Engineer",
       organization: "Hubtel · Accra, Ghana",
       period: "Oct 2023 - Present",
-      summary: "Designing, developing, and maintaining dependable internal systems and business-facing workflows.",
+      summary: "Contributing to internal .NET back-office platforms that support operational teams through reliable APIs, background services, shared integrations, and user-facing tools.",
       highlights: [
-        "Translate operational needs into clear, reliable internal tools.",
-        "Collaborate across functions to refine requirements, deliver changes, and improve existing systems."
+        "Deliver and maintain .NET APIs, background workers, scheduled processes, and internal web tools for operational workflows.",
+        "Work with shared SDKs, service integrations, mocks, and automated tests to keep systems reliable and easier to evolve.",
+        "Collaborate across product and operational teams to improve internal workflows while applying secure engineering practices."
       ]
     },
     {
@@ -209,21 +211,24 @@ export const siteConfig = {
   videoWork: [
     {
       id: "ai-video-01",
-      title: "AI video work 01",
+      title: "The Door of No Return",
       tiktokId: "7574813322512502028",
-      href: "https://www.tiktok.com/@pastinpower/video/7574813322512502028?lang=en"
+      href: "https://www.tiktok.com/@pastinpower/video/7574813322512502028?lang=en",
+      thumbnail: "/assets/profile/works/past-in-power/door-of-no-return.jpg"
     },
     {
       id: "ai-video-02",
-      title: "AI video work 02",
+      title: "Moving to Ghana",
       tiktokId: "7577621268103449912",
-      href: "https://www.tiktok.com/@pastinpower/video/7577621268103449912?lang=en"
+      href: "https://www.tiktok.com/@pastinpower/video/7577621268103449912?lang=en",
+      thumbnail: "/assets/profile/works/past-in-power/moving-to-ghana.jpg"
     },
     {
       id: "ai-video-03",
-      title: "AI video work 03",
+      title: "Pray for Me",
       tiktokId: "7594226081251577100",
-      href: "https://www.tiktok.com/@pastinpower/video/7594226081251577100?lang=en"
+      href: "https://www.tiktok.com/@pastinpower/video/7594226081251577100?lang=en",
+      thumbnail: "/assets/profile/works/past-in-power/pray-for-me.jpg"
     }
   ] satisfies VideoWork[],
   news: [
