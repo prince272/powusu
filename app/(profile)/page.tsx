@@ -1,4 +1,5 @@
 import { AboutSection } from "@/components/profile/about-section";
+import { AiVideoSection } from "@/components/profile/ai-video-section";
 import { CertificatesSection } from "@/components/profile/certificates-section";
 import { ContactSection } from "@/components/profile/contact-section";
 import { ExperienceSection } from "@/components/profile/experience-section";
@@ -18,6 +19,7 @@ export default function HomePage() {
       <AboutSection />
       <ExperienceSection />
       <WorksSection />
+      <AiVideoSection />
       <NewsSection />
       <SkillsSection />
       <CertificatesSection />

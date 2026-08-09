@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Past In Power video portfolio</title>
+  <desc id="desc">A vibrant abstract illustration for a short-form video portfolio.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17151f"/>
+      <stop offset="0.48" stop-color="#2d1d4a"/>
+      <stop offset="1" stop-color="#0d5360"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#69f1de"/>
+      <stop offset="0.55" stop-color="#b9a6ff"/>
+      <stop offset="1" stop-color="#ff8e75"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#background)"/>
+  <circle cx="1190" cy="170" r="220" fill="#b9a6ff" opacity=".18" filter="url(#glow)"/>
+  <circle cx="300" cy="760" r="210" fill="#69f1de" opacity=".14" filter="url(#glow)"/>
+  <path d="M250 650C480 315 755 313 975 525s334 104 430-118" fill="none" stroke="url(#stroke)" stroke-linecap="round" stroke-width="28"/>
+  <g transform="translate(675 310)">
+    <rect width="250" height="360" rx="42" fill="#17151f" stroke="#fff" stroke-opacity=".35" stroke-width="8"/>
+    <rect x="24" y="46" width="202" height="246" rx="24" fill="url(#stroke)" opacity=".92"/>
+    <path d="M105 122l84 47-84 48z" fill="#17151f"/>
+    <rect x="92" y="320" width="66" height="11" rx="6" fill="#fff" opacity=".7"/>
+  </g>
+  <text x="110" y="150" fill="#fff" font-family="Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="12">VIDEO PORTFOLIO</text>
+  <text x="110" y="220" fill="#e7e1ff" font-family="Arial, sans-serif" font-size="78" font-weight="700">Past In Power</text>
+  <text x="110" y="790" fill="#fff" font-family="Arial, sans-serif" font-size="30" letter-spacing="5">SHORT-FORM VIDEO WORK</text>
+</svg>

@@ -15,6 +15,13 @@ export type Certificate = {
   source?: { href: string; label: string };
 };
 
+export type VideoWork = {
+  id: string;
+  title: string;
+  tiktokId: string;
+  href: string;
+};
+
 export const siteConfig = {
   name: "Prince Owusu",
   title: "Prince Owusu | Software Engineer",
@@ -29,11 +36,13 @@ export const siteConfig = {
     github: "https://github.com/prince272",
     linkedin: "https://www.linkedin.com/in/prince-owusu-799438108",
     twitter: "https://twitter.com/OwusuPrince272",
+    tiktok: "https://www.tiktok.com/@pastinpower",
     whatsapp: "https://api.whatsapp.com/send?phone=233550362337&text=Let%27s%20connect.",
     email: "mailto:princeowusu.272@gmail.com"
   },
   navItems: [
     { label: "Work", href: "#work" },
+    { label: "AI Video", href: "#ai-video" },
     { label: "Experience", href: "#experience" },
     { label: "News", href: "#news" },
     { label: "Skills", href: "#skills" },
@@ -125,6 +134,18 @@ export const siteConfig = {
   ],
   works: [
     {
+      id: "past-in-power",
+      name: "Past In Power",
+      title: "TikTok Video Portfolio",
+      category: "Short-form video",
+      description: "A collection of short-form video work and creative projects, published on TikTok.",
+      images: ["/assets/profile/works/past-in-power-cover.svg"],
+      defaultImage: "/assets/profile/works/past-in-power-cover.svg",
+      logo: null,
+      link: "https://www.tiktok.com/@pastinpower",
+      stack: ["Video", "Creative work", "TikTok"]
+    },
+    {
       id: "yanioba",
       name: "Yanioba",
       title: "Community Safety App",
@@ -185,6 +206,26 @@ export const siteConfig = {
       stack: ["C#", ".NET", "Desktop", "Automation"]
     }
   ],
+  videoWork: [
+    {
+      id: "ai-video-01",
+      title: "AI video work 01",
+      tiktokId: "7574813322512502028",
+      href: "https://www.tiktok.com/@pastinpower/video/7574813322512502028?lang=en"
+    },
+    {
+      id: "ai-video-02",
+      title: "AI video work 02",
+      tiktokId: "7577621268103449912",
+      href: "https://www.tiktok.com/@pastinpower/video/7577621268103449912?lang=en"
+    },
+    {
+      id: "ai-video-03",
+      title: "AI video work 03",
+      tiktokId: "7594226081251577100",
+      href: "https://www.tiktok.com/@pastinpower/video/7594226081251577100?lang=en"
+    }
+  ] satisfies VideoWork[],
   news: [
     {
       id: "academy-ayoba",
