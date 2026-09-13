@@ -33,7 +33,7 @@ export function WorksSection() {
                   )}
                   <div className="absolute left-5 top-5 rounded-full bg-[#17151f]/80 px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-white backdrop-blur">0{index + 1} / {work.category}</div>
                   {work.logo ? (
-                    <Image src={work.logo} alt="" width={56} height={56} className="absolute bottom-4 right-5 size-14 rounded-2xl border-4 border-white object-contain shadow-xl" />
+                    <Image src={work.logo} alt="" width={56} height={56} className="absolute bottom-4 right-5 size-14 rounded-2xl object-contain shadow-xl" />
                   ) : (
                     <span className="absolute bottom-4 right-5 grid size-14 place-items-center rounded-2xl border-4 border-white bg-[#153d4a] font-display text-base tracking-[-0.08em] text-white shadow-xl">YA</span>
                   )}
