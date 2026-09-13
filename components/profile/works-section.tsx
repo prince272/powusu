@@ -22,10 +22,9 @@ export function WorksSection() {
                   {work.mobilePreviews ? (
                     <div className="flex aspect-[16/9] items-end justify-center gap-3 overflow-hidden bg-[radial-gradient(circle_at_50%_100%,#54345f_0%,#211b29_46%,#15121d_76%)] px-8 pt-7 sm:gap-5 sm:px-12">
                       {work.mobilePreviews.map((image, previewIndex) => (
-                        <div key={image} className={`relative overflow-hidden rounded-[1.75rem] border-[6px] border-[#08070b] bg-black shadow-[0_16px_32px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition duration-500 group-hover:-translate-y-1 ${previewIndex === 1 ? "h-[92%]" : "h-[78%]"} aspect-[9/19]`}>
+                        <div key={image} className={`relative overflow-hidden rounded-[1rem] border-[5px] border-[#08070b] bg-black shadow-[0_16px_32px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition duration-500 group-hover:-translate-y-1 ${previewIndex === 1 ? "h-[92%]" : "h-[78%]"} aspect-[9/19]`}>
                           <Image src={image} alt={`${work.title} mobile app preview`} width={360} height={760} className="size-full object-cover" />
-                          <span aria-hidden className="absolute left-1/2 top-1 z-10 h-2.5 w-10 -translate-x-1/2 rounded-full bg-[#08070b]" />
-                          <span aria-hidden className="absolute bottom-1 left-1/2 z-10 h-1 w-9 -translate-x-1/2 rounded-full bg-white/75" />
+                          <span aria-hidden className="absolute left-1/2 top-1 z-10 size-2 -translate-x-1/2 rounded-full bg-[#08070b] ring-1 ring-white/10" />
                         </div>
                       ))}
                     </div>
