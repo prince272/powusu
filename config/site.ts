@@ -143,6 +143,7 @@ export const siteConfig = {
       description: "A Ghana-focused platform for funeral announcements and reminders, service discovery, direct messaging, maps, and notifications.",
       images: ["/assets/profile/works/asiewie/app-funerals.png"],
       defaultImage: "/assets/profile/works/asiewie/app-funerals.png",
+      imageFit: "contain",
       logo: "/assets/profile/works/asiewie/logo.png",
       link: "https://asiewie.com",
       stack: ["React Native", "Expo", "Next.js", "ASP.NET Core", "MySQL"]

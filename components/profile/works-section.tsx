@@ -19,7 +19,7 @@ export function WorksSection() {
             <Card key={work.id} variant="default" className="group overflow-hidden border-0 bg-[var(--surface)] shadow-none transition-transform duration-300 hover:-translate-y-1">
               <Card.Content className="p-0">
                 <div className="relative overflow-hidden bg-[#15121d]">
-                  <Image src={work.defaultImage} alt={`${work.title} project preview`} width={960} height={540} className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" />
+                  <Image src={work.defaultImage} alt={`${work.title} project preview`} width={960} height={540} className={`aspect-[16/9] w-full ${work.imageFit === "contain" ? "object-contain" : "object-cover"} opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100`} />
                   <div className="absolute left-5 top-5 rounded-full bg-[#17151f]/80 px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-white backdrop-blur">0{index + 1} / {work.category}</div>
                   {work.logo ? (
                     <Image src={work.logo} alt="" width={56} height={56} className="absolute bottom-4 right-5 size-14 rounded-2xl border-4 border-white object-contain shadow-xl" />
