@@ -136,6 +136,18 @@ export const siteConfig = {
   ],
   works: [
     {
+      id: "asiewie",
+      name: "Asiewie",
+      title: "Funeral Planning Platform",
+      category: "Mobile & web platform",
+      description: "A Ghana-focused platform for funeral announcements and reminders, service discovery, direct messaging, maps, and notifications.",
+      images: ["/assets/profile/works/asiewie/app-funerals.png"],
+      defaultImage: "/assets/profile/works/asiewie/app-funerals.png",
+      logo: "/assets/profile/works/asiewie/logo.png",
+      link: "https://asiewie.com",
+      stack: ["React Native", "Expo", "Next.js", "ASP.NET Core", "MySQL"]
+    },
+    {
       id: "past-in-power",
       name: "Past In Power",
       title: "TikTok Video Portfolio",
