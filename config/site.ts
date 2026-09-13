@@ -154,8 +154,8 @@ export const siteConfig = {
       title: "TikTok Video Portfolio",
       category: "Short-form video",
       description: "A collection of short-form video work and creative projects, published on TikTok.",
-      images: ["/assets/profile/works/past-in-power-cover.svg"],
-      defaultImage: "/assets/profile/works/past-in-power-cover.svg",
+      images: ["/assets/profile/works/past-in-power/tiktok-profile.png"],
+      defaultImage: "/assets/profile/works/past-in-power/tiktok-profile.png",
       logo: null,
       link: "https://www.tiktok.com/@pastinpower",
       stack: ["Video", "Creative work", "TikTok"]
