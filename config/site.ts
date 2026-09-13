@@ -144,6 +144,11 @@ export const siteConfig = {
       images: ["/assets/profile/works/asiewie/app-funerals.png"],
       defaultImage: "/assets/profile/works/asiewie/app-funerals.png",
       imageFit: "contain",
+      mobilePreviews: [
+        "/assets/profile/works/asiewie/app-search.png",
+        "/assets/profile/works/asiewie/app-funerals.png",
+        "/assets/profile/works/asiewie/app-services.png"
+      ],
       logo: "/assets/profile/works/asiewie/logo.png",
       link: "https://asiewie.com",
       stack: ["React Native", "Expo", "Next.js", "ASP.NET Core", "MySQL"]

@@ -19,7 +19,17 @@ export function WorksSection() {
             <Card key={work.id} variant="default" className="group overflow-hidden border-0 bg-[var(--surface)] shadow-none transition-transform duration-300 hover:-translate-y-1">
               <Card.Content className="p-0">
                 <div className="relative overflow-hidden bg-[#15121d]">
-                  <Image src={work.defaultImage} alt={`${work.title} project preview`} width={960} height={540} className={`aspect-[16/9] w-full ${work.imageFit === "contain" ? "object-contain" : "object-cover"} opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100`} />
+                  {work.mobilePreviews ? (
+                    <div className="flex aspect-[16/9] items-end justify-center gap-3 overflow-hidden bg-[radial-gradient(circle_at_50%_100%,#54345f_0%,#211b29_46%,#15121d_76%)] px-8 pt-7 sm:gap-5 sm:px-12">
+                      {work.mobilePreviews.map((image, previewIndex) => (
+                        <div key={image} className={`overflow-hidden rounded-[1.75rem] border-[5px] border-[#08070b] bg-black shadow-[0_16px_32px_rgba(0,0,0,0.45)] transition duration-500 group-hover:-translate-y-1 ${previewIndex === 1 ? "h-[92%]" : "h-[78%]"} aspect-[9/19]`}>
+                          <Image src={image} alt={`${work.title} mobile app preview`} width={360} height={760} className="size-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Image src={work.defaultImage} alt={`${work.title} project preview`} width={960} height={540} className={`aspect-[16/9] w-full ${work.imageFit === "contain" ? "object-contain" : "object-cover"} opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100`} />
+                  )}
                   <div className="absolute left-5 top-5 rounded-full bg-[#17151f]/80 px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-white backdrop-blur">0{index + 1} / {work.category}</div>
                   {work.logo ? (
                     <Image src={work.logo} alt="" width={56} height={56} className="absolute bottom-4 right-5 size-14 rounded-2xl border-4 border-white object-contain shadow-xl" />
